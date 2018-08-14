@@ -5,20 +5,20 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-#include <fstream>
 
 double  g_dElapsedTime;
 double  g_dDeltaTime;
 bool    g_abKeyPressed[K_COUNT];
-bool    g_abFlags[flagCount];
+bool    g_abFlags[flagCount] = { 0 };
 
 // Game specific variables here
+Map			g_map(0); //map
 SGameChar   g_sChar1((char)3, 30, 0x0C, {3, 3}); //player1
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 double  g_dBounceTime; // this is to prevent key bouncing, so we won't trigger keypresses more than once
 
 // Console object
-Console g_Console(Console::maximizeConsole, "RISE OF THE TOMB MARAUDER");
+Console g_Console(200, 60, "RISE OF THE TOMB MARAUDER");
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -27,10 +27,10 @@ Console g_Console(Console::maximizeConsole, "RISE OF THE TOMB MARAUDER");
 // Input    : void
 // Output   : void
 //--------------------------------------------------------------
-void init( void )
+void init(void)
 {
-    // Set precision for floating point output
-    g_dElapsedTime = 0.0;
+	// Set precision for floating point output
+	g_dElapsedTime = 0.0;
     g_dBounceTime = 0.0;
 
     // sets the initial state for the game
@@ -165,40 +165,63 @@ void moveCharacter()
     if (g_abKeyPressed[K_W] && g_sChar1.m_cLocation.Y > 0)
     {
         //Beep(1440, 30);
-		g_sChar1.m_futureLocation = { 0,-1 };
-		g_sChar1.m_cLocation.Y--;
-        bSomethingHappened = true;
+		g_sChar1.direction = { 0,-1 };
+		g_sChar1.m_futureLocation.X = g_sChar1.m_cLocation.X + g_sChar1.direction.X;
+		g_sChar1.m_futureLocation.Y = g_sChar1.m_cLocation.Y + g_sChar1.direction.Y;
+		if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
+			g_sChar1.m_cLocation.Y--;
+        g_abFlags[moving] = true;
     }
     if (g_abKeyPressed[K_A] && g_sChar1.m_cLocation.X > 0)
     {
         //Beep(1440, 30)
-		g_sChar1.m_futureLocation = { -1,0 };
-		g_sChar1.m_cLocation.X--;
-        bSomethingHappened = true;
+		g_sChar1.direction = { -1, 0 };
+		g_sChar1.m_futureLocation.X = g_sChar1.m_cLocation.X + g_sChar1.direction.X;
+		g_sChar1.m_futureLocation.Y = g_sChar1.m_cLocation.Y + g_sChar1.direction.Y;
+		if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
+			g_sChar1.m_cLocation.X--;
+		g_abFlags[moving] = true;
     }
     if (g_abKeyPressed[K_S] && g_sChar1.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
     {
         //Beep(1440, 30);
-		g_sChar1.m_futureLocation = { 0,1 };
-		g_sChar1.m_cLocation.Y++;
-        bSomethingHappened = true;
+		g_sChar1.direction = { 0, 1 };
+		g_sChar1.m_futureLocation.X = g_sChar1.m_cLocation.X + g_sChar1.direction.X;
+		g_sChar1.m_futureLocation.Y = g_sChar1.m_cLocation.Y + g_sChar1.direction.Y;
+		if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
+			g_sChar1.m_cLocation.Y++;
+		g_abFlags[moving] = true;
     }
     if (g_abKeyPressed[K_D] && g_sChar1.m_cLocation.X < g_Console.getConsoleSize().X - 1)
     {
         //Beep(1440, 30);
-		g_sChar1.m_futureLocation = { 1,0 };
-		g_sChar1.m_cLocation.X++;
-        bSomethingHappened = true;
+		g_sChar1.direction = { 1, 0 };
+		g_sChar1.m_futureLocation.X = g_sChar1.m_cLocation.X + g_sChar1.direction.X;
+		g_sChar1.m_futureLocation.Y = g_sChar1.m_cLocation.Y + g_sChar1.direction.Y;
+		if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
+			g_sChar1.m_cLocation.X++;
+		g_abFlags[moving] = true;
     }
 
     if (g_abKeyPressed[K_LSHIFT] && (g_sChar1.gun == NULL || !g_abFlags[shooting]))
     {
 		g_abFlags[shooting] = true;
 		g_sChar1.gun = new Gun(g_sChar1.m_cLocation);
-        bSomethingHappened = true;
+		g_abFlags[moving] = true;
     }
+	if (g_abKeyPressed[K_RCTRL])
+	{
+			g_map.updateMap(1);
+	}
 
-    if (bSomethingHappened)
+	if (g_abFlags[moving])
+	{
+		if (g_sChar1.direction.X == -1 || g_sChar1.direction.X == 1)
+			g_dBounceTime = g_dElapsedTime + 0.03; // fazt
+		else if (g_sChar1.direction.Y == -1 || g_sChar1.direction.Y == 1)
+			g_dBounceTime = g_dElapsedTime + 0.06; // not as fazt
+	}
+    else if (bSomethingHappened)
     {
         // set the bounce time to some time in the future to prevent accidental triggers
         g_dBounceTime = g_dElapsedTime + 0.125; // 125ms should be enough
@@ -236,7 +259,7 @@ void renderGame()
 {
     renderMap();        // renders the map to the buffer first
     renderCharacter();  // renders the character into the buffer
-	
+
 	if (g_abFlags[shooting]) //renders bullet if shooting
 		renderBullet();
 }
@@ -244,12 +267,16 @@ void renderGame()
 void renderMap()
 {
 	COORD c = { 0, 1 }; 
-	string line;
-	std::ifstream Map("Levels/_Level01.txt");
-	while (c.Y <= g_Console.getConsoleSize().Y && getline(Map, line))
+	string line = "";
+	for (int i = 0; i < g_map.rows; i++)
 	{
-		g_Console.writeToBuffer(c, line, 0x0F);
-		c.Y++;
+		for (int j = 0; j < g_map.cols; j++)
+		{
+			line += g_map.mapArray[i * g_map.cols + j]; //add characters to line
+		}
+		g_Console.writeToBuffer(c, line, 0x0F); //write to buffer, one line
+		c.Y++; //next line
+		line = ""; //clear line for next line
 	}
 }
 
@@ -271,17 +298,19 @@ void renderEnemy()
 void renderBullet()
 {	
 	if (g_sChar1.gun->direction.X == 0 && g_sChar1.gun->direction.Y == 0)
-		g_sChar1.gun->direction = g_sChar1.m_futureLocation;
+		g_sChar1.gun->direction = g_sChar1.direction;
 
 	g_sChar1.gun->shoot(g_sChar1.m_cLocation, g_sChar1.gun->direction.X, g_sChar1.gun->direction.Y);
 
-	if (g_sChar1.gun->outOfRange)
-		g_Console.writeToBuffer(g_sChar1.gun->bulletPos,"HI", 0xF0);
-	else
+	if (g_map.collideWithWall(g_sChar1.gun->bulletPos) || g_sChar1.gun->outOfRange ||
+		g_sChar1.gun->bulletPos.X < 0 || g_sChar1.gun->bulletPos.Y < 0 ||
+		g_sChar1.gun->bulletPos.X > g_Console.getConsoleSize().X - 1 || g_sChar1.gun->bulletPos.Y > g_Console.getConsoleSize().Y - 1)
 	{
 		delete g_sChar1.gun;
 		g_abFlags[shooting] = false;
 	}
+	else
+		g_Console.writeToBuffer(g_sChar1.gun->bulletPos, (char)254, 0x0E);
 }
 
 void renderFramerate()
@@ -300,7 +329,7 @@ void renderFramerate()
     ss << g_dElapsedTime << "s";
     c.X = 0;
     c.Y = 0;
-	g_Console.writeToBuffer(c, ss.str(), 0x09);
+	g_Console.writeToBuffer(c, ss.str());
 }
 
 void renderToScreen()

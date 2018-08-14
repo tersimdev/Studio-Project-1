@@ -4,6 +4,7 @@
 #include "Framework\timer.h"
 #include "Framework\console.h"
 #include "player.h"
+#include "map.h"
 #include <string>
 using std::string;
 
@@ -13,6 +14,7 @@ extern bool g_bQuitGame;
 //enum for flags
 enum FLAGS
 {
+	moving = 0,
 	shooting,
 	flagCount
 };
@@ -20,7 +22,7 @@ enum FLAGS
 // Enumeration to store the control keys that your game will have
 enum EKEYS
 {
-	K_UP,
+	K_UP = 0,
 	K_DOWN,
 	K_LEFT,
 	K_RIGHT,

@@ -28,8 +28,8 @@ void Gun::shoot(COORD playerPos, SHORT dirX, SHORT dirY)
 	{
 		this->bulletPos.X += dirX;
 		this->bulletPos.Y += dirY;
-		outOfRange = true;
+		outOfRange = false;
 	}
-	else outOfRange = false;
+	else outOfRange = true;
 		
 }
