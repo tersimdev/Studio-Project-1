@@ -186,7 +186,6 @@ void moveCharacter()
     if (g_abKeyPressed[K_RMB] || g_abKeyPressed[K_LMB])
     {
 		g_sChar.m_bActive = !g_sChar.m_bActive;
-		playerShoot(1, 1);
         bSomethingHappened = true;
     }
 
@@ -227,6 +226,8 @@ void renderGame()
 {
     renderMap(chooseNextMap()); // renders the map to the buffer first
     renderCharacter();  // renders the character into the buffer
+	COORD c = { g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y };
+	playerShoot(c, 1, 1);
 }
 
 void renderMap(string mapName)
@@ -280,17 +281,17 @@ void renderFramerate()
     g_Console.writeToBuffer(c, ss.str(), 0x09);
 }
 
+void playerShoot(COORD c, int dirX, int dirY)
+{
+	c.X += dirX;
+	c.Y += dirY;
+	g_Console.writeToBuffer(c, "HH", 0xF0);
+}
+
 void renderToScreen()
 {
     // Writes the buffer to the console, hence you will see what you have written
     g_Console.flushBufferToConsole();
 }
 
-void playerShoot(int dirX, int dirY)
-{
-	COORD c;
-	c.X = g_sChar.m_cLocation.X + dirX;
-	c.Y = g_sChar.m_cLocation.Y + dirY;
 
-	g_Console.writeToBuffer(c, "HH", 0xF0);
-}

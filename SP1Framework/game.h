@@ -54,6 +54,7 @@ void renderMap(string);		// renders the map to the buffer first
 void renderCharacter();     // renders the character into the buffer
 void renderFramerate();     // renders debug information, frame rate, elapsed time, etc
 void renderToScreen();      // dump the contents of the buffer to the screen, one frame worth of game
-void playerShoot(int dirX, int dirY); //shoots a projectile in a specific direction
-void renderEnemy(int limitX, int limitY);			// renders the enemy into buffer
+void playerShoot(COORD c, int dirX, int dirY);	//shoots a projectile in a specific direction
+void renderEnemy(int limitX, int limitY);	// renders the enemy into buffer
+
 #endif // _GAME_H
