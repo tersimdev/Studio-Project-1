@@ -2,40 +2,49 @@
 #define _GAME_H
 
 #include "Framework\timer.h"
-#include "maps.h"
+#include "Framework\console.h"
+#include "player.h"
 #include <string>
 using std::string;
 
 extern CStopWatch g_swTimer;
 extern bool g_bQuitGame;
 
+//enum for flags
+enum FLAGS
+{
+	shooting,
+	flagCount
+};
+
 // Enumeration to store the control keys that your game will have
 enum EKEYS
 {
-    K_UP,
-    K_DOWN,
-    K_LEFT,
-    K_RIGHT,
-    K_ESCAPE,
-    K_RMB,
+	K_UP,
+	K_DOWN,
+	K_LEFT,
+	K_RIGHT,
+	K_LSHIFT,
+	K_W,
+	K_A,
+	K_S,
+	K_D,
+	K_RCTRL,
+	K_RMB,
 	K_LMB,
-    K_COUNT
+	K_ESCAPE,
+	K_COUNT
 };
 
 // Enumeration for the different screen states
 enum EGAMESTATES
 {
     S_SPLASHSCREEN,
+	S_MENU,
     S_GAME,
     S_COUNT
 };
 
-// struct for the game character
-struct SGameChar
-{
-    COORD m_cLocation;
-    bool  m_bActive;
-};
 
 void init        ( void );      // initialize your variables, allocate memory, etc
 void getInput    ( void );      // get input from player
@@ -49,12 +58,12 @@ void moveCharacter();       // moves the character, collision detection, physics
 void processUserInput();    // checks if you should change states or do something else with the game, e.g. pause, exit
 void clearScreen();         // clears the current screen and draw from scratch 
 void renderSplashScreen();  // renders the splash screen
-void renderGame();          // renders the game stuff     
-void renderMap(string);		// renders the map to the buffer first
+void renderGame();          // renders the game stuff
+void renderMap();           // renders the map to the buffer first
 void renderCharacter();     // renders the character into the buffer
 void renderFramerate();     // renders debug information, frame rate, elapsed time, etc
 void renderToScreen();      // dump the contents of the buffer to the screen, one frame worth of game
-void playerShoot(COORD c, int dirX, int dirY);	//shoots a projectile in a specific direction
-void renderEnemy(int limitX, int limitY);	// renders the enemy into buffer
+void renderEnemy();			// renders the enemy into buffer
+void renderBullet();		//renders bullets from players
 
 #endif // _GAME_H

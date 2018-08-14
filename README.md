@@ -1,25 +1,20 @@
-#git commands
+#GIT
 
 
-git pull origin master 
-#pulls from the master branch
-git checkout -b "branchname"
-##creates a new branch with branchname
+//get updated files
+git pull origin master (or git pull after using the push)
 
-do stuff
+//push files to github
+git push -u origin master (or git push after using this once)
 
+//adds all files to be committed
 git add .
-#adds files to be committed
-git commit -m "message"
-#commits changes to local files
-git push origin branchname
-#pushes changes to branchname
 
-git checkout master
-#switch to master branch, repalce master with branchname to switch to branch
+//commits the changes, with message msg
+git commit -m "msg"
 
+//undoes the previous commit
 git reset HEAD^
-#undoes previous commit
 
+//undo uncommitted local changes to file
 git checkout <file>
-#restores file to state in github

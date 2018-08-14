@@ -2,7 +2,6 @@
 //
 //
 #include "game.h"
-#include "Framework\console.h"
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -11,14 +10,16 @@
 double  g_dElapsedTime;
 double  g_dDeltaTime;
 bool    g_abKeyPressed[K_COUNT];
+bool    g_flags[flagCount];
 
 // Game specific variables here
-SGameChar   g_sChar;
+SGameChar   g_sChar1((char)3, 30, 0x0C, {3, 3}); //player1
+Bullet *bullet1 = NULL; //bullet
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 double  g_dBounceTime; // this is to prevent key bouncing, so we won't trigger keypresses more than once
 
 // Console object
-extern Console g_Console(Console::maximizeConsole, "RISE OF THE TOMB MARAUDER");
+Console g_Console(Console::maximizeConsole, "RISE OF THE TOMB MARAUDER");
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -28,17 +29,14 @@ extern Console g_Console(Console::maximizeConsole, "RISE OF THE TOMB MARAUDER");
 // Output   : void
 //--------------------------------------------------------------
 void init( void )
-{	
-	// Set precision for floating point output
+{
+    // Set precision for floating point output
     g_dElapsedTime = 0.0;
     g_dBounceTime = 0.0;
 
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
 
-    g_sChar.m_cLocation.X = g_Console.getConsoleSize().X * 0.5;
-    g_sChar.m_cLocation.Y = g_Console.getConsoleSize().Y * 0.5;
-    g_sChar.m_bActive = true;
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
 
@@ -77,15 +75,18 @@ void shutdown( void )
 //--------------------------------------------------------------
 void getInput( void )
 {    
-    g_abKeyPressed[K_UP]     = isKeyPressed(0x57); //W
-    g_abKeyPressed[K_DOWN]   = isKeyPressed(0x53); //S
-    g_abKeyPressed[K_LEFT]   = isKeyPressed(0x41); //A
-    g_abKeyPressed[K_RIGHT]  = isKeyPressed(0x44); //D
-    g_abKeyPressed[K_RMB]	 = isKeyPressed(VK_RBUTTON);
+    g_abKeyPressed[K_UP]     = isKeyPressed(VK_UP);
+    g_abKeyPressed[K_DOWN]   = isKeyPressed(VK_DOWN);
+    g_abKeyPressed[K_LEFT]   = isKeyPressed(VK_LEFT);
+    g_abKeyPressed[K_RIGHT]  = isKeyPressed(VK_RIGHT);
+    g_abKeyPressed[K_LSHIFT] = isKeyPressed(VK_LSHIFT);
+	g_abKeyPressed[K_W]		 = isKeyPressed(0x57); 
+	g_abKeyPressed[K_A]      = isKeyPressed(0x41); 
+	g_abKeyPressed[K_S]      = isKeyPressed(0x53); 
+	g_abKeyPressed[K_D]      = isKeyPressed(0x44); 
+	g_abKeyPressed[K_RMB]    = isKeyPressed(VK_RBUTTON);
 	g_abKeyPressed[K_LMB]    = isKeyPressed(VK_LBUTTON);
-	g_abKeyPressed[K_ESCAPE] = isKeyPressed(VK_ESCAPE);
-
-	
+    g_abKeyPressed[K_ESCAPE] = isKeyPressed(VK_ESCAPE);
 }
 
 //--------------------------------------------------------------
@@ -112,6 +113,8 @@ void update(double dt)
     {
         case S_SPLASHSCREEN : splashScreenWait(); // game logic for the splash screen
             break;
+		case S_MENU:
+			break;
         case S_GAME: gameplay(); // gameplay logic when we are in the game
             break;
     }
@@ -140,7 +143,7 @@ void render()
 
 void splashScreenWait()    // waits for time to pass in splash screen
 {
-    if (g_dElapsedTime > 2) // wait for 2 seconds to switch to game mode, else do nothing
+    if (g_dElapsedTime > 1.0) // wait for 3 seconds to switch to game mode, else do nothing
         g_eGameState = S_GAME;
 }
 
@@ -159,33 +162,39 @@ void moveCharacter()
 
     // Updating the location of the character based on the key press
     // providing a beep sound whenver we shift the character
-    if (g_abKeyPressed[K_UP] && g_sChar.m_cLocation.Y > 0)
+    if (g_abKeyPressed[K_W] && g_sChar1.m_cLocation.Y > 0)
     {
         //Beep(1440, 30);
-        g_sChar.m_cLocation.Y--;
+		g_sChar1.m_futureLocation = { 0,-1 };
+		g_sChar1.m_cLocation.Y--;
         bSomethingHappened = true;
     }
-    if (g_abKeyPressed[K_LEFT] && g_sChar.m_cLocation.X > 0)
+    if (g_abKeyPressed[K_A] && g_sChar1.m_cLocation.X > 0)
+    {
+        //Beep(1440, 30)
+		g_sChar1.m_futureLocation = { -1,0 };
+		g_sChar1.m_cLocation.X--;
+        bSomethingHappened = true;
+    }
+    if (g_abKeyPressed[K_S] && g_sChar1.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
     {
         //Beep(1440, 30);
-        g_sChar.m_cLocation.X--;
+		g_sChar1.m_futureLocation = { 0,1 };
+		g_sChar1.m_cLocation.Y++;
         bSomethingHappened = true;
     }
-    if (g_abKeyPressed[K_DOWN] && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
+    if (g_abKeyPressed[K_D] && g_sChar1.m_cLocation.X < g_Console.getConsoleSize().X - 1)
     {
         //Beep(1440, 30);
-        g_sChar.m_cLocation.Y++;
+		g_sChar1.m_futureLocation = { 1,0 };
+		g_sChar1.m_cLocation.X++;
         bSomethingHappened = true;
     }
-    if (g_abKeyPressed[K_RIGHT] && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
+
+    if (g_abKeyPressed[K_LSHIFT] && (bullet1 == NULL || !g_flags[shooting]))
     {
-        //Beep(1440, 30);
-        g_sChar.m_cLocation.X++;
-        bSomethingHappened = true;
-    }
-    if (g_abKeyPressed[K_RMB] || g_abKeyPressed[K_LMB])
-    {
-		g_sChar.m_bActive = !g_sChar.m_bActive;
+		g_flags[shooting] = true;
+		bullet1 = new Bullet(g_sChar1.m_cLocation);
         bSomethingHappened = true;
     }
 
@@ -210,31 +219,32 @@ void clearScreen()
 
 void renderSplashScreen()  // renders the splash screen
 {
-    COORD c = g_Console.getConsoleSize();
-    c.Y /= 3;
-    c.X = c.X * 0.5 - 9;
-    g_Console.writeToBuffer(c, "A game in 2 seconds", 0x03);
-    c.Y += 1;
-    c.X = g_Console.getConsoleSize().X * 0.5 - 20;
-    g_Console.writeToBuffer(c, "Font Size 16 Consolas for best experience", 0x09);
-    c.Y += 1;
-    c.X = g_Console.getConsoleSize().X * 0.5 - 9;
-    g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x09);
+	COORD c = g_Console.getConsoleSize();
+	c.Y /= 3;
+	c.X = c.X * 0.5 - 9;
+	g_Console.writeToBuffer(c, "A game in 3 seconds", 0x03);
+	/*c.Y += 1;
+	c.X = g_Console.getConsoleSize().X * 0.5 - 20;
+	g_Console.writeToBuffer(c, "Font Size 16 Consolas for best experience", 0x09);
+	*/
+	c.Y += 1;
+	c.X = g_Console.getConsoleSize().X * 0.5 - 9;
+	g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x09);
 }
 
 void renderGame()
 {
-    renderMap(chooseNextMap()); // renders the map to the buffer first
+    renderMap();        // renders the map to the buffer first
     renderCharacter();  // renders the character into the buffer
-	COORD c = { g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y };
-	playerShoot(c, 1, 1);
+	if (g_flags[shooting])
+		renderBullet();
 }
 
-void renderMap(string mapName)
+void renderMap()
 {
 	COORD c = { 0, 1 };
 	string line;
-	std::ifstream Map(mapName);
+	std::ifstream Map("Levels/_Level01.txt");
 	while (c.Y <= g_Console.getConsoleSize().Y && getline(Map, line))
 	{
 		g_Console.writeToBuffer(c, line, 0x0F);
@@ -244,22 +254,33 @@ void renderMap(string mapName)
 
 void renderCharacter()
 {
-    // Draw the location of the character
-    WORD charColor = 0x0A;
-    if (g_sChar.m_bActive)
-    {
-        charColor = 0x0C;
-    }
-    g_Console.writeToBuffer(g_sChar.m_cLocation, (char)3, charColor);
+	// Draw the location of the character
+	g_Console.writeToBuffer(g_sChar1.m_cLocation, g_sChar1.symbol, g_sChar1.color);
 }
 
-void renderEnemy(int limitX, int limitY)
+void renderEnemy()
 {
 	COORD c;
 	//random location within set area
-	c.X = rand() % limitX + 1; 
-	c.Y = rand() % limitY + 1;
+	c.X = rand() % 50 + 1;
+	c.Y = rand() % 50 + 1;
 	g_Console.writeToBuffer(c, (char)1, 0x0B);
+}
+
+void renderBullet()
+{	
+	if (bullet1->direction.X == 0 && bullet1->direction.Y == 0)
+		bullet1->direction = g_sChar1.m_futureLocation;
+
+	bullet1->shoot(g_sChar1.m_cLocation, bullet1->direction.X, bullet1->direction.Y);
+
+	if (bullet1->outOfRange)
+		g_Console.writeToBuffer(bullet1->location,"HI", 0xF0);
+	else
+	{
+		delete bullet1;
+		g_flags[shooting] = false;
+	}
 }
 
 void renderFramerate()
@@ -278,20 +299,10 @@ void renderFramerate()
     ss << g_dElapsedTime << "s";
     c.X = 0;
     c.Y = 0;
-    g_Console.writeToBuffer(c, ss.str(), 0x09);
+	g_Console.writeToBuffer(c, ss.str(), 0x09);
 }
-
-void playerShoot(COORD c, int dirX, int dirY)
-{
-	c.X += dirX;
-	c.Y += dirY;
-	g_Console.writeToBuffer(c, "HH", 0xF0);
-}
-
 void renderToScreen()
 {
     // Writes the buffer to the console, hence you will see what you have written
     g_Console.flushBufferToConsole();
 }
-
-
