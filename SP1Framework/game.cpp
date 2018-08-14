@@ -6,6 +6,9 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <string>
+#include <fstream>
+using std::string;
 
 HWND hWnd;
 
@@ -233,9 +236,69 @@ void renderGame()
 
 void renderMap()
 {
-    
-}
+	COORD c;
+	int count = 0;
+	int lineNumber = 0;
+	string floorname, smap, floorline, mapread;
+	std::ifstream minimap("Levels/_Level01.txt");
 
+	while (getline(minimap, smap))
+	{
+		lineNumber = 10 * count;
+		for (int i = 0; i < smap.size(); i++)
+		{
+			c.X = i * 28;
+
+			switch (smap[i])
+			{
+			case '-':
+				floorname = "Levels/Templates/Row.txt";
+				break;
+			case 'C':
+				floorname = "Levels/Templates/Column.txt";
+				break;
+			case 'A':
+				floorname = "Levels/Templates/Lend.txt";
+				break;
+			case 'D':
+				floorname = "Levels/Templates/Rend.txt";
+				break;
+			case 'U':
+				floorname = "Levels/Templates/InverseT.txt";
+				break;
+			case '+':
+				floorname = "Levels/Templates/Plus.txt";
+				break;
+			case 'O':
+				floorname = "Levels/Templates/Rdown.txt";
+				break;
+			case 'P':
+				floorname = "Levels/Templates/Rup.txt";
+				break;
+			case 'Q':
+				floorname = "Levels/Templates/Ldown.txt";
+				break;
+			case 'W':
+				floorname = "Levels/Templates/Lup.txt";
+				break;
+			case 'T':
+				floorname = "Levels/Templates/T.txt";
+				break;
+			default:
+				floorname = "Levels/Templates/Space.txt";
+			}
+
+			std::ifstream floor(floorname);
+			for (int j = 0; j < 10; j++)
+			{
+				c.Y = j + lineNumber;
+				getline(floor, mapread);
+				g_Console.writeToBuffer(c, mapread);
+			}
+		}
+		count++;
+	}
+}
 void renderCharacter()
 {
     // Draw the location of the character
