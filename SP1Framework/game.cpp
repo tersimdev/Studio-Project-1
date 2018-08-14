@@ -6,11 +6,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-#include <string>
 #include <fstream>
-using std::string;
-
-HWND hWnd;
 
 double  g_dElapsedTime;
 double  g_dDeltaTime;
@@ -22,7 +18,7 @@ EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 double  g_dBounceTime; // this is to prevent key bouncing, so we won't trigger keypresses more than once
 
 // Console object
-Console g_Console(Console::maximizeConsole, "RISE OF THE TOMB MARAUDER");
+extern Console g_Console(Console::maximizeConsole, "RISE OF THE TOMB MARAUDER");
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -32,10 +28,7 @@ Console g_Console(Console::maximizeConsole, "RISE OF THE TOMB MARAUDER");
 // Output   : void
 //--------------------------------------------------------------
 void init( void )
-{
-    //handler for console window
-	hWnd = ::GetActiveWindow();
-	
+{	
 	// Set precision for floating point output
     g_dElapsedTime = 0.0;
     g_dBounceTime = 0.0;
@@ -88,7 +81,8 @@ void getInput( void )
     g_abKeyPressed[K_DOWN]   = isKeyPressed(0x53); //S
     g_abKeyPressed[K_LEFT]   = isKeyPressed(0x41); //A
     g_abKeyPressed[K_RIGHT]  = isKeyPressed(0x44); //D
-    g_abKeyPressed[K_SPACE]  = isKeyPressed(VK_RBUTTON);
+    g_abKeyPressed[K_RMB]	 = isKeyPressed(VK_RBUTTON);
+	g_abKeyPressed[K_LMB]    = isKeyPressed(VK_LBUTTON);
 	g_abKeyPressed[K_ESCAPE] = isKeyPressed(VK_ESCAPE);
 
 	
@@ -189,9 +183,10 @@ void moveCharacter()
         g_sChar.m_cLocation.X++;
         bSomethingHappened = true;
     }
-    if (g_abKeyPressed[K_SPACE])
+    if (g_abKeyPressed[K_RMB] || g_abKeyPressed[K_LMB])
     {
-        g_sChar.m_bActive = !g_sChar.m_bActive;
+		g_sChar.m_bActive = !g_sChar.m_bActive;
+		playerShoot(1, 1);
         bSomethingHappened = true;
     }
 
@@ -230,75 +225,22 @@ void renderSplashScreen()  // renders the splash screen
 
 void renderGame()
 {
-    renderMap();        // renders the map to the buffer first
+    renderMap(chooseNextMap()); // renders the map to the buffer first
     renderCharacter();  // renders the character into the buffer
 }
 
-void renderMap()
+void renderMap(string mapName)
 {
-	COORD c;
-	int count = 0;
-	int lineNumber = 0;
-	string floorname, smap, floorline, mapread;
-	std::ifstream minimap("Levels/_Level01.txt");
-
-	while (getline(minimap, smap))
+	COORD c = { 0, 1 };
+	string line;
+	std::ifstream Map(mapName);
+	while (c.Y <= g_Console.getConsoleSize().Y && getline(Map, line))
 	{
-		lineNumber = 10 * count;
-		for (int i = 0; i < smap.size(); i++)
-		{
-			c.X = i * 28;
-
-			switch (smap[i])
-			{
-			case '-':
-				floorname = "Levels/Templates/Row.txt";
-				break;
-			case 'C':
-				floorname = "Levels/Templates/Column.txt";
-				break;
-			case 'A':
-				floorname = "Levels/Templates/Lend.txt";
-				break;
-			case 'D':
-				floorname = "Levels/Templates/Rend.txt";
-				break;
-			case 'U':
-				floorname = "Levels/Templates/InverseT.txt";
-				break;
-			case '+':
-				floorname = "Levels/Templates/Plus.txt";
-				break;
-			case 'O':
-				floorname = "Levels/Templates/Rdown.txt";
-				break;
-			case 'P':
-				floorname = "Levels/Templates/Rup.txt";
-				break;
-			case 'Q':
-				floorname = "Levels/Templates/Ldown.txt";
-				break;
-			case 'W':
-				floorname = "Levels/Templates/Lup.txt";
-				break;
-			case 'T':
-				floorname = "Levels/Templates/T.txt";
-				break;
-			default:
-				floorname = "Levels/Templates/Space.txt";
-			}
-
-			std::ifstream floor(floorname);
-			for (int j = 0; j < 10; j++)
-			{
-				c.Y = j + lineNumber;
-				getline(floor, mapread);
-				g_Console.writeToBuffer(c, mapread);
-			}
-		}
-		count++;
+		g_Console.writeToBuffer(c, line, 0x0F);
+		c.Y++;
 	}
 }
+
 void renderCharacter()
 {
     // Draw the location of the character
@@ -337,8 +279,18 @@ void renderFramerate()
     c.Y = 0;
     g_Console.writeToBuffer(c, ss.str(), 0x09);
 }
+
 void renderToScreen()
 {
     // Writes the buffer to the console, hence you will see what you have written
     g_Console.flushBufferToConsole();
+}
+
+void playerShoot(int dirX, int dirY)
+{
+	COORD c;
+	c.X = g_sChar.m_cLocation.X + dirX;
+	c.Y = g_sChar.m_cLocation.Y + dirY;
+
+	g_Console.writeToBuffer(c, "HH", 0xF0);
 }

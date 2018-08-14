@@ -2,6 +2,9 @@
 #define _GAME_H
 
 #include "Framework\timer.h"
+#include "maps.h"
+#include <string>
+using std::string;
 
 extern CStopWatch g_swTimer;
 extern bool g_bQuitGame;
@@ -14,7 +17,8 @@ enum EKEYS
     K_LEFT,
     K_RIGHT,
     K_ESCAPE,
-    K_SPACE,
+    K_RMB,
+	K_LMB,
     K_COUNT
 };
 
@@ -46,11 +50,10 @@ void processUserInput();    // checks if you should change states or do somethin
 void clearScreen();         // clears the current screen and draw from scratch 
 void renderSplashScreen();  // renders the splash screen
 void renderGame();          // renders the game stuff     
-void renderMap();			// renders the map to the buffer first
+void renderMap(string);		// renders the map to the buffer first
 void renderCharacter();     // renders the character into the buffer
 void renderFramerate();     // renders debug information, frame rate, elapsed time, etc
 void renderToScreen();      // dump the contents of the buffer to the screen, one frame worth of game
-
-
+void playerShoot(int dirX, int dirY); //shoots a projectile in a specific direction
 void renderEnemy(int limitX, int limitY);			// renders the enemy into buffer
 #endif // _GAME_H
