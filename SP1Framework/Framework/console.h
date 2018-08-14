@@ -4,6 +4,9 @@
 #include <windows.h>
 #include <string>
 
+
+#define fontsize 16
+
 //=============================================================================
 // Slower write to screen functions
 // Left here for posterity's sake to see how it was done
@@ -47,6 +50,7 @@ class Console
     public:
         // Constructors, sets the console size and title.
         Console(COORD consoleSize, LPCSTR lpConsoleTitle = 0);
+		Console(COORD maximizeConsole(), LPCSTR lpConsoleTitle = 0);
         Console(SHORT consoleWidth, SHORT consoleHeight, LPCSTR lpConsoleTitle = 0);
         ~Console();
         
@@ -68,6 +72,18 @@ class Console
         void writeToBuffer(SHORT x, SHORT y, std::string& s, WORD attribute = 0x0F);
         void writeToBuffer(SHORT x, SHORT y, char ch, WORD attribute = 0x0F);
         
+		// this allows for flags to be changed
+		void setConsoleMode(DWORD mode);
+
+		//to change console size before passing to constructor
+		static COORD maximizeConsole()
+		{
+			RECT desktop;
+			GetWindowRect(GetDesktopWindow(), &desktop);
+			short width = desktop.right / ((fontsize >> 1) - 0.8);
+			short height = desktop.bottom / (fontsize + 1);
+			return { width, height };
+		}
         //===================================================================================================
         // These are for your eyes only, don't bother to try to call the following functions.
     private:

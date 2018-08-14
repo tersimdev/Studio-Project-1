@@ -98,17 +98,24 @@ bool isKeyPressed(unsigned short ushKey)
 //=============================================================================
 // Console object code follows
 //=============================================================================
+
 Console::Console(COORD consoleSize, LPCSTR lpConsoleTitle) : 
 	m_u32ScreenDataBufferSize(consoleSize.X * consoleSize.Y)
 {
     initConsole(consoleSize, lpConsoleTitle);
 }
 
+Console::Console(COORD maximizeConsole(), LPCSTR lpConsoleTitle) :
+	m_u32ScreenDataBufferSize(maximizeConsole().X * maximizeConsole().Y)
+{
+	initConsole(maximizeConsole(), lpConsoleTitle);
+}
+
 Console::Console(SHORT consoleWidth, SHORT consoleHeight, LPCSTR lpConsoleTitle) :
     m_u32ScreenDataBufferSize(consoleWidth * consoleHeight)
-{
-    COORD consoleSize = { consoleWidth, consoleHeight };
-    initConsole(consoleSize, lpConsoleTitle);
+{ 
+	COORD consoleSize = { consoleWidth, consoleHeight };
+	initConsole(consoleSize, lpConsoleTitle);
 }
 
 Console::~Console()
@@ -136,10 +143,10 @@ void Console::initConsole(COORD consoleSize, LPCSTR lpConsoleTitle)
        NULL);                   // reserved; must be NULL 
 
 	m_cMaxConsoleSize = GetLargestConsoleWindowSize(m_hScreenBuffer);
-
 	// Sets the console size
 	setConsoleWindowSize();
-    SetConsoleActiveScreenBuffer(m_hScreenBuffer); 	
+    SetConsoleActiveScreenBuffer(m_hScreenBuffer);
+	ShowWindow(GetConsoleWindow(), SW_MAXIMIZE);
 }
 
 void Console::setConsoleTitle(LPCSTR lpConsoleTitle)
@@ -262,3 +269,10 @@ void Console::writeToConsole(const CHAR_INFO* lpBuffer)
     // WriteConsoleOutputA for ASCII text
 	WriteConsoleOutputA(m_hScreenBuffer, lpBuffer, m_cConsoleSize, c, &WriteRegion);
 }
+
+void Console::setConsoleMode(DWORD mode)
+{
+	HANDLE consoleInputBufferHandle = GetStdHandle(STD_INPUT_HANDLE);
+	SetConsoleMode(consoleInputBufferHandle, mode);
+}
+

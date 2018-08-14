@@ -7,6 +7,8 @@
 #include <iomanip>
 #include <sstream>
 
+HWND hWnd;
+
 double  g_dElapsedTime;
 double  g_dDeltaTime;
 bool    g_abKeyPressed[K_COUNT];
@@ -17,7 +19,7 @@ EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 double  g_dBounceTime; // this is to prevent key bouncing, so we won't trigger keypresses more than once
 
 // Console object
-Console g_Console(100, 25, "sapnu puas");
+Console g_Console(Console::maximizeConsole, "RISE OF THE TOMB MARAUDER");
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -28,7 +30,10 @@ Console g_Console(100, 25, "sapnu puas");
 //--------------------------------------------------------------
 void init( void )
 {
-    // Set precision for floating point output
+    //handler for console window
+	hWnd = ::GetActiveWindow();
+	
+	// Set precision for floating point output
     g_dElapsedTime = 0.0;
     g_dBounceTime = 0.0;
 
@@ -40,6 +45,12 @@ void init( void )
     g_sChar.m_bActive = true;
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
+
+	// setting seed for srand
+	srand(time(NULL));
+
+	//prevent selection of text- disable quick edit mode
+	g_Console.setConsoleMode(ENABLE_EXTENDED_FLAGS | ENABLE_MOUSE_INPUT);
 }
 
 //--------------------------------------------------------------
@@ -70,12 +81,14 @@ void shutdown( void )
 //--------------------------------------------------------------
 void getInput( void )
 {    
-    g_abKeyPressed[K_UP]     = isKeyPressed(VK_UP);
-    g_abKeyPressed[K_DOWN]   = isKeyPressed(VK_DOWN);
-    g_abKeyPressed[K_LEFT]   = isKeyPressed(VK_LEFT);
-    g_abKeyPressed[K_RIGHT]  = isKeyPressed(VK_RIGHT);
-    //g_abKeyPressed[K_SPACE]  = isKeyPressed(VK_SPACE);
-    g_abKeyPressed[K_ESCAPE] = isKeyPressed(VK_ESCAPE);
+    g_abKeyPressed[K_UP]     = isKeyPressed(0x57); //W
+    g_abKeyPressed[K_DOWN]   = isKeyPressed(0x53); //S
+    g_abKeyPressed[K_LEFT]   = isKeyPressed(0x41); //A
+    g_abKeyPressed[K_RIGHT]  = isKeyPressed(0x44); //D
+    g_abKeyPressed[K_SPACE]  = isKeyPressed(VK_RBUTTON);
+	g_abKeyPressed[K_ESCAPE] = isKeyPressed(VK_ESCAPE);
+
+	
 }
 
 //--------------------------------------------------------------
@@ -173,11 +186,11 @@ void moveCharacter()
         g_sChar.m_cLocation.X++;
         bSomethingHappened = true;
     }
-    /*if (g_abKeyPressed[K_SPACE])
+    if (g_abKeyPressed[K_SPACE])
     {
         g_sChar.m_bActive = !g_sChar.m_bActive;
         bSomethingHappened = true;
-    }*/
+    }
 
     if (bSomethingHappened)
     {
@@ -204,9 +217,9 @@ void renderSplashScreen()  // renders the splash screen
     c.Y /= 3;
     c.X = c.X * 0.5 - 9;
     g_Console.writeToBuffer(c, "A game in 2 seconds", 0x03);
-    /*c.Y += 1;
+    c.Y += 1;
     c.X = g_Console.getConsoleSize().X * 0.5 - 20;
-    g_Console.writeToBuffer(c, "Press <Space> to change character colour", 0x09);*/
+    g_Console.writeToBuffer(c, "Font Size 16 Consolas for best experience", 0x09);
     c.Y += 1;
     c.X = g_Console.getConsoleSize().X * 0.5 - 9;
     g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x09);
@@ -220,21 +233,7 @@ void renderGame()
 
 void renderMap()
 {
-    /*// Set up sample colours, and output shadings
-    const WORD colors[] = {
-        0x1D, 0x2E, 0x3F, 0x40, 0x50, 0x60,
-        0x70, 0x80, 0x90, 0xA0, 0xB0, 0xC0
-    };
-
-    for (int i = 0; i < 12; ++i)
-    {
-        c.X = 5 * i;
-        c.Y = i + 1;
-        colour(colors[i]);
-        g_Console.writeToBuffer(c, "Hello", colors[i]);
-    }*/
-
-	COORD c;
+    
 }
 
 void renderCharacter()
@@ -246,6 +245,15 @@ void renderCharacter()
         charColor = 0x0C;
     }
     g_Console.writeToBuffer(g_sChar.m_cLocation, (char)3, charColor);
+}
+
+void renderEnemy(int limitX, int limitY)
+{
+	COORD c;
+	//random location within set area
+	c.X = rand() % limitX + 1; 
+	c.Y = rand() % limitY + 1;
+	g_Console.writeToBuffer(c, (char)1, 0x0B);
 }
 
 void renderFramerate()
