@@ -10,11 +10,10 @@
 double  g_dElapsedTime;
 double  g_dDeltaTime;
 bool    g_abKeyPressed[K_COUNT];
-bool    g_flags[flagCount];
+bool    g_abFlags[flagCount];
 
 // Game specific variables here
 SGameChar   g_sChar1((char)3, 30, 0x0C, {3, 3}); //player1
-Bullet *bullet1 = NULL; //bullet
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 double  g_dBounceTime; // this is to prevent key bouncing, so we won't trigger keypresses more than once
 
@@ -79,11 +78,12 @@ void getInput( void )
     g_abKeyPressed[K_DOWN]   = isKeyPressed(VK_DOWN);
     g_abKeyPressed[K_LEFT]   = isKeyPressed(VK_LEFT);
     g_abKeyPressed[K_RIGHT]  = isKeyPressed(VK_RIGHT);
-    g_abKeyPressed[K_LSHIFT] = isKeyPressed(VK_LSHIFT);
+	g_abKeyPressed[K_RCTRL] = isKeyPressed(VK_RCONTROL);
 	g_abKeyPressed[K_W]		 = isKeyPressed(0x57); 
 	g_abKeyPressed[K_A]      = isKeyPressed(0x41); 
 	g_abKeyPressed[K_S]      = isKeyPressed(0x53); 
-	g_abKeyPressed[K_D]      = isKeyPressed(0x44); 
+	g_abKeyPressed[K_D]      = isKeyPressed(0x44);
+	g_abKeyPressed[K_LSHIFT] = isKeyPressed(VK_LSHIFT); 
 	g_abKeyPressed[K_RMB]    = isKeyPressed(VK_RBUTTON);
 	g_abKeyPressed[K_LMB]    = isKeyPressed(VK_LBUTTON);
     g_abKeyPressed[K_ESCAPE] = isKeyPressed(VK_ESCAPE);
@@ -191,10 +191,10 @@ void moveCharacter()
         bSomethingHappened = true;
     }
 
-    if (g_abKeyPressed[K_LSHIFT] && (bullet1 == NULL || !g_flags[shooting]))
+    if (g_abKeyPressed[K_LSHIFT] && (g_sChar1.gun == NULL || !g_abFlags[shooting]))
     {
-		g_flags[shooting] = true;
-		bullet1 = new Bullet(g_sChar1.m_cLocation);
+		g_abFlags[shooting] = true;
+		g_sChar1.gun = new Gun(g_sChar1.m_cLocation);
         bSomethingHappened = true;
     }
 
@@ -236,13 +236,14 @@ void renderGame()
 {
     renderMap();        // renders the map to the buffer first
     renderCharacter();  // renders the character into the buffer
-	if (g_flags[shooting])
+	
+	if (g_abFlags[shooting]) //renders bullet if shooting
 		renderBullet();
 }
 
 void renderMap()
 {
-	COORD c = { 0, 1 };
+	COORD c = { 0, 1 }; 
 	string line;
 	std::ifstream Map("Levels/_Level01.txt");
 	while (c.Y <= g_Console.getConsoleSize().Y && getline(Map, line))
@@ -262,24 +263,24 @@ void renderEnemy()
 {
 	COORD c;
 	//random location within set area
-	c.X = rand() % 50 + 1;
-	c.Y = rand() % 50 + 1;
+	c.X = 10;
+	c.Y = 10;
 	g_Console.writeToBuffer(c, (char)1, 0x0B);
 }
 
 void renderBullet()
 {	
-	if (bullet1->direction.X == 0 && bullet1->direction.Y == 0)
-		bullet1->direction = g_sChar1.m_futureLocation;
+	if (g_sChar1.gun->direction.X == 0 && g_sChar1.gun->direction.Y == 0)
+		g_sChar1.gun->direction = g_sChar1.m_futureLocation;
 
-	bullet1->shoot(g_sChar1.m_cLocation, bullet1->direction.X, bullet1->direction.Y);
+	g_sChar1.gun->shoot(g_sChar1.m_cLocation, g_sChar1.gun->direction.X, g_sChar1.gun->direction.Y);
 
-	if (bullet1->outOfRange)
-		g_Console.writeToBuffer(bullet1->location,"HI", 0xF0);
+	if (g_sChar1.gun->outOfRange)
+		g_Console.writeToBuffer(g_sChar1.gun->bulletPos,"HI", 0xF0);
 	else
 	{
-		delete bullet1;
-		g_flags[shooting] = false;
+		delete g_sChar1.gun;
+		g_abFlags[shooting] = false;
 	}
 }
 
@@ -301,6 +302,7 @@ void renderFramerate()
     c.Y = 0;
 	g_Console.writeToBuffer(c, ss.str(), 0x09);
 }
+
 void renderToScreen()
 {
     // Writes the buffer to the console, hence you will see what you have written

@@ -1,6 +1,6 @@
 #include "player.h"
 
-// Constructor
+/*CONSTRUCTORS*/
 
 SGameChar::SGameChar(char symb, int hp, WORD col, COORD location)
 {
@@ -11,26 +11,23 @@ SGameChar::SGameChar(char symb, int hp, WORD col, COORD location)
 };
 
 
-Bullet::Bullet() {}
-Bullet::Bullet(COORD loc)
+Gun::Gun(COORD loc)
 {
-	this->location = loc;
+	this->bulletPos = loc;
 }
+
 /*FUNCTIONS*/
 
-void Bullet::shoot(COORD playerPos, SHORT dirX, SHORT dirY)
+void Gun::shoot(COORD playerPos, SHORT dirX, SHORT dirY)
 {
 	int range = this->range;
-	if ((dirX == 1 && location.X < playerPos.X + range) || (dirX == -1 && location.X > playerPos.X - range))
+	if ( ((dirX == 1 && bulletPos.X < playerPos.X + range) 
+		|| (dirX == -1 && bulletPos.X > playerPos.X - range) )
+		|| ( (dirY == 1 && bulletPos.Y < playerPos.Y + (range >> 1)) 
+		|| (dirY == -1 && bulletPos.Y > playerPos.Y - (range >> 1))) )
 	{
-		this->location.X += dirX;
-		this->location.Y += dirY;
-		outOfRange = true;
-	}
-	else if ((dirY == 1 && location.Y < playerPos.Y + (range >> 1)) || (dirY == -1 && location.Y > playerPos.Y - (range >> 1)))
-	{
-		this->location.X += dirX;
-		this->location.Y += dirY;
+		this->bulletPos.X += dirX;
+		this->bulletPos.Y += dirY;
 		outOfRange = true;
 	}
 	else outOfRange = false;
