@@ -46,7 +46,16 @@ void Map::updateMap()
 
 bool Map::collideWithWall(COORD c)
 {
-	if (this->mapArray[(c.Y - 1) * this->cols + c.X] != ' ')
+	if (this->mapArray[(c.Y - 1) * this->cols + c.X] == 'Z')
+	{
+		return true;
+	}
+	else return false;
+}
+
+bool Map::findChar(COORD c, char target)
+{
+	if (this->mapArray[(c.Y - 1) * this->cols + c.X] == target)
 	{
 		return true;
 	}

@@ -22,7 +22,7 @@ double  g_dBounceTimeUI;
 double  g_dBounceTimeMove;
 double  g_dBounceTimeAction;
 // Console object
-Console g_Console(200, 60, "RISE OF THE TOMB MARAUDER");
+Console g_Console(200, 50, "RISE OF THE TOMB MARAUDER");
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -35,6 +35,7 @@ void init(void)
 {
 	// Set precision for floating point output
 	g_dElapsedTime = 0.0;
+	g_dBounceTimeNorm = 0.0;
 	g_dBounceTimeUI = 0.0;
 	g_dBounceTimeMove = 0.0;
 	g_dBounceTimeAction = 0.0;
@@ -191,7 +192,12 @@ void moveCharacter()
 		g_sChar1.direction = { 0,-1 };
 		g_sChar1.m_futureLocation.X = g_sChar1.m_cLocation.X + g_sChar1.direction.X;
 		g_sChar1.m_futureLocation.Y = g_sChar1.m_cLocation.Y + g_sChar1.direction.Y;
-		if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
+		if (g_map.findChar(g_sChar1.m_futureLocation, 'D'))
+		{
+			g_map.updateMap();
+			g_sChar1.m_cLocation.Y = g_Console.getConsoleSize().Y - 1;
+		}
+		else if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
 			g_sChar1.m_cLocation.Y--;
 		g_abFlags[moving] = true;
 	}
@@ -201,7 +207,12 @@ void moveCharacter()
 		g_sChar1.direction = { 0, 1 };
 		g_sChar1.m_futureLocation.X = g_sChar1.m_cLocation.X + g_sChar1.direction.X;
 		g_sChar1.m_futureLocation.Y = g_sChar1.m_cLocation.Y + g_sChar1.direction.Y;
-		if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
+		if (g_map.findChar(g_sChar1.m_futureLocation, 'D'))
+		{
+			g_map.updateMap();
+			g_sChar1.m_cLocation.Y = 1;
+		}
+		else if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
 			g_sChar1.m_cLocation.Y++;
 		g_abFlags[moving] = true;
 	}
@@ -211,7 +222,12 @@ void moveCharacter()
 		g_sChar1.direction = { -1, 0 };
 		g_sChar1.m_futureLocation.X = g_sChar1.m_cLocation.X + g_sChar1.direction.X;
 		g_sChar1.m_futureLocation.Y = g_sChar1.m_cLocation.Y + g_sChar1.direction.Y;
-		if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
+		if (g_map.findChar(g_sChar1.m_futureLocation, 'D'))
+		{
+			g_map.updateMap();
+			g_sChar1.m_cLocation.X = g_Console.getConsoleSize().X - 1;
+		}
+		else if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
 			g_sChar1.m_cLocation.X--;
 		g_abFlags[moving] = true;
 	}
@@ -221,7 +237,12 @@ void moveCharacter()
 		g_sChar1.direction = { 1, 0 };
 		g_sChar1.m_futureLocation.X = g_sChar1.m_cLocation.X + g_sChar1.direction.X;
 		g_sChar1.m_futureLocation.Y = g_sChar1.m_cLocation.Y + g_sChar1.direction.Y;
-		if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
+		if (g_map.findChar(g_sChar1.m_futureLocation, 'D'))
+		{
+			g_map.updateMap();
+			g_sChar1.m_cLocation.X = 0;
+		}
+		else if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
 			g_sChar1.m_cLocation.X++;
 		g_abFlags[moving] = true;
 	}
@@ -257,11 +278,17 @@ void processUserInput()
 	if (g_dBounceTimeNorm > g_dElapsedTime)
 		return;
 		// quits the game if player hits the escape key
-    if (g_abKeyPressed[K_ESCAPE])
-        g_bQuitGame = true;  
-
+	if (g_abKeyPressed[K_ESCAPE])
+	{
+		g_bQuitGame = true;
+		eventHappened = true;
+	}
+          
 	if (g_abKeyPressed[K_RCTRL])
+	{
 		g_map.updateMap();
+		eventHappened = true;
+	}
 
 	if (eventHappened)
 		g_dBounceTimeNorm = g_dElapsedTime + 0.125; // avg
@@ -372,27 +399,27 @@ void renderMainMenu()
 {
 	COORD c = g_Console.getConsoleSize();
 	c.Y /= 3;
-	c.X = c.X / 2 - 9;
+	c.X = c.X / 2 - 11;
 
 	WORD attri1 = 0x07, attri2 = 0x07, attri3 = 0x07;
 
 	switch (g_menuSelection)
 	{
 	case 0:
-		attri1 = 0x0A;
+		attri1 = 0x03;
 		break;
 	case 1:
-		attri2 = 0x0A;
+		attri2 = 0x03;
 		break;
 	case 2:
-		attri3 = 0x0A;
+		attri3 = 0x03;
 		break;
 	}
 
-	g_Console.writeToBuffer(c, "1. Play", attri1);
+	g_Console.writeToBuffer(c, "1. New Game", attri1);
 	c.Y += 1;
-	c.X = g_Console.getConsoleSize().X / 2 - 9;
-	g_Console.writeToBuffer(c, "2. Load", attri2);
+	c.X = g_Console.getConsoleSize().X / 2 - 12;
+	g_Console.writeToBuffer(c, "2. Load Game", attri2);
 	c.Y += 1;
 	c.X = g_Console.getConsoleSize().X / 2 - 9;
 	g_Console.writeToBuffer(c, "3. Exit", attri3);
@@ -456,7 +483,7 @@ void renderMainMenu()
 	if (bSomethingHappened)
 	{
 		// set the bounce time to some time in the future to prevent accidental triggers
-		g_dBounceTimeUI = g_dElapsedTime + 0.3;
+		g_dBounceTimeUI = g_dElapsedTime + 0.2;
 	}
 }
 
@@ -471,16 +498,16 @@ void renderLoadSave()
 	switch (g_menuSelection)
 	{
 	case 0:
-		attri1 = 0x0A;
+		attri1 = 0x03;
 		break;
 	case 1:
-		attri2 = 0x0A;
+		attri2 = 0x03;
 		break;
 	case 2:
-		attri3 = 0x0A;
+		attri3 = 0x03;
 		break;
 	case 3:
-		attri4 = 0x0A;
+		attri4 = 0x03;
 		break;
 	}
 	g_Console.writeToBuffer(c, "1. Empty", attri1);
@@ -561,6 +588,6 @@ void renderLoadSave()
 	if (bSomethingHappened)
 	{
 		// set the bounce time to some time in the future to prevent accidental triggers
-		g_dBounceTimeUI = g_dElapsedTime + 0.3;
+		g_dBounceTimeUI = g_dElapsedTime + 0.2;
 	}
 }
