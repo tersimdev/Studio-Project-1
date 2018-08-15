@@ -211,7 +211,7 @@ void moveCharacter()
     }
 	if (g_abKeyPressed[K_RCTRL])
 	{
-			g_map.updateMap(1);
+			g_map.updateMap();
 	}
 
 	if (g_abFlags[moving])

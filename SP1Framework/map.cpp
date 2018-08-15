@@ -37,6 +37,13 @@ void Map::updateMap(int level)
 	this->loadMap(this->mapNames[this->mapLevel]);
 }
 
+void Map::updateMap()
+{
+	this->mapLevel++;
+	this->mapLevel %= this->numOfLevels;
+	this->loadMap(this->mapNames[this->mapLevel]);
+}
+
 bool Map::collideWithWall(COORD c)
 {
 	if (this->mapArray[(c.Y - 1) * this->cols + c.X] != ' ')
