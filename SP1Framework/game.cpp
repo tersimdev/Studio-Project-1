@@ -11,7 +11,6 @@ double  g_dDeltaTime;
 bool    g_abKeyPressed[K_COUNT];
 bool    g_abFlags[flagCount] = { 0 };
 int		g_menuSelection;
-int		currentgamestate;
 // Game specific variables here
 Map			g_map(0); //map
 SGameChar   g_sChar1((char)3, 30, 0x0C, {3, 3}); //player1
@@ -22,7 +21,7 @@ double  g_dBounceTimeUI;
 double  g_dBounceTimeMove;
 double  g_dBounceTimeAction;
 // Console object
-Console g_Console(200, 50, "RISE OF THE TOMB MARAUDER");
+Console g_Console(199, 51, "RISE OF THE TOMB MARAUDER");
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -54,7 +53,6 @@ void init(void)
 
 	//init variables
 	g_menuSelection = 0;
-	currentgamestate = 1;
 }
 
 //--------------------------------------------------------------
@@ -131,12 +129,14 @@ void update(double dt)
     {
         case S_SPLASHSCREEN : splashScreenWait(); // game logic for the splash screen
             break;
-		case S_MENU: renderMainMenu();
+		case S_MENU: mainMenu();
 			break;
-		case S_LOADSAVE: renderLoadSave();
+		case S_LOADSAVE: loadSave();
 			break;
         case S_GAME: gameplay(); // gameplay logic when we are in the game
             break;
+		case S_BOSS: bossMode();
+			break;
     }
 }
 //--------------------------------------------------------------
@@ -160,6 +160,8 @@ void render()
 		break;
 	case S_GAME: renderGame();
 		break;
+	case S_BOSS: renderBossMode();
+		break;
 	}
 	renderFramerate();  // renders debug information, frame rate, elapsed time, etc
     renderToScreen();   // dump the contents of the buffer to the screen, one frame worth of game
@@ -171,10 +173,51 @@ void splashScreenWait()    // waits for time to pass in splash screen
         g_eGameState = S_MENU;
 }
 
+void renderFramerate()
+{
+	COORD c;
+	// displays the framerate
+	std::ostringstream ss;
+	ss << std::fixed << std::setprecision(3);
+	ss << 1.0 / g_dDeltaTime << "fps";
+	c.X = g_Console.getConsoleSize().X - 9;
+	c.Y = 0;
+	g_Console.writeToBuffer(c, ss.str());
+
+	// displays the elapsed time
+	ss.str("");
+	ss << g_dElapsedTime << "s";
+	c.X = 0;
+	c.Y = 0;
+	g_Console.writeToBuffer(c, ss.str());
+}
+
+void renderToScreen()
+{
+	// Writes the buffer to the console, hence you will see what you have written
+	g_Console.flushBufferToConsole();
+}
+
+void clearScreen()
+{
+	// Clears the buffer with this colour attribute
+	g_Console.clearBuffer(0x00);
+}
+
+
+
+
+
+
+
+/******************************************MAIN GAME******************************************/
+
+
 void gameplay()         // gameplay logic
 {
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();    // moves the character, collision detection, physics, etc
+	checkForTiles();	// checks for special tiles which player can interact with
 	actionsListener();	// other action keys like shooting, etc
 						// sound can be played here too.
 }
@@ -186,18 +229,13 @@ void moveCharacter()
 		return;
 	// Updating the location of the character based on the key press
 	// providing a beep sound whenver we shift the character
-	if (g_abKeyPressed[K_W] && g_sChar1.m_cLocation.Y > 0)
+	if (g_abKeyPressed[K_W] && g_sChar1.m_cLocation.Y > 1)
 	{
 		//Beep(1440, 30);
 		g_sChar1.direction = { 0,-1 };
-		g_sChar1.m_futureLocation.X = g_sChar1.m_cLocation.X + g_sChar1.direction.X;
-		g_sChar1.m_futureLocation.Y = g_sChar1.m_cLocation.Y + g_sChar1.direction.Y;
-		if (g_map.findChar(g_sChar1.m_futureLocation, 'D'))
-		{
-			g_map.updateMap();
-			g_sChar1.m_cLocation.Y = g_Console.getConsoleSize().Y - 1;
-		}
-		else if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
+		//calculating future location
+		g_sChar1.m_futureLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
+		if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
 			g_sChar1.m_cLocation.Y--;
 		g_abFlags[moving] = true;
 	}
@@ -205,14 +243,9 @@ void moveCharacter()
 	{
 		//Beep(1440, 30);
 		g_sChar1.direction = { 0, 1 };
-		g_sChar1.m_futureLocation.X = g_sChar1.m_cLocation.X + g_sChar1.direction.X;
-		g_sChar1.m_futureLocation.Y = g_sChar1.m_cLocation.Y + g_sChar1.direction.Y;
-		if (g_map.findChar(g_sChar1.m_futureLocation, 'D'))
-		{
-			g_map.updateMap();
-			g_sChar1.m_cLocation.Y = 1;
-		}
-		else if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
+		//calculating future location
+		g_sChar1.m_futureLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
+		if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
 			g_sChar1.m_cLocation.Y++;
 		g_abFlags[moving] = true;
 	}
@@ -220,14 +253,9 @@ void moveCharacter()
 	{
 		//Beep(1440, 30)
 		g_sChar1.direction = { -1, 0 };
-		g_sChar1.m_futureLocation.X = g_sChar1.m_cLocation.X + g_sChar1.direction.X;
-		g_sChar1.m_futureLocation.Y = g_sChar1.m_cLocation.Y + g_sChar1.direction.Y;
-		if (g_map.findChar(g_sChar1.m_futureLocation, 'D'))
-		{
-			g_map.updateMap();
-			g_sChar1.m_cLocation.X = g_Console.getConsoleSize().X - 1;
-		}
-		else if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
+		//calculating future location
+		g_sChar1.m_futureLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
+		if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
 			g_sChar1.m_cLocation.X--;
 		g_abFlags[moving] = true;
 	}
@@ -235,24 +263,17 @@ void moveCharacter()
 	{
 		//Beep(1440, 30);
 		g_sChar1.direction = { 1, 0 };
-		g_sChar1.m_futureLocation.X = g_sChar1.m_cLocation.X + g_sChar1.direction.X;
-		g_sChar1.m_futureLocation.Y = g_sChar1.m_cLocation.Y + g_sChar1.direction.Y;
-		if (g_map.findChar(g_sChar1.m_futureLocation, 'D'))
-		{
-			g_map.updateMap();
-			g_sChar1.m_cLocation.X = 0;
-		}
-		else if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
+		//calculating future location
+		g_sChar1.m_futureLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
+		if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
 			g_sChar1.m_cLocation.X++;
 		g_abFlags[moving] = true;
 	}
 
 	if (g_abFlags[moving])
-	{
-		if (g_sChar1.direction.X == -1 || g_sChar1.direction.X == 1)
-			g_dBounceTimeMove = g_dElapsedTime + 0.05; // fazt
-		else if (g_sChar1.direction.Y == -1 || g_sChar1.direction.Y == 1)
-			g_dBounceTimeMove = g_dElapsedTime + 0.10; // not as fazt
+	{	
+		//check bounce time
+		g_dBounceTimeMove = g_dElapsedTime + 0.05; // fazt
 	}
 }
 
@@ -272,6 +293,7 @@ void actionsListener()
 	if (eventHappened)
 		g_dBounceTimeAction = g_dElapsedTime + 1.0; // slow
 }
+
 void processUserInput()
 {
 	bool eventHappened = false;
@@ -294,18 +316,39 @@ void processUserInput()
 		g_dBounceTimeNorm = g_dElapsedTime + 0.125; // avg
 }
 
-void clearScreen()
+void checkForTiles()
 {
-    // Clears the buffer with this colour attribute
-    g_Console.clearBuffer(0x00);
+	if (g_abFlags[moving])
+	{
+		if (g_map.findChar(g_sChar1.m_futureLocation, 'D'))
+		{
+			g_map.updateMap(); //loads next map, wraping around
+			if (g_sChar1.direction.X == 1)
+				g_sChar1.m_cLocation.X = 2;
+			else if (g_sChar1.direction.X == -1)
+				g_sChar1.m_cLocation.X = g_Console.getConsoleSize().X - 2;
+			else if (g_sChar1.direction.Y == 1)
+				g_sChar1.m_cLocation.Y = 2;
+			else if (g_sChar1.direction.Y == -1)
+				g_sChar1.m_cLocation.Y = g_Console.getConsoleSize().Y - 2;
+		}
+		else if (g_map.findChar(g_sChar1.m_futureLocation, 'U'))
+		{
+			//intialising position of player
+			g_sChar1.m_cLocation.X = g_Console.getConsoleSize().X * 0.5 - 1;
+			g_sChar1.m_cLocation.Y = g_Console.getConsoleSize().Y * 0.5 - 1;
+			g_map.loadMap("Levels/BOSS1.txt");
+			g_eGameState = S_BOSS;
+		}
+	}
 }
 
 void renderSplashScreen()  // renders the splash screen
 {
 	COORD c = g_Console.getConsoleSize();
 	c.Y /= 3;
-	c.X = c.X * 0.5 - 9;
-	g_Console.writeToBuffer(c, "A game in 3 seconds", 0x03);
+	c.X = c.X * 0.5 - 7;
+	g_Console.writeToBuffer(c, "Starting in 3s", 0x03);
 	/*c.Y += 1;
 	c.X = g_Console.getConsoleSize().X * 0.5 - 20;
 	g_Console.writeToBuffer(c, "Font Size 16 Consolas for best experience", 0x09);
@@ -354,14 +397,16 @@ void renderEnemy()
 
 void renderBullet()
 {	
+	//change direction if none initialized
 	if (g_sChar1.gun->direction.X == 0 && g_sChar1.gun->direction.Y == 0)
 		g_sChar1.gun->direction = g_sChar1.direction;
 
 	g_sChar1.gun->shoot(g_sChar1.m_cLocation, g_sChar1.gun->direction.X, g_sChar1.gun->direction.Y);
 
-	if (g_map.collideWithWall(g_sChar1.gun->bulletPos) || g_sChar1.gun->outOfRange ||
-		g_sChar1.gun->bulletPos.X < 0 || g_sChar1.gun->bulletPos.Y < 0 ||
-		g_sChar1.gun->bulletPos.X > g_Console.getConsoleSize().X - 1 || g_sChar1.gun->bulletPos.Y > g_Console.getConsoleSize().Y - 1)
+	//check if bullet exceeds console or hits wall or out of range
+	if (g_sChar1.gun->outOfRange || g_sChar1.gun->bulletPos.X < 0 || g_sChar1.gun->bulletPos.Y < 1 ||
+		g_sChar1.gun->bulletPos.X > g_Console.getConsoleSize().X - 1 || g_sChar1.gun->bulletPos.Y > g_Console.getConsoleSize().Y - 1 || 
+		g_map.collideWithWall(g_sChar1.gun->bulletPos))
 	{
 		delete g_sChar1.gun; //no more visual bullet
 		g_abFlags[shooting] = false; //stops rendering
@@ -370,60 +415,39 @@ void renderBullet()
 		g_Console.writeToBuffer(g_sChar1.gun->bulletPos, (char)254, 0x0E);
 }
 
-void renderFramerate()
-{
-    COORD c;
-    // displays the framerate
-    std::ostringstream ss;
-    ss << std::fixed << std::setprecision(3);
-    ss << 1.0 / g_dDeltaTime << "fps";
-    c.X = g_Console.getConsoleSize().X - 9;
-    c.Y = 0;
-    g_Console.writeToBuffer(c, ss.str());
 
-    // displays the elapsed time
-    ss.str("");
-    ss << g_dElapsedTime << "s";
-    c.X = 0;
-    c.Y = 0;
-	g_Console.writeToBuffer(c, ss.str());
+
+
+
+
+
+/****************************************BOSS GAMEPLAY****************************************/
+
+
+void bossMode()
+{
+	moveCharacter();    // moves the character, collision detection, physics, etc
 }
 
-void renderToScreen()
+void renderBossMode()
 {
-    // Writes the buffer to the console, hence you will see what you have written
-    g_Console.flushBufferToConsole();
+	renderMap();
+	renderCharacter();
 }
 
-void renderMainMenu()					
+
+
+
+
+
+
+
+
+/******************************************UI******************************************/
+
+
+void mainMenu()
 {
-	COORD c = g_Console.getConsoleSize();
-	c.Y /= 3;
-	c.X = c.X / 2 - 11;
-
-	WORD attri1 = 0x07, attri2 = 0x07, attri3 = 0x07;
-
-	switch (g_menuSelection)
-	{
-	case 0:
-		attri1 = 0x03;
-		break;
-	case 1:
-		attri2 = 0x03;
-		break;
-	case 2:
-		attri3 = 0x03;
-		break;
-	}
-
-	g_Console.writeToBuffer(c, "1. New Game", attri1);
-	c.Y += 1;
-	c.X = g_Console.getConsoleSize().X / 2 - 12;
-	g_Console.writeToBuffer(c, "2. Load Game", attri2);
-	c.Y += 1;
-	c.X = g_Console.getConsoleSize().X / 2 - 9;
-	g_Console.writeToBuffer(c, "3. Exit", attri3);
-
 	//handling input
 	bool bSomethingHappened = false;
 	if (g_dBounceTimeUI > g_dElapsedTime)
@@ -487,13 +511,9 @@ void renderMainMenu()
 	}
 }
 
-void renderLoadSave()
+void renderMainMenu()					
 {
-	COORD c = g_Console.getConsoleSize();
-	c.Y /= 3;
-	c.X = c.X / 2 - 9;
-
-	WORD attri1 = 0x07, attri2 = 0x07, attri3 = 0x07, attri4 = 0x07;
+	WORD attri1 = 0x07, attri2 = 0x07, attri3 = 0x07;
 
 	switch (g_menuSelection)
 	{
@@ -506,21 +526,23 @@ void renderLoadSave()
 	case 2:
 		attri3 = 0x03;
 		break;
-	case 3:
-		attri4 = 0x03;
-		break;
 	}
-	g_Console.writeToBuffer(c, "1. Empty", attri1);
+
+	COORD c = g_Console.getConsoleSize();
+	c.Y /= 3;
+	c.X = c.X * 0.5 - 3;
+
+	g_Console.writeToBuffer(c, "1. PLAY", attri1);
 	c.Y += 1;
-	c.X = g_Console.getConsoleSize().X / 2 - 9;
-	g_Console.writeToBuffer(c, "2. Empty", attri2);
+	c.X = g_Console.getConsoleSize().X * 0.5 - 3;
+	g_Console.writeToBuffer(c, "2. LOAD", attri2);
 	c.Y += 1;
-	c.X = g_Console.getConsoleSize().X / 2 - 9;
-	g_Console.writeToBuffer(c, "3. Empty", attri3);
-	c.Y += 1;
-	c.X = g_Console.getConsoleSize().X / 2 - 9;
-	g_Console.writeToBuffer(c, "4. Back", attri4);
-	
+	c.X = g_Console.getConsoleSize().X * 0.5 - 3;
+	g_Console.writeToBuffer(c, "3. EXIT", attri3);
+}
+
+void loadSave()
+{
 	//handling input
 	bool bSomethingHappened = false;
 	if (g_dBounceTimeUI > g_dElapsedTime)
@@ -590,4 +612,40 @@ void renderLoadSave()
 		// set the bounce time to some time in the future to prevent accidental triggers
 		g_dBounceTimeUI = g_dElapsedTime + 0.2;
 	}
+}
+
+void renderLoadSave()
+{
+	WORD attri1 = 0x07, attri2 = 0x07, attri3 = 0x07, attri4 = 0x07;
+
+	switch (g_menuSelection)
+	{
+	case 0:
+		attri1 = 0x03;
+		break;
+	case 1:
+		attri2 = 0x03;
+		break;
+	case 2:
+		attri3 = 0x03;
+		break;
+	case 3:
+		attri4 = 0x03;
+		break;
+	}
+
+	COORD c = g_Console.getConsoleSize();
+	c.Y /= 3;
+	c.X = c.X * 0.5 - 4;
+
+	g_Console.writeToBuffer(c, "1. EMPTY", attri1);
+	c.Y += 1;
+	c.X = g_Console.getConsoleSize().X * 0.5 - 4;
+	g_Console.writeToBuffer(c, "2. EMPTY", attri2);
+	c.Y += 1;
+	c.X = g_Console.getConsoleSize().X * 0.5 - 4;
+	g_Console.writeToBuffer(c, "3. EMPTY", attri3);
+	c.Y += 1;
+	c.X = g_Console.getConsoleSize().X * 0.5 - 4;
+	g_Console.writeToBuffer(c, "4. BACK", attri4);
 }

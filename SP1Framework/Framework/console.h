@@ -102,4 +102,8 @@ class Console
         void shutDownConsole();
 };
 
+
+//adds two coords together
+COORD ADDCOORDS(COORD c1, COORD c2);
+
 #endif // _CONSOLE_H

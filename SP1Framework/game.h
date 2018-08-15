@@ -52,6 +52,7 @@ enum EGAMESTATES
     S_SPLASHSCREEN,
 	S_MENU,
     S_GAME,
+	S_BOSS,
     S_COUNT
 };
 
@@ -74,9 +75,16 @@ void renderCharacter();     // renders the character into the buffer
 void renderFramerate();     // renders debug information, frame rate, elapsed time, etc
 void renderToScreen();      // dump the contents of the buffer to the screen, one frame worth of game
 
+/*new*/
 void renderEnemy();			//renders the enemy into buffer
 void renderBullet();		//renders bullets from players
+void mainMenu();			//captures events for navigating UI
 void renderMainMenu();      //renders main menu
+void loadSave();			//captures events for navigating UI
 void renderLoadSave();		//renders loading of saves
 void actionsListener();		//listens to actions
+void checkForTiles();		//checks for special tiles which player can interact with
+void bossMode();			//boss mode
+void renderBossMode();		//renders the boss' attacks etc
+
 #endif // _GAME_H

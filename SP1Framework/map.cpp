@@ -3,6 +3,7 @@
 /*CONSTRUCTOR*/
 Map::Map(int index)
 {
+	mapNamesInit();
 	loadMap(mapNames[index]);
 }
 
@@ -60,4 +61,14 @@ bool Map::findChar(COORD c, char target)
 		return true;
 	}
 	else return false;
+}
+
+void Map::mapNamesInit()
+{
+	for (int i = 0; i < this->numOfLevels; i++)
+	{
+		string name;
+		name = "Levels/" + std::to_string(i);
+		this->mapNames.push_back(name + ".txt");
+	}
 }

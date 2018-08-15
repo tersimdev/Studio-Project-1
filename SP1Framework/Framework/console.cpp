@@ -275,3 +275,11 @@ void Console::setConsoleMode(DWORD mode)
 	HANDLE consoleInputBufferHandle = GetStdHandle(STD_INPUT_HANDLE);
 	SetConsoleMode(consoleInputBufferHandle, mode);
 }
+
+//add coords together
+COORD ADDCOORDS(COORD c1, COORD c2)
+{
+	c1.X += c2.X;
+	c1.Y += c2.Y;
+	return c1;
+}
