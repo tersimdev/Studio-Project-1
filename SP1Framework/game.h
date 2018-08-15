@@ -3,6 +3,7 @@
 
 #include "Framework\timer.h"
 #include "Framework\console.h"
+#include "organism.h"
 #include "player.h"
 #include "map.h"
 #include <string>

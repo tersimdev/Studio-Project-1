@@ -4,18 +4,10 @@
 #include "game.h"
 
 // struct for the game character
-class SGameChar
+class SGameChar : public Organism
 {
 public:
-	SGameChar(char symb, int hp, WORD color, COORD location = { 3, 3 });
-
-	char symbol; //ascii character
-	WORD color; //color of char
-	COORD m_cLocation; //position of player
-	COORD direction = { 1, 0 }; //direction of movement
-	COORD m_futureLocation; //future position of player
-	bool  m_bActive = true; //whether player is active
-
+	SGameChar(char symb, int hp, WORD col, COORD location = { 3, 3 });
 	struct Gun *gun = NULL;
 
 private:

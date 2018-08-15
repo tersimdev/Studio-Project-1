@@ -151,7 +151,7 @@ void gameplay()            // gameplay logic
 {
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();    // moves the character, collision detection, physics, etc
-                        // sound can be played here too.
+	                 // sound can be played here too.
 }
 
 void moveCharacter()
@@ -224,7 +224,7 @@ void moveCharacter()
     else if (bSomethingHappened)
     {
         // set the bounce time to some time in the future to prevent accidental triggers
-        g_dBounceTime = g_dElapsedTime + 0.125; // 125ms should be enough
+        g_dBounceTime = g_dElapsedTime + g_sChar1.gun->getFirerate(); // 125ms should be enough
     }
 }
 void processUserInput()
@@ -289,9 +289,6 @@ void renderCharacter()
 void renderEnemy()
 {
 	COORD c;
-	//random location within set area
-	c.X = 10;
-	c.Y = 10;
 	g_Console.writeToBuffer(c, (char)1, 0x0B);
 }
 
