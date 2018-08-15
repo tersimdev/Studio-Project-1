@@ -36,12 +36,19 @@ enum EKEYS
 	K_RMB,
 	K_LMB,
 	K_ESCAPE,
+	K_ENTER,
+	K_BACKSPACE,
+	K_1,
+	K_2,
+	K_3,
+	K_4,
 	K_COUNT
 };
 
 // Enumeration for the different screen states
 enum EGAMESTATES
 {
+	S_LOADSAVE,
     S_SPLASHSCREEN,
 	S_MENU,
     S_GAME,
@@ -69,5 +76,6 @@ void renderToScreen();      // dump the contents of the buffer to the screen, on
 
 void renderEnemy();			// renders the enemy into buffer
 void renderBullet();		//renders bullets from players
-
+void mainmenu();			//main menu
+void loadsave();			//place for players to load their save
 #endif // _GAME_H
