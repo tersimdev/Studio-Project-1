@@ -10,7 +10,8 @@ double  g_dElapsedTime;
 double  g_dDeltaTime;
 bool    g_abKeyPressed[K_COUNT];
 bool    g_abFlags[flagCount] = { 0 };
-
+int selection = 1;
+int currentgamestate = 1;
 // Game specific variables here
 Map			g_map(0); //map
 SGameChar   g_sChar1((char)3, 30, 0x0C, {3, 3}); //player1
@@ -87,6 +88,13 @@ void getInput( void )
 	g_abKeyPressed[K_RMB]    = isKeyPressed(VK_RBUTTON);
 	g_abKeyPressed[K_LMB]    = isKeyPressed(VK_LBUTTON);
     g_abKeyPressed[K_ESCAPE] = isKeyPressed(VK_ESCAPE);
+	g_abKeyPressed[K_ENTER] = isKeyPressed(VK_RETURN);
+	g_abKeyPressed[K_BACKSPACE] = isKeyPressed(VK_BACK);
+	g_abKeyPressed[K_1] = isKeyPressed(0x31);
+	g_abKeyPressed[K_2] = isKeyPressed(0x32);
+	g_abKeyPressed[K_3] = isKeyPressed(0x33);
+	g_abKeyPressed[K_4] = isKeyPressed(0x34);
+
 }
 
 //--------------------------------------------------------------
@@ -113,7 +121,9 @@ void update(double dt)
     {
         case S_SPLASHSCREEN : splashScreenWait(); // game logic for the splash screen
             break;
-		case S_MENU:
+		case S_MENU: mainmenu();
+			break;
+		case S_LOADSAVE:loadsave();
 			break;
         case S_GAME: gameplay(); // gameplay logic when we are in the game
             break;
@@ -134,6 +144,11 @@ void render()
     {
         case S_SPLASHSCREEN: renderSplashScreen();
             break;
+		case S_MENU:mainmenu();
+			break;
+
+		case S_LOADSAVE:loadsave();
+			break;
         case S_GAME: renderGame();
             break;
     }
@@ -144,7 +159,7 @@ void render()
 void splashScreenWait()    // waits for time to pass in splash screen
 {
     if (g_dElapsedTime > 1.0) // wait for 3 seconds to switch to game mode, else do nothing
-        g_eGameState = S_GAME;
+        g_eGameState = S_MENU;
 }
 
 void gameplay()            // gameplay logic
@@ -232,6 +247,12 @@ void processUserInput()
     // quits the game if player hits the escape key
     if (g_abKeyPressed[K_ESCAPE])
         g_bQuitGame = true;    
+
+	if (g_abKeyPressed[K_BACKSPACE])
+	{	
+			g_eGameState = S_MENU;
+			selection = 1;
+	}
 }
 
 void clearScreen()
@@ -333,4 +354,296 @@ void renderToScreen()
 {
     // Writes the buffer to the console, hence you will see what you have written
     g_Console.flushBufferToConsole();
+}
+
+void mainmenu()					
+{
+	COORD c = g_Console.getConsoleSize();
+	c.Y /= 3;
+	c.X = c.X / 2 - 9;
+
+	switch (selection)
+	{
+	case 1:
+	{
+		g_Console.writeToBuffer(c, "1. Play", 0x0A);
+		c.Y += 1;
+		c.X = g_Console.getConsoleSize().X / 2 - 9;
+		g_Console.writeToBuffer(c, "2. Load", 0x17);
+		c.Y += 1;
+		c.X = g_Console.getConsoleSize().X / 2 - 9;
+		g_Console.writeToBuffer(c, "3. Exit", 0x17);
+		c.Y += 3;
+		c.X = g_Console.getConsoleSize().X / 2 - 16;
+		g_Console.writeToBuffer(c, "Press 'Backspace' to back", 0x17);
+		break;
+	}
+
+	case 2:
+	{
+		g_Console.writeToBuffer(c, "1. Play", 0x17);
+		c.Y += 1;
+		c.X = g_Console.getConsoleSize().X / 2 - 9;
+		g_Console.writeToBuffer(c, "2. Load", 0x0A);
+		c.Y += 1;
+		c.X = g_Console.getConsoleSize().X / 2 - 9;
+		g_Console.writeToBuffer(c, "3. Exit", 0x17);
+		c.Y += 3;
+		c.X = g_Console.getConsoleSize().X / 2 - 16;
+		g_Console.writeToBuffer(c, "Press 'Backspace' to back", 0x17);
+		break;
+	}
+
+	case 3:
+	{
+		g_Console.writeToBuffer(c, "1. Play", 0x17);
+		c.Y += 1;
+		c.X = g_Console.getConsoleSize().X / 2 - 9;
+		g_Console.writeToBuffer(c, "2. Load", 0x17);
+		c.Y += 1;
+		c.X = g_Console.getConsoleSize().X / 2 - 9;
+		g_Console.writeToBuffer(c, "3. Exit", 0x0A);
+		c.Y += 3;
+		c.X = g_Console.getConsoleSize().X / 2 - 16;
+		g_Console.writeToBuffer(c, "Press 'Backspace' to back", 0x17);
+		break;
+	}
+	}
+
+	bool bSomethingHappened = false;
+	if (g_dBounceTime > g_dElapsedTime)
+		return;
+
+	
+
+
+
+
+	if (g_abKeyPressed[K_ENTER])
+	{
+		if (selection == 1)
+		{
+			g_eGameState = S_GAME;
+		}
+
+		if (selection == 2)
+		{
+			g_eGameState = S_LOADSAVE;
+			selection = 1;
+			currentgamestate = 2;
+		}
+
+		if (selection == 3)
+		{
+			g_bQuitGame = true;
+		}
+		bSomethingHappened = true;
+	}
+
+	if (g_abKeyPressed[K_UP])
+	{
+		selection--;
+		if (selection == 0)
+		{
+			selection = 3;
+		}
+		bSomethingHappened = true;
+	}
+
+	if (g_abKeyPressed[K_DOWN])
+	{
+		selection++;
+		if (selection == 4)
+		{
+			selection = 1;
+		}
+		bSomethingHappened = true;
+	}
+
+	if (g_abKeyPressed[K_1])
+	{
+		g_eGameState = S_GAME;
+	}
+
+	if (g_abKeyPressed[K_2])
+	{
+		g_eGameState = S_LOADSAVE;
+		selection = 1;
+	}
+
+	if (g_abKeyPressed[K_3])
+	{
+		g_bQuitGame = true;
+	}
+
+	if (bSomethingHappened)
+	{
+		// set the bounce time to some time in the future to prevent accidental triggers
+		g_dBounceTime = g_dElapsedTime + 0.2; // 125ms should be enough
+	}
+}
+
+
+
+
+void loadsave()
+{
+	COORD c = g_Console.getConsoleSize();
+	c.Y /= 3;
+	c.X = c.X / 2 - 9;
+
+
+
+	switch (selection)
+	{
+	case 1:
+	{
+		g_Console.writeToBuffer(c, "1. Empty", 0x0A);
+		c.Y += 1;
+		c.X = g_Console.getConsoleSize().X / 2 - 9;
+		g_Console.writeToBuffer(c, "2. Empty", 0x17);
+		c.Y += 1;
+		c.X = g_Console.getConsoleSize().X / 2 - 9;
+		g_Console.writeToBuffer(c, "3. Empty", 0x17);
+		c.Y += 1;
+		c.X = g_Console.getConsoleSize().X / 2 - 9;
+		g_Console.writeToBuffer(c, "4. Back", 0x17);
+		break;
+	}
+
+	case 2:
+	{
+		g_Console.writeToBuffer(c, "1. Empty", 0x17);
+		c.Y += 1;
+		c.X = g_Console.getConsoleSize().X / 2 - 9;
+		g_Console.writeToBuffer(c, "2. Empty", 0x0A);
+		c.Y += 1;
+		c.X = g_Console.getConsoleSize().X / 2 - 9;
+		g_Console.writeToBuffer(c, "3. Empty", 0x17);
+		c.Y += 1;
+		c.X = g_Console.getConsoleSize().X / 2 - 9;
+		g_Console.writeToBuffer(c, "4. Back", 0x17);
+		break;
+	}
+
+	case 3:
+	{
+		g_Console.writeToBuffer(c, "1. Empty", 0x17);
+		c.Y += 1;
+		c.X = g_Console.getConsoleSize().X / 2 - 9;
+		g_Console.writeToBuffer(c, "2. Empty", 0x17);
+		c.Y += 1;
+		c.X = g_Console.getConsoleSize().X / 2 - 9;
+		g_Console.writeToBuffer(c, "3. Empty", 0x0A);
+		c.Y += 1;
+		c.X = g_Console.getConsoleSize().X / 2 - 9;
+		g_Console.writeToBuffer(c, "4. Back", 0x17);
+		break;
+	}
+
+	case 4:
+	{
+		g_Console.writeToBuffer(c, "1. Empty", 0x17);
+		c.Y += 1;
+		c.X = g_Console.getConsoleSize().X / 2 - 9;
+		g_Console.writeToBuffer(c, "2. Empty", 0x17);
+		c.Y += 1;
+		c.X = g_Console.getConsoleSize().X / 2 - 9;
+		g_Console.writeToBuffer(c, "3. Empty", 0x17);
+		c.Y += 1;
+		c.X = g_Console.getConsoleSize().X / 2 - 9;
+		g_Console.writeToBuffer(c, "4. Back", 0x0A);
+		break;
+	}
+	}
+
+	bool bSomethingHappened = false;
+	if (g_dBounceTime > g_dElapsedTime)
+		return;
+
+	if (g_abKeyPressed[K_ENTER])
+	{
+		if (g_dBounceTime > g_dElapsedTime)
+			return;
+		if (selection == 1)
+		{
+			//load saved file 1
+		}
+
+		if (selection == 2)
+		{
+			//load saved file 2
+		}
+
+		if (selection == 3)
+		{
+			//load saved file 3
+		}
+
+		if (selection == 4)
+		{
+			g_eGameState = S_MENU;
+			selection = 1;
+			currentgamestate = 1;            //game state goes back to main menu
+		}
+		bSomethingHappened = true;
+	}
+
+	if (g_abKeyPressed[K_UP])
+	{
+		selection--;
+		if (selection == 0)
+		{
+			selection = 4;
+		}
+		bSomethingHappened = true;
+	}
+
+	if (g_abKeyPressed[K_DOWN])
+	{
+		selection++;
+		if (selection == 5)
+		{
+			selection = 1;
+		}
+		bSomethingHappened = true;
+	}
+
+	if (g_abKeyPressed[K_BACKSPACE])
+	{
+		g_eGameState = S_MENU;
+	}
+
+	if (g_abKeyPressed[K_1])
+	{
+		//load saved file 1
+	}
+
+	if (g_abKeyPressed[K_2])
+	{
+		//load saved file 2
+	}
+
+	if (g_abKeyPressed[K_3])
+	{
+		//load saved file 3
+	}
+
+	if (g_abKeyPressed[K_4])
+	{
+		g_eGameState = S_MENU;
+		selection = 1;
+	}
+
+	if (g_abKeyPressed[K_BACKSPACE])
+	{
+		g_eGameState = S_MENU;
+		selection = 1;
+	}
+
+	if (bSomethingHappened)
+	{
+		// set the bounce time to some time in the future to prevent accidental triggers
+		g_dBounceTime = g_dElapsedTime + 0.2; // 125ms should be enough
+	}
 }
