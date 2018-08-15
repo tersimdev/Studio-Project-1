@@ -16,8 +16,11 @@ int		currentgamestate;
 Map			g_map(0); //map
 SGameChar   g_sChar1((char)3, 30, 0x0C, {3, 3}); //player1
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
-double  g_dBounceTime; // this is to prevent key bouncing, so we won't trigger keypresses more than once
-
+// these are to prevent key bouncing, so we won't trigger keypresses more than once
+double	g_dBounceTimeNorm;
+double  g_dBounceTimeUI; 
+double  g_dBounceTimeMove;
+double  g_dBounceTimeAction;
 // Console object
 Console g_Console(200, 60, "RISE OF THE TOMB MARAUDER");
 
@@ -32,7 +35,9 @@ void init(void)
 {
 	// Set precision for floating point output
 	g_dElapsedTime = 0.0;
-    g_dBounceTime = 0.0;
+	g_dBounceTimeUI = 0.0;
+	g_dBounceTimeMove = 0.0;
+	g_dBounceTimeAction = 0.0;
 
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
@@ -169,93 +174,97 @@ void gameplay()         // gameplay logic
 {
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();    // moves the character, collision detection, physics, etc
+	actionsListener();	// other action keys like shooting, etc
 						// sound can be played here too.
 }
 
 void moveCharacter()
 {
-    bool bSomethingHappened = false;
-    if (g_dBounceTime > g_dElapsedTime)
-        return;
-
-    // Updating the location of the character based on the key press
-    // providing a beep sound whenver we shift the character
-    if (g_abKeyPressed[K_W] && g_sChar1.m_cLocation.Y > 0)
-    {
-        //Beep(1440, 30);
+	g_abFlags[moving] = false;
+	if (g_dBounceTimeMove > g_dElapsedTime)
+		return;
+	// Updating the location of the character based on the key press
+	// providing a beep sound whenver we shift the character
+	if (g_abKeyPressed[K_W] && g_sChar1.m_cLocation.Y > 0)
+	{
+		//Beep(1440, 30);
 		g_sChar1.direction = { 0,-1 };
 		g_sChar1.m_futureLocation.X = g_sChar1.m_cLocation.X + g_sChar1.direction.X;
 		g_sChar1.m_futureLocation.Y = g_sChar1.m_cLocation.Y + g_sChar1.direction.Y;
 		if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
 			g_sChar1.m_cLocation.Y--;
-        g_abFlags[moving] = true;
-    }
+		g_abFlags[moving] = true;
+	}
 	else if (g_abKeyPressed[K_S] && g_sChar1.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
-    {
-        //Beep(1440, 30);
+	{
+		//Beep(1440, 30);
 		g_sChar1.direction = { 0, 1 };
 		g_sChar1.m_futureLocation.X = g_sChar1.m_cLocation.X + g_sChar1.direction.X;
 		g_sChar1.m_futureLocation.Y = g_sChar1.m_cLocation.Y + g_sChar1.direction.Y;
 		if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
 			g_sChar1.m_cLocation.Y++;
 		g_abFlags[moving] = true;
-    }
-    if (g_abKeyPressed[K_A] && g_sChar1.m_cLocation.X > 0)
-    {
-        //Beep(1440, 30)
+	}
+	if (g_abKeyPressed[K_A] && g_sChar1.m_cLocation.X > 0)
+	{
+		//Beep(1440, 30)
 		g_sChar1.direction = { -1, 0 };
 		g_sChar1.m_futureLocation.X = g_sChar1.m_cLocation.X + g_sChar1.direction.X;
 		g_sChar1.m_futureLocation.Y = g_sChar1.m_cLocation.Y + g_sChar1.direction.Y;
 		if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
 			g_sChar1.m_cLocation.X--;
 		g_abFlags[moving] = true;
-    } 
-    else if (g_abKeyPressed[K_D] && g_sChar1.m_cLocation.X < g_Console.getConsoleSize().X - 1)
-    {
-        //Beep(1440, 30);
+	}
+	else if (g_abKeyPressed[K_D] && g_sChar1.m_cLocation.X < g_Console.getConsoleSize().X - 1)
+	{
+		//Beep(1440, 30);
 		g_sChar1.direction = { 1, 0 };
 		g_sChar1.m_futureLocation.X = g_sChar1.m_cLocation.X + g_sChar1.direction.X;
 		g_sChar1.m_futureLocation.Y = g_sChar1.m_cLocation.Y + g_sChar1.direction.Y;
 		if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
 			g_sChar1.m_cLocation.X++;
 		g_abFlags[moving] = true;
-    }
-
-    if (g_abKeyPressed[K_LSHIFT] && (g_sChar1.gun == NULL || !g_abFlags[shooting]))
-    {
-		g_abFlags[shooting] = true;
-		g_sChar1.gun = new Gun(g_sChar1.m_cLocation);
-		g_abFlags[moving] = true;
-    }
-	if (g_abKeyPressed[K_RCTRL])
-	{
-			g_map.updateMap();
 	}
 
 	if (g_abFlags[moving])
 	{
 		if (g_sChar1.direction.X == -1 || g_sChar1.direction.X == 1)
-			g_dBounceTime = g_dElapsedTime + 0.06; // fazt
+			g_dBounceTimeMove = g_dElapsedTime + 0.05; // fazt
 		else if (g_sChar1.direction.Y == -1 || g_sChar1.direction.Y == 1)
-			g_dBounceTime = g_dElapsedTime + 0.12; // not as fazt
+			g_dBounceTimeMove = g_dElapsedTime + 0.10; // not as fazt
 	}
-    else if (bSomethingHappened)
-    {
-        // set the bounce time to some time in the future to prevent accidental triggers
-        g_dBounceTime = g_dElapsedTime + g_sChar1.gun->getFirerate(); // 125ms should be enough
-    }
+}
+
+void actionsListener()
+{
+	bool eventHappened = false;
+	if (g_dBounceTimeAction > g_dElapsedTime)
+		return;
+
+	if (g_abKeyPressed[K_LSHIFT] && g_dBounceTimeAction < g_dElapsedTime && (g_sChar1.gun == NULL || !g_abFlags[shooting]))
+	{
+		g_abFlags[shooting] = true;
+		g_sChar1.gun = new Gun(g_sChar1.m_cLocation);
+		eventHappened = true;
+	}	
+
+	if (eventHappened)
+		g_dBounceTimeAction = g_dElapsedTime + 1.0; // slow
 }
 void processUserInput()
 {
-    // quits the game if player hits the escape key
+	bool eventHappened = false;
+	if (g_dBounceTimeNorm > g_dElapsedTime)
+		return;
+		// quits the game if player hits the escape key
     if (g_abKeyPressed[K_ESCAPE])
-        g_bQuitGame = true;    
+        g_bQuitGame = true;  
 
-	if (g_abKeyPressed[K_BACKSPACE])
-	{	
-			g_eGameState = S_MENU;
-			g_menuSelection = 1;
-	}
+	if (g_abKeyPressed[K_RCTRL])
+		g_map.updateMap();
+
+	if (eventHappened)
+		g_dBounceTimeNorm = g_dElapsedTime + 0.125; // avg
 }
 
 void clearScreen()
@@ -327,8 +336,8 @@ void renderBullet()
 		g_sChar1.gun->bulletPos.X < 0 || g_sChar1.gun->bulletPos.Y < 0 ||
 		g_sChar1.gun->bulletPos.X > g_Console.getConsoleSize().X - 1 || g_sChar1.gun->bulletPos.Y > g_Console.getConsoleSize().Y - 1)
 	{
-		delete g_sChar1.gun;
-		g_abFlags[shooting] = false;
+		delete g_sChar1.gun; //no more visual bullet
+		g_abFlags[shooting] = false; //stops rendering
 	}
 	else
 		g_Console.writeToBuffer(g_sChar1.gun->bulletPos, (char)254, 0x0E);
@@ -390,7 +399,7 @@ void renderMainMenu()
 
 	//handling input
 	bool bSomethingHappened = false;
-	if (g_dBounceTime > g_dElapsedTime)
+	if (g_dBounceTimeUI > g_dElapsedTime)
 		return;
 	if (g_abKeyPressed[K_ENTER])
 	{
@@ -439,7 +448,7 @@ void renderMainMenu()
 		g_bQuitGame = true;
 	}
 
-	if (g_abKeyPressed[K_BACKSPACE] || g_abKeyPressed[K_ESCAPE])
+	if (g_abKeyPressed[K_ESCAPE])
 	{
 		g_bQuitGame = true;
 	}
@@ -447,7 +456,7 @@ void renderMainMenu()
 	if (bSomethingHappened)
 	{
 		// set the bounce time to some time in the future to prevent accidental triggers
-		g_dBounceTime = g_dElapsedTime + 0.125; // 125ms should be enough
+		g_dBounceTimeUI = g_dElapsedTime + 0.3;
 	}
 }
 
@@ -487,7 +496,7 @@ void renderLoadSave()
 	
 	//handling input
 	bool bSomethingHappened = false;
-	if (g_dBounceTime > g_dElapsedTime)
+	if (g_dBounceTimeUI > g_dElapsedTime)
 		return;
 
 	if (g_abKeyPressed[K_ENTER])
@@ -525,11 +534,6 @@ void renderLoadSave()
 		bSomethingHappened = true;
 	}
 
-	if (g_abKeyPressed[K_BACKSPACE] || g_abKeyPressed[K_ESCAPE])
-	{
-		g_eGameState = S_MENU;
-	}
-
 	if (g_abKeyPressed[K_1])
 	{
 		//load saved file 1
@@ -548,7 +552,7 @@ void renderLoadSave()
 		g_menuSelection = 0;
 	}
 
-	if (g_abKeyPressed[K_BACKSPACE])
+	if (g_abKeyPressed[K_BACKSPACE] || g_abKeyPressed[K_ESCAPE])
 	{
 		g_eGameState = S_MENU;
 		g_menuSelection = 0;
@@ -557,6 +561,6 @@ void renderLoadSave()
 	if (bSomethingHappened)
 	{
 		// set the bounce time to some time in the future to prevent accidental triggers
-		g_dBounceTime = g_dElapsedTime + 0.125; // 125ms should be enough
+		g_dBounceTimeUI = g_dElapsedTime + 0.3;
 	}
 }

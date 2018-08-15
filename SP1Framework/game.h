@@ -78,4 +78,5 @@ void renderEnemy();			//renders the enemy into buffer
 void renderBullet();		//renders bullets from players
 void renderMainMenu();      //renders main menu
 void renderLoadSave();		//renders loading of saves
+void actionsListener();		//listens to actions
 #endif // _GAME_H

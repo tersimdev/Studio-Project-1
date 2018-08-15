@@ -28,9 +28,7 @@ public:
 	void shoot(COORD playerPos, SHORT dirX, SHORT dirY); //updates position of bullet to be rendered
 
 	int getRange() { return range; }
-	double getFirerate() { return firerate; }
 private:
-	double firerate = 1.0;
 	int range = 25;
 };
 
