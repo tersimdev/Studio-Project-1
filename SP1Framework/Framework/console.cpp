@@ -146,6 +146,7 @@ void Console::initConsole(COORD consoleSize, LPCSTR lpConsoleTitle)
 	// Sets the console size
 	setConsoleWindowSize();
     SetConsoleActiveScreenBuffer(m_hScreenBuffer); 
+	ShowWindow(GetConsoleWindow(), SW_MAXIMIZE); //maximize
 }
 
 void Console::setConsoleTitle(LPCSTR lpConsoleTitle)

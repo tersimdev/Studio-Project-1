@@ -30,8 +30,8 @@ public:
 	int getRange() { return range; }
 	double getFirerate() { return firerate; }
 private:
-	double firerate = 3.0;
-	int range = 35;
+	double firerate = 1.0;
+	int range = 25;
 };
 
 #endif
