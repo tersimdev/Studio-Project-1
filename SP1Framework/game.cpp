@@ -22,7 +22,7 @@ double  g_dBounceTimeUI;
 double  g_dBounceTimeMove;
 double  g_dBounceTimeAction;
 // Console object
-Console g_Console(199, 51, "RISE OF THE TOMB MARAUDER");
+Console g_Console(199, 51, "RISE OF THE TOMB EXPLORER NOOB");
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -84,25 +84,77 @@ void shutdown( void )
 //--------------------------------------------------------------
 void getInput( void )
 {    
-    g_abKeyPressed[K_UP]     = isKeyPressed(VK_UP);
-    g_abKeyPressed[K_DOWN]   = isKeyPressed(VK_DOWN);
-    g_abKeyPressed[K_LEFT]   = isKeyPressed(VK_LEFT);
-    g_abKeyPressed[K_RIGHT]  = isKeyPressed(VK_RIGHT);
-	g_abKeyPressed[K_RCTRL] = isKeyPressed(VK_RCONTROL);
-	g_abKeyPressed[K_W]		 = isKeyPressed(0x57); 
-	g_abKeyPressed[K_A]      = isKeyPressed(0x41); 
-	g_abKeyPressed[K_S]      = isKeyPressed(0x53); 
-	g_abKeyPressed[K_D]      = isKeyPressed(0x44);
-	g_abKeyPressed[K_LSHIFT] = isKeyPressed(VK_LSHIFT); 
-	g_abKeyPressed[K_RMB]    = isKeyPressed(VK_RBUTTON);
-	g_abKeyPressed[K_LMB]    = isKeyPressed(VK_LBUTTON);
-    g_abKeyPressed[K_ESCAPE] = isKeyPressed(VK_ESCAPE);
-	g_abKeyPressed[K_ENTER] = isKeyPressed(VK_RETURN);
-	g_abKeyPressed[K_BACKSPACE] = isKeyPressed(VK_BACK);
-	g_abKeyPressed[K_1] = isKeyPressed(0x31);
-	g_abKeyPressed[K_2] = isKeyPressed(0x32);
-	g_abKeyPressed[K_3] = isKeyPressed(0x33);
-	g_abKeyPressed[K_4] = isKeyPressed(0x34);
+	switch (g_eGameState)
+	{
+	case S_SPLASHSCREEN: //none
+		break;
+	case S_MENU: //ui
+	case S_LOADSAVE: //ui
+	case S_GAME: //game
+	case S_BOSS: //boss
+		{
+		g_abKeyPressed[K_UP] = isKeyPressed(VK_UP);
+		g_abKeyPressed[K_DOWN] = isKeyPressed(VK_DOWN);
+		g_abKeyPressed[K_LEFT] = isKeyPressed(VK_LEFT);
+		g_abKeyPressed[K_RIGHT] = isKeyPressed(VK_RIGHT);
+		g_abKeyPressed[K_RCTRL] = isKeyPressed(VK_RCONTROL);
+		g_abKeyPressed[K_W] = isKeyPressed(0x57);
+		g_abKeyPressed[K_A] = isKeyPressed(0x41);
+		g_abKeyPressed[K_S] = isKeyPressed(0x53);
+		g_abKeyPressed[K_D] = isKeyPressed(0x44);
+		g_abKeyPressed[K_LSHIFT] = isKeyPressed(VK_LSHIFT);
+
+		g_abKeyPressed[K_ENTER] = isKeyPressed(VK_RETURN);
+		g_abKeyPressed[K_ESCAPE] = isKeyPressed(VK_ESCAPE);
+		g_abKeyPressed[K_BACKSPACE] = isKeyPressed(VK_BACK);
+		}
+		break;
+	case S_QUIZ:
+		{
+		g_abKeyPressed[K_A] = isKeyPressed(0x41);
+		g_abKeyPressed[K_B] = isKeyPressed(0x42);
+		g_abKeyPressed[K_C] = isKeyPressed(0x43);
+		g_abKeyPressed[K_D] = isKeyPressed(0x44);
+		g_abKeyPressed[K_E] = isKeyPressed(0x45);
+		g_abKeyPressed[K_F] = isKeyPressed(0x46);
+		g_abKeyPressed[K_G] = isKeyPressed(0x47);
+		g_abKeyPressed[K_H] = isKeyPressed(0x48);
+		g_abKeyPressed[K_I] = isKeyPressed(0x49);
+		g_abKeyPressed[K_J] = isKeyPressed(0x4A);
+		g_abKeyPressed[K_K] = isKeyPressed(0x4B);
+		g_abKeyPressed[K_L] = isKeyPressed(0x4C);
+		g_abKeyPressed[K_M] = isKeyPressed(0x4D);
+		g_abKeyPressed[K_N] = isKeyPressed(0x4E);
+		g_abKeyPressed[K_O] = isKeyPressed(0x4F);
+		g_abKeyPressed[K_P] = isKeyPressed(0x50);
+		g_abKeyPressed[K_Q] = isKeyPressed(0x51);
+		g_abKeyPressed[K_R] = isKeyPressed(0x52);
+		g_abKeyPressed[K_S] = isKeyPressed(0x53);
+		g_abKeyPressed[K_T] = isKeyPressed(0x54);
+		g_abKeyPressed[K_U] = isKeyPressed(0x55);
+		g_abKeyPressed[K_V] = isKeyPressed(0x56);
+		g_abKeyPressed[K_W] = isKeyPressed(0x57);
+		g_abKeyPressed[K_X] = isKeyPressed(0x58);
+		g_abKeyPressed[K_Y] = isKeyPressed(0x59);
+		g_abKeyPressed[K_Z] = isKeyPressed(0x5A);
+		g_abKeyPressed[K_0] = isKeyPressed(0x30);
+		g_abKeyPressed[K_1] = isKeyPressed(0x31);
+		g_abKeyPressed[K_2] = isKeyPressed(0x32);
+		g_abKeyPressed[K_3] = isKeyPressed(0x33);
+		g_abKeyPressed[K_4] = isKeyPressed(0x34);
+		g_abKeyPressed[K_5] = isKeyPressed(0x35);
+		g_abKeyPressed[K_6] = isKeyPressed(0x36);
+		g_abKeyPressed[K_7] = isKeyPressed(0x37);
+		g_abKeyPressed[K_8] = isKeyPressed(0x38);
+		g_abKeyPressed[K_9] = isKeyPressed(0x39);
+
+		g_abKeyPressed[K_ENTER] = isKeyPressed(VK_RETURN);
+		g_abKeyPressed[K_BACKSPACE] = isKeyPressed(VK_BACK);
+		g_abKeyPressed[K_SPACE] = isKeyPressed(VK_SPACE);
+		break;
+	}
+		break;
+	}
 }
 
 //--------------------------------------------------------------
@@ -173,7 +225,7 @@ void render()
 
 void splashScreenWait()    // waits for time to pass in splash screen
 {
-    if (g_dElapsedTime > 1.0) // wait for 3 seconds to switch to main menu mode, else do nothing
+    if (g_dElapsedTime > 1.5) // wait for 3 seconds to switch to main menu mode, else do nothing
         g_eGameState = S_MENU;
 }
 
@@ -295,7 +347,7 @@ void actionsListener()
 	}	
 
 	if (eventHappened)
-		g_dBounceTimeAction = g_dElapsedTime + 1.0; // slow
+		g_dBounceTimeAction = g_dElapsedTime + 0.8; // slow
 }
 
 void processUserInput()
@@ -312,6 +364,7 @@ void processUserInput()
           
 	if (g_abKeyPressed[K_RCTRL])
 	{
+		g_quiz.query();
 		g_eGameState = S_QUIZ;
 		eventHappened = true;
 	}
@@ -327,14 +380,20 @@ void checkForTiles()
 		if (g_map.findChar(g_sChar1.m_futureLocation, 'D'))
 		{
 			g_map.updateMap(); //loads next map, wraping around
-			if (g_sChar1.direction.X == 1)
+			if (g_sChar1.m_cLocation.X > g_Console.getConsoleSize().X * 0.9)
+			{
 				g_sChar1.m_cLocation.X = 2;
-			else if (g_sChar1.direction.X == -1)
-				g_sChar1.m_cLocation.X = g_Console.getConsoleSize().X - 2;
-			else if (g_sChar1.direction.Y == 1)
+			}
+			else if (g_sChar1.m_cLocation.X < g_Console.getConsoleSize().X * 0.1)
+			{
+				g_sChar1.m_cLocation.X = g_Console.getConsoleSize().X - 3;
+			}	
+			else if (g_sChar1.m_cLocation.Y > g_Console.getConsoleSize().Y * 0.9)
+			{
 				g_sChar1.m_cLocation.Y = 2;
-			else if (g_sChar1.direction.Y == -1)
-				g_sChar1.m_cLocation.Y = g_Console.getConsoleSize().Y - 2;
+			}
+			else if (g_sChar1.m_cLocation.Y < g_Console.getConsoleSize().Y * 0.1)
+				g_sChar1.m_cLocation.Y = g_Console.getConsoleSize().Y - 3;
 		}
 		else if (g_map.findChar(g_sChar1.m_futureLocation, 'U'))
 		{
@@ -353,10 +412,9 @@ void renderSplashScreen()  // renders the splash screen
 	c.Y /= 3;
 	c.X = c.X * 0.5 - 7;
 	g_Console.writeToBuffer(c, "Starting in 3s", 0x03);
-	/*c.Y += 1;
-	c.X = g_Console.getConsoleSize().X * 0.5 - 20;
-	g_Console.writeToBuffer(c, "Font Size 16 Consolas for best experience", 0x09);
-	*/
+	c.Y += 1;
+	c.X = g_Console.getConsoleSize().X * 0.5 - 21;
+	g_Console.writeToBuffer(c, "Change console font-size to suit your needs", 0x09);
 	c.Y += 1;
 	c.X = g_Console.getConsoleSize().X * 0.5 - 9;
 	g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x09);
@@ -666,11 +724,186 @@ void quizMode()
 		g_quiz.attempt += "A";
 		bSomethingHappened = true;
 	}
-
-	//and all the letters
-	else if (g_abKeyPressed[K_S])
+	if (g_abKeyPressed[K_B])
+	{
+		g_quiz.attempt += "B";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_C])
+	{
+		g_quiz.attempt += "C";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_D])
+	{
+		g_quiz.attempt += "D";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_E])
+	{
+		g_quiz.attempt += "E";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_F])
+	{
+		g_quiz.attempt += "F";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_G])
+	{
+		g_quiz.attempt += "G";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_H])
+	{
+		g_quiz.attempt += "H";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_I])
+	{
+		g_quiz.attempt += "I";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_J])
+	{
+		g_quiz.attempt += "J";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_K])
+	{
+		g_quiz.attempt += "K";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_L])
+	{
+		g_quiz.attempt += "L";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_M])
+	{
+		g_quiz.attempt += "M";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_N])
+	{
+		g_quiz.attempt += "N";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_O])
+	{
+		g_quiz.attempt += "O";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_P])
+	{
+		g_quiz.attempt += "P";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_Q])
+	{
+		g_quiz.attempt += "Q";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_R])
+	{
+		g_quiz.attempt += "R";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_S])
 	{
 		g_quiz.attempt += "S";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_T])
+	{
+		g_quiz.attempt += "T";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_U])
+	{
+		g_quiz.attempt += "U";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_V])
+	{
+		g_quiz.attempt += "V";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_W])
+	{
+		g_quiz.attempt += "W";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_X])
+	{
+		g_quiz.attempt += "X";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_Y])
+	{
+		g_quiz.attempt += "Y";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_Z])
+	{
+		g_quiz.attempt += "Z";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_0])
+	{
+		g_quiz.attempt += "0";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_1])
+	{
+		g_quiz.attempt += "1";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_2])
+	{
+		g_quiz.attempt += "2";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_3])
+	{
+		g_quiz.attempt += "3";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_4])
+	{
+		g_quiz.attempt += "4";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_5])
+	{
+		g_quiz.attempt += "5";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_6])
+	{
+		g_quiz.attempt += "6";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_7])
+	{
+		g_quiz.attempt += "7";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_8])
+	{
+		g_quiz.attempt += "8";
+		bSomethingHappened = true;
+	}
+	if (g_abKeyPressed[K_9])
+	{
+		g_quiz.attempt += "9";
+		bSomethingHappened = true;
+	}
+
+
+	if (g_abKeyPressed[K_SPACE])
+	{
+		g_quiz.attempt += " ";
 		bSomethingHappened = true;
 	}
 
@@ -681,24 +914,31 @@ void quizMode()
 	}
 	else if (g_abKeyPressed[K_ENTER])
 	{	
-		g_abFlags[quizzing] = true;
+		if (g_abFlags[quizzing])
+		{
+			g_quiz.reset();
+			g_eGameState = S_GAME;
+			g_abFlags[quizzing] = false;
+		}
+		else g_abFlags[quizzing] = true;
+		g_quiz.checkAns();
 		bSomethingHappened = true;
 	}
 	if (bSomethingHappened)
 	{
 		// set the bounce time to some time in the future to prevent accidental triggers
-		g_dBounceTimeUI = g_dElapsedTime + 0.2;
+		g_dBounceTimeUI = g_dElapsedTime + 0.125;
 	}
 }
 
 void renderQuiz()
 {
-	g_Console.writeToBuffer({100, 25}, g_quiz.currQn, 0x0F);
-	g_Console.writeToBuffer({ 100, 27 }, g_quiz.attempt, 0x0F);
-	string status = "";
+	g_Console.writeToBuffer({ 10, 25 }, g_quiz.currQn, 0x0F);
+	g_Console.writeToBuffer({ 10, 27 }, g_quiz.attempt + "_", 0x0F);
+	string result = "";
 	if (g_abFlags[quizzing])
-		g_quiz.checkAns() ? status = "Correct!" : status = "Wrong!";
+		g_quiz.checkAns() ? result = "Correct!" : result = "Wrong!";
 	else
-		status = "";
-	g_Console.writeToBuffer({ 100, 28 }, status, 0x0F);
+		result = "";
+	g_Console.writeToBuffer({ 10, 28 }, result, 0x0F);
 }

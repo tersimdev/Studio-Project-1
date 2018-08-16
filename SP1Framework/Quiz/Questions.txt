@@ -1,4 +1,10 @@
-whats round and beautiful
-ur mom gay
-hi
-hi1
+| |1 1| |_
+How many courses are there in SIDM?
+What is Mr Chris Hong's number?
+Which famous British women murderer of the 19th century was never arrested?
+When did Singapore gain Independence?
+By default the members of the structure are
+How many number of arguments can a destructor of a class receives?
+An array can be passed to the function with call by value mechanism, True or False?
+Can destructors be virtual in C++?
+What is the Game of the Year 2017 according to IGN?

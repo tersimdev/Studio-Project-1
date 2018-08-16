@@ -40,10 +40,7 @@ enum EKEYS
 	K_ESCAPE,
 	K_ENTER,
 	K_BACKSPACE,
-	K_1,
-	K_2,
-	K_3,
-	K_4,
+	K_SPACE,
 	K_B,
 	K_C,
 	K_E,
@@ -66,6 +63,16 @@ enum EKEYS
 	K_X,
 	K_Y,
 	K_Z,
+	K_1,
+	K_2,
+	K_3,
+	K_4,
+	K_5,
+	K_6,
+	K_7,
+	K_8,
+	K_9,
+	K_0,
 	K_COUNT
 };
 

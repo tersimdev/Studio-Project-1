@@ -26,16 +26,44 @@ void Quiz::loadQuiz()
 
 void Quiz::query(int index)
 {
-	this->currAns = this->answers[index];
 	this->currQn = this->questions[index];
+	string answer = "";
+	for (int i = 0; i < this->answers[index].length() + 1; i++)
+	{
+		if (i == this->answers[index].length() || this->answers[index][i] == '|')
+		{
+			this->currAns.push_back(answer);
+			answer = "";
+			continue;
+		}
+		else
+			answer += (this->answers[index])[i];
+	}
+}
+
+void Quiz::query()
+{
+	Quiz::query(rand() % this->questions.size());
 }
 
 bool Quiz::checkAns()
 {
 	//convert both to uppercase
 	std::transform(attempt.begin(), attempt.end(), attempt.begin(), ::toupper);
-	std::transform(currAns.begin(), currAns.end(), currAns.begin(), ::toupper);
-	//check if same
-	if (this->attempt == this->currAns) return true;
-	else return false;
+	if (currAns.size() == 0)
+		return NULL;
+	for (auto i : this->currAns) //loop and check through all possible answers
+	{
+		std::transform(i.begin(), i.end(), i.begin(), ::toupper);
+		//check if same
+		if (this->attempt == i) return true;
+	}
+	return false;
+}
+
+void Quiz::reset()
+{
+	this->currQn = "";
+	this->currAns.clear();
+	this->attempt = "";
 }
