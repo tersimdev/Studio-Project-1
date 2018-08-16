@@ -6,6 +6,7 @@
 #include "organism.h"
 #include "player.h"
 #include "map.h"
+#include "quiz.h"
 #include <string>
 using std::string;
 
@@ -17,6 +18,7 @@ enum FLAGS
 {
 	moving = 0,
 	shooting,
+	quizzing,
 	flagCount
 };
 
@@ -42,6 +44,28 @@ enum EKEYS
 	K_2,
 	K_3,
 	K_4,
+	K_B,
+	K_C,
+	K_E,
+	K_F,
+	K_G,
+	K_H,
+	K_I,
+	K_J,
+	K_K,
+	K_L,
+	K_M,
+	K_N,
+	K_O,
+	K_P,
+	K_Q,
+	K_R,
+	K_T,
+	K_U,
+	K_V,
+	K_X,
+	K_Y,
+	K_Z,
 	K_COUNT
 };
 
@@ -85,9 +109,9 @@ void loadSave();			//captures events for navigating UI
 void renderLoadSave();		//renders loading of saves
 void actionsListener();		//listens to actions
 void checkForTiles();		//checks for special tiles which player can interact with
-void bossMode();			//boss mode
+void bossMode();			//new map and collision tiles and enemies
 void renderBossMode();		//renders the boss' attacks etc
+void quizMode();			//captures keyboard input
+void renderQuiz();			//renders the quiz to console
 
-
-void test();
 #endif // _GAME_H

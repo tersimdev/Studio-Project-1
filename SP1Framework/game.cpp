@@ -14,6 +14,7 @@ int		g_menuSelection;
 // Game specific variables here
 Map			g_map(0); //map
 SGameChar   g_sChar1((char)3, 30, 0x0C, {3, 3}); //player1
+Quiz		g_quiz(0); //quiz
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 // these are to prevent key bouncing, so we won't trigger keypresses more than once
 double	g_dBounceTimeNorm;
@@ -102,7 +103,6 @@ void getInput( void )
 	g_abKeyPressed[K_2] = isKeyPressed(0x32);
 	g_abKeyPressed[K_3] = isKeyPressed(0x33);
 	g_abKeyPressed[K_4] = isKeyPressed(0x34);
-
 }
 
 //--------------------------------------------------------------
@@ -137,7 +137,7 @@ void update(double dt)
             break;
 		case S_BOSS: bossMode();
 			break;
-		case S_QUIZ: test();
+		case S_QUIZ: quizMode();
 			break;
     }
 }
@@ -164,7 +164,7 @@ void render()
 		break;
 	case S_BOSS: renderBossMode();
 		break;
-	case S_QUIZ: test();
+	case S_QUIZ: renderQuiz();
 		break;
 	}
 	renderFramerate();  // renders debug information, frame rate, elapsed time, etc
@@ -655,16 +655,33 @@ void renderLoadSave()
 }
 
 
-string ans = "test";
-void test()
+void quizMode()
 {
-	g_Console.writeToBuffer({ 100, 25 }, ans, 0x0F);
 	bool bSomethingHappened = false;
 	if (g_dBounceTimeUI > g_dElapsedTime)
 		return;
-	if (g_abKeyPressed[K_W])
+
+	if (g_abKeyPressed[K_A])
 	{
-		ans += "w";
+		g_quiz.attempt += "A";
+		bSomethingHappened = true;
+	}
+
+	//and all the letters
+	else if (g_abKeyPressed[K_S])
+	{
+		g_quiz.attempt += "S";
+		bSomethingHappened = true;
+	}
+
+	else if (g_abKeyPressed[K_BACKSPACE])
+	{
+		g_quiz.attempt = g_quiz.attempt.substr(0, g_quiz.attempt.length() - 1); //removes a char
+		bSomethingHappened = true;
+	}
+	else if (g_abKeyPressed[K_ENTER])
+	{	
+		g_abFlags[quizzing] = true;
 		bSomethingHappened = true;
 	}
 	if (bSomethingHappened)
@@ -672,4 +689,16 @@ void test()
 		// set the bounce time to some time in the future to prevent accidental triggers
 		g_dBounceTimeUI = g_dElapsedTime + 0.2;
 	}
+}
+
+void renderQuiz()
+{
+	g_Console.writeToBuffer({100, 25}, g_quiz.currQn, 0x0F);
+	g_Console.writeToBuffer({ 100, 27 }, g_quiz.attempt, 0x0F);
+	string status = "";
+	if (g_abFlags[quizzing])
+		g_quiz.checkAns() ? status = "Correct!" : status = "Wrong!";
+	else
+		status = "";
+	g_Console.writeToBuffer({ 100, 28 }, status, 0x0F);
 }
