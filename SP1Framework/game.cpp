@@ -721,198 +721,197 @@ void quizMode()
 
 	if (g_abKeyPressed[K_A])
 	{
-		g_quiz.attempt += "A";
+		g_quiz.attempt += 'A';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_B])
 	{
-		g_quiz.attempt += "B";
+		g_quiz.attempt += 'B';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_C])
 	{
-		g_quiz.attempt += "C";
+		g_quiz.attempt += 'C';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_D])
 	{
-		g_quiz.attempt += "D";
+		g_quiz.attempt += 'D';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_E])
 	{
-		g_quiz.attempt += "E";
+		g_quiz.attempt += 'E';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_F])
 	{
-		g_quiz.attempt += "F";
+		g_quiz.attempt += 'F';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_G])
 	{
-		g_quiz.attempt += "G";
+		g_quiz.attempt += 'G';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_H])
 	{
-		g_quiz.attempt += "H";
+		g_quiz.attempt += 'H';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_I])
 	{
-		g_quiz.attempt += "I";
+		g_quiz.attempt += 'I';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_J])
 	{
-		g_quiz.attempt += "J";
+		g_quiz.attempt += 'J';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_K])
 	{
-		g_quiz.attempt += "K";
+		g_quiz.attempt += 'K';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_L])
 	{
-		g_quiz.attempt += "L";
+		g_quiz.attempt += 'L';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_M])
 	{
-		g_quiz.attempt += "M";
+		g_quiz.attempt += 'M';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_N])
 	{
-		g_quiz.attempt += "N";
+		g_quiz.attempt += 'N';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_O])
 	{
-		g_quiz.attempt += "O";
+		g_quiz.attempt += 'O';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_P])
 	{
-		g_quiz.attempt += "P";
+		g_quiz.attempt += 'P';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_Q])
 	{
-		g_quiz.attempt += "Q";
+		g_quiz.attempt += 'Q';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_R])
 	{
-		g_quiz.attempt += "R";
+		g_quiz.attempt += 'R';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_S])
 	{
-		g_quiz.attempt += "S";
+		g_quiz.attempt += 'S';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_T])
 	{
-		g_quiz.attempt += "T";
+		g_quiz.attempt += 'T';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_U])
 	{
-		g_quiz.attempt += "U";
+		g_quiz.attempt += 'U';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_V])
 	{
-		g_quiz.attempt += "V";
+		g_quiz.attempt += 'V';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_W])
 	{
-		g_quiz.attempt += "W";
+		g_quiz.attempt += 'W';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_X])
 	{
-		g_quiz.attempt += "X";
+		g_quiz.attempt += 'X';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_Y])
 	{
-		g_quiz.attempt += "Y";
+		g_quiz.attempt += 'Y';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_Z])
 	{
-		g_quiz.attempt += "Z";
+		g_quiz.attempt += 'Z';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_0])
 	{
-		g_quiz.attempt += "0";
+		g_quiz.attempt += '0';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_1])
 	{
-		g_quiz.attempt += "1";
+		g_quiz.attempt += '1';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_2])
 	{
-		g_quiz.attempt += "2";
+		g_quiz.attempt += '2';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_3])
 	{
-		g_quiz.attempt += "3";
+		g_quiz.attempt += '3';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_4])
 	{
-		g_quiz.attempt += "4";
+		g_quiz.attempt += '4';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_5])
 	{
-		g_quiz.attempt += "5";
+		g_quiz.attempt += '5';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_6])
 	{
-		g_quiz.attempt += "6";
+		g_quiz.attempt += '6';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_7])
 	{
-		g_quiz.attempt += "7";
+		g_quiz.attempt += '7';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_8])
 	{
-		g_quiz.attempt += "8";
+		g_quiz.attempt += '8';
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_9])
 	{
-		g_quiz.attempt += "9";
+		g_quiz.attempt += '9';
 		bSomethingHappened = true;
 	}
 
 
 	if (g_abKeyPressed[K_SPACE])
 	{
-		g_quiz.attempt += " ";
+		g_quiz.attempt += ' ';
 		bSomethingHappened = true;
 	}
-
-	else if (g_abKeyPressed[K_BACKSPACE])
+	if (g_abKeyPressed[K_BACKSPACE])
 	{
 		g_quiz.attempt = g_quiz.attempt.substr(0, g_quiz.attempt.length() - 1); //removes a char
 		bSomethingHappened = true;
 	}
-	else if (g_abKeyPressed[K_ENTER])
+	if (g_abKeyPressed[K_ENTER])
 	{	
 		if (g_abFlags[quizzing])
 		{
@@ -927,7 +926,7 @@ void quizMode()
 	if (bSomethingHappened)
 	{
 		// set the bounce time to some time in the future to prevent accidental triggers
-		g_dBounceTimeUI = g_dElapsedTime + 0.125;
+		g_dBounceTimeUI = g_dElapsedTime + 0.15;
 	}
 }
 
