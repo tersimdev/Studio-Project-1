@@ -98,7 +98,7 @@ class Console
         // Initializes the console for this size
         void initConsole(COORD consoleSize, LPCSTR lpConsoleTitle = 0);
         void writeToConsole(const CHAR_INFO* lpBuffer);
-
+		
         void shutDownConsole();
 };
 

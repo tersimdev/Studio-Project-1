@@ -137,6 +137,8 @@ void update(double dt)
             break;
 		case S_BOSS: bossMode();
 			break;
+		case S_QUIZ: test();
+			break;
     }
 }
 //--------------------------------------------------------------
@@ -161,6 +163,8 @@ void render()
 	case S_GAME: renderGame();
 		break;
 	case S_BOSS: renderBossMode();
+		break;
+	case S_QUIZ: test();
 		break;
 	}
 	renderFramerate();  // renders debug information, frame rate, elapsed time, etc
@@ -308,7 +312,7 @@ void processUserInput()
           
 	if (g_abKeyPressed[K_RCTRL])
 	{
-		g_map.updateMap();
+		g_eGameState = S_QUIZ;
 		eventHappened = true;
 	}
 
@@ -648,4 +652,24 @@ void renderLoadSave()
 	c.Y += 1;
 	c.X = g_Console.getConsoleSize().X * 0.5 - 4;
 	g_Console.writeToBuffer(c, "4. BACK", attri4);
+}
+
+
+string ans = "test";
+void test()
+{
+	g_Console.writeToBuffer({ 100, 25 }, ans, 0x0F);
+	bool bSomethingHappened = false;
+	if (g_dBounceTimeUI > g_dElapsedTime)
+		return;
+	if (g_abKeyPressed[K_W])
+	{
+		ans += "w";
+		bSomethingHappened = true;
+	}
+	if (bSomethingHappened)
+	{
+		// set the bounce time to some time in the future to prevent accidental triggers
+		g_dBounceTimeUI = g_dElapsedTime + 0.2;
+	}
 }

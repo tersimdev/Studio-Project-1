@@ -53,6 +53,7 @@ enum EGAMESTATES
 	S_MENU,
     S_GAME,
 	S_BOSS,
+	S_QUIZ,
     S_COUNT
 };
 
@@ -87,4 +88,6 @@ void checkForTiles();		//checks for special tiles which player can interact with
 void bossMode();			//boss mode
 void renderBossMode();		//renders the boss' attacks etc
 
+
+void test();
 #endif // _GAME_H
