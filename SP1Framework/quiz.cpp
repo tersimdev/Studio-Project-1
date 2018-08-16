@@ -26,6 +26,7 @@ void Quiz::loadQuiz()
 
 void Quiz::query(int index)
 {
+	this->reset();
 	this->currQn = this->questions[index];
 	string answer = "";
 	for (int i = 0; i < this->answers[index].length() + 1; i++)
@@ -59,6 +60,32 @@ bool Quiz::checkAns()
 		if (this->attempt == i) return true;
 	}
 	return false;
+}
+
+void Quiz::quizResult(int choice, string* output, string* answers)
+{
+	switch (choice)
+	{
+	case WIN_ENEMY:
+		*output = "CORRECT! enemy.die()";
+		break;
+	case LOSE_ENEMY:
+		*output = "WRONG! player.health--";
+		break;
+	case WIN_BOSS:
+		*output = "CORRECT! enemy.health--";
+		break;
+	case LOSE_BOSS:
+		*output = "WRONG! player.health--";
+		break;
+	}
+
+	for (int i = 0; i < this->currAns.size(); i++)
+	{
+		*answers += this->currAns[i];
+		if (i != this->currAns.size() - 1) 
+			*answers += "  |OR|  ";
+	}
 }
 
 void Quiz::reset()

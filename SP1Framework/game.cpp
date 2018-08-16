@@ -453,7 +453,7 @@ void renderCharacter()
 
 void renderEnemy()
 {
-	COORD c;
+	COORD c = {10,10};
 	g_Console.writeToBuffer(c, (char)1, 0x0B);
 }
 
@@ -915,7 +915,6 @@ void quizMode()
 	{	
 		if (g_abFlags[quizzing])
 		{
-			g_quiz.reset();
 			g_eGameState = S_GAME;
 			g_abFlags[quizzing] = false;
 		}
@@ -926,7 +925,7 @@ void quizMode()
 	if (bSomethingHappened)
 	{
 		// set the bounce time to some time in the future to prevent accidental triggers
-		g_dBounceTimeUI = g_dElapsedTime + 0.15;
+		g_dBounceTimeUI = g_dElapsedTime + 0.2;
 	}
 }
 
@@ -934,10 +933,13 @@ void renderQuiz()
 {
 	g_Console.writeToBuffer({ 10, 25 }, g_quiz.currQn, 0x0F);
 	g_Console.writeToBuffer({ 10, 27 }, g_quiz.attempt + "_", 0x0F);
-	string result = "";
+	string result = "", answers = "";
 	if (g_abFlags[quizzing])
-		g_quiz.checkAns() ? result = "Correct!" : result = "Wrong!";
+		g_quiz.checkAns() ? 
+			g_quiz.quizResult(WIN_ENEMY, &result, &answers) : 
+			g_quiz.quizResult(LOSE_ENEMY, &result, &answers);
 	else
 		result = "";
 	g_Console.writeToBuffer({ 10, 28 }, result, 0x0F);
+	g_Console.writeToBuffer({ 10, 29 }, answers, 0x0F);
 }

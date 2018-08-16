@@ -1,10 +1,10 @@
-loss|is this loss
-6|only GDT
+LOSS|IS THIS LOSS
+6|ONLY GDT
 65501775
-Jack The Ripper
-9 August 1965|09/08/1965|9/8/1965|9 8 1965
-public
+JACK THE RIPPER
+9 AUGUST 1965|09081965
+PUBLIC
 0
-False
-Yes
-breath of the wild|BotW
+FALSE
+YES
+BREATH OF THE WILD|BOTW

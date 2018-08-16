@@ -1,10 +1,10 @@
-| |1 1| |_
-How many courses are there in SIDM?
-What is Mr Chris Hong's number?
-Which famous British women murderer of the 19th century was never arrested?
-When did Singapore gain Independence?
-By default the members of the structure are
-How many number of arguments can a destructor of a class receives?
-An array can be passed to the function with call by value mechanism, True or False?
-Can destructors be virtual in C++?
-What is the Game of the Year 2017 according to IGN?
+WHAT IS THIS? - >   | |1 1| |_
+HOW MANY COURSES ARE THERE IN SIDM?
+WHAT IS MR CHRIS HONG'S NUMBER?
+WHICH FAMOUS BRITISH WOMEN MURDERER OF THE 19TH CENTURY WAS NEVER ARRESTED?
+WHEN DID SINGAPORE GAIN INDEPENDENCE? (DDMMYYY)
+BY DEFAULT THE MEMBERS OF THE STRUCTURE ARE:
+HOW MANY NUMBER OF ARGUMENTS CAN A DESTRUCTOR OF A CLASS RECEIVES?
+AN ARRAY CAN BE PASSED TO THE FUNCTION WITH CALL BY VALUE MECHANISM, TRUE OR FALSE?
+CAN DESTRUCTORS BE VIRTUAL IN C++?
+WHAT IS THE GAME OF THE YEAR 2017 ACCORDING TO IGN? HINT: THE LEGEND OF ZELDA: ______
