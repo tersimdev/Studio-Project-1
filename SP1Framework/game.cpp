@@ -13,7 +13,8 @@ bool    g_abFlags[flagCount] = { 0 };
 int		g_menuSelection;
 // Game specific variables here
 Map			g_map(0); //map
-SGameChar   g_sChar1((char)3, 30, 0x0C, {3, 3}); //player1
+SGameChar	g_sChar1((char)3, 30, 0x0C, &g_map, 1); //player1
+//SGameChar	g_sChar2((char)3, 30, 0x0A, &g_map, 2); //player2
 Quiz		g_quiz(0); //quiz
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 // these are to prevent key bouncing, so we won't trigger keypresses more than once
@@ -22,7 +23,7 @@ double  g_dBounceTimeUI;
 double  g_dBounceTimeMove;
 double  g_dBounceTimeAction;
 // Console object
-Console g_Console(199, 51, "RISE OF THE TOMB EXPLORER NOOB");
+Console g_Console(199, 51, "RISE OF THE TOMB EXPLORING N00BS");
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -438,13 +439,55 @@ void renderMap()
 {
 	COORD c = { 0, 1 }; 
 	string line = "";
+	char currChar;
+	WORD color;
 	for (int i = 0; i < g_map.rows; i++)
 	{
 		for (int j = 0; j < g_map.cols; j++)
 		{
-			line += g_map.mapArray[i * g_map.cols + j]; //add characters to line
-		}
-		g_Console.writeToBuffer(c, line, 0x0F); //write to buffer, one line
+			//add characters to line, replacing depending on char
+			currChar = g_map.mapArray[i * g_map.cols + j];
+			switch (currChar)
+			{
+			case 'Z': //wall
+				currChar = _Z;
+				color = 0x08;
+				break;
+			case 'B': //boulder
+				currChar = _B;
+				color = 0x07;
+				break;
+			case 'D': //door
+				currChar = _D;
+				color = 0x0F;
+				break;
+			case 'E':
+				currChar = _E;
+				color = 0x0D;
+				break;
+			case 'P': //player1
+				currChar = ' ';
+				break;
+			case 'S': //player2
+				currChar = (char)3;
+				color = 0x0A;
+				break;
+			case 'U':
+				currChar = _U;
+				color = 0x05;
+				break;
+			case '0': //text
+				currChar = _0;
+				color = 0x03;
+				break;
+			default:
+				color = 0x0F;
+			}
+			c.X = j; //next char
+			//write to buffer, one char
+			g_Console.writeToBuffer(c, currChar, color);
+			
+		}		
 		c.Y++; //next line
 		line = ""; //clear line for next line
 	}
@@ -458,12 +501,7 @@ void renderCharacter()
 
 void renderBullet()
 {	
-	//change direction if none initialized
-	if (g_sChar1.gun->direction.X == 0 && g_sChar1.gun->direction.Y == 0)
-		g_sChar1.gun->direction = g_sChar1.direction;
-
-	g_sChar1.gun->shoot(g_sChar1.m_cLocation, g_sChar1.gun->direction.X, g_sChar1.gun->direction.Y);
-
+	g_sChar1.gun->shoot(&g_sChar1);
 	//check if bullet exceeds console or hits wall or out of range
 	if (g_sChar1.gun->outOfRange || g_sChar1.gun->bulletPos.X < 0 || g_sChar1.gun->bulletPos.Y < 1 ||
 		g_sChar1.gun->bulletPos.X > g_Console.getConsoleSize().X - 1 || g_sChar1.gun->bulletPos.Y > g_Console.getConsoleSize().Y - 1 || 
