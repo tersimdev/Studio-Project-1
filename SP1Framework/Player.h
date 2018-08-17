@@ -1,7 +1,7 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
-
-#include "game.h"
+#include "Framework\console.h"
+#include "organism.h"
 
 // struct for the game character
 class SGameChar : public Organism
@@ -15,6 +15,7 @@ private:
 };
 
 
+
 struct Gun
 {
 public:
@@ -23,13 +24,12 @@ public:
 	COORD bulletPos;
 	COORD direction = { 0,0 };
 
-	bool outOfRange= false;
+	bool outOfRange = false;
 
 	void shoot(COORD playerPos, SHORT dirX, SHORT dirY); //updates position of bullet to be rendered
 
-	int getRange() { return range; }
 private:
-	int range = 25;
+	int range = 25; //range of gun
 };
 
 #endif

@@ -47,11 +47,12 @@ void Map::updateMap()
 
 bool Map::collideWithWall(COORD c)
 {
-	if (this->mapArray[(c.Y - 1) * this->cols + c.X] == 'Z')
-	{
-		return true;
+	for (int i = 0; i < colllidables.size(); i++)
+	{ 
+		if (this->findChar(c, this->colllidables[i]))
+			return true;
 	}
-	else return false;
+	return false;
 }
 
 bool Map::findChar(COORD c, char target)
@@ -61,6 +62,14 @@ bool Map::findChar(COORD c, char target)
 		return true;
 	}
 	else return false;
+}
+
+void Map::moveChar(char target, COORD c, COORD dir)
+{
+	this->mapArray[(c.Y - 1) * this->cols + c.X] = prevChar;
+	c = ADDCOORDS(c, dir);
+	prevChar = this->mapArray[(c.Y - 1) * this->cols + c.X];
+	this->mapArray[(c.Y - 1) * this->cols + c.X] = target;
 }
 
 void Map::mapNamesInit()

@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
@@ -15,6 +11,10 @@
     </Filter>
     <Filter Include="Header Files\Framework">
       <UniqueIdentifier>{07667b27-3d02-4514-a465-3fd8b26758ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Source Files\Framework">
       <UniqueIdentifier>{37c19c94-9502-4b2b-b3f1-70fa908b49af}</UniqueIdentifier>
@@ -42,6 +42,9 @@
     <ClCompile Include="quiz.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="boulders.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\console.h">
@@ -65,5 +68,40 @@
     <ClInclude Include="quiz.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="trigger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="boulders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Quiz\Questions.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="Levels\0.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="Levels\1.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="Levels\2.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="Levels\3.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="Levels\4.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="Levels\5.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="Quiz\Answers.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="Levels\BOSS1.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -7,6 +7,8 @@
 #include "player.h"
 #include "map.h"
 #include "quiz.h"
+#include "trigger.h"
+#include "boulders.h"
 #include <string>
 using std::string;
 
@@ -108,17 +110,18 @@ void renderFramerate();     // renders debug information, frame rate, elapsed ti
 void renderToScreen();      // dump the contents of the buffer to the screen, one frame worth of game
 
 /*new*/
-void renderEnemy();			//renders the enemy into buffer
-void renderBullet();		//renders bullets from players
 void mainMenu();			//captures events for navigating UI
-void renderMainMenu();      //renders main menu
 void loadSave();			//captures events for navigating UI
-void renderLoadSave();		//renders loading of saves
 void actionsListener();		//listens to actions
 void checkForTiles();		//checks for special tiles which player can interact with
 void bossMode();			//new map and collision tiles and enemies
-void renderBossMode();		//renders the boss' attacks etc
 void quizMode();			//captures keyboard input
+void renderBullet();		//renders bullets from players
+void renderMainMenu();      //renders main menu
+void renderLoadSave();		//renders loading of saves
+void renderBossMode();		//renders the boss' attacks etc
 void renderQuiz();			//renders the quiz to console
+//void renderEnemy();			//renders the enemy into buffer
+
 
 #endif // _GAME_H

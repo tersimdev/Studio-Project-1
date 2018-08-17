@@ -79,6 +79,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="boulders.cpp" />
     <ClCompile Include="Framework\console.cpp" />
     <ClCompile Include="Framework\timer.cpp" />
     <ClCompile Include="game.cpp" />
@@ -88,6 +89,7 @@
     <ClCompile Include="quiz.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="boulders.h" />
     <ClInclude Include="Framework\console.h" />
     <ClInclude Include="Framework\timer.h" />
     <ClInclude Include="game.h" />
@@ -95,6 +97,18 @@
     <ClInclude Include="organism.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="quiz.h" />
+    <ClInclude Include="trigger.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Levels\0.txt" />
+    <Text Include="Levels\1.txt" />
+    <Text Include="Levels\2.txt" />
+    <Text Include="Levels\3.txt" />
+    <Text Include="Levels\4.txt" />
+    <Text Include="Levels\5.txt" />
+    <Text Include="Levels\BOSS1.txt" />
+    <Text Include="Quiz\Answers.txt" />
+    <Text Include="Quiz\Questions.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

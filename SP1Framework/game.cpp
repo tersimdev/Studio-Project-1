@@ -403,6 +403,11 @@ void checkForTiles()
 			g_map.loadMap("Levels/BOSS1.txt");
 			g_eGameState = S_BOSS;
 		}
+		else if (g_map.findChar(g_sChar1.m_futureLocation, 'B'))
+		{
+			Boulder boulder(g_sChar1.m_futureLocation);
+			boulder.moveBoulder(&g_map, &g_Console, &g_sChar1);
+		}
 	}
 }
 
@@ -449,12 +454,6 @@ void renderCharacter()
 {
 	// Draw the location of the character
 	g_Console.writeToBuffer(g_sChar1.m_cLocation, g_sChar1.symbol, g_sChar1.color);
-}
-
-void renderEnemy()
-{
-	COORD c = {10,10};
-	g_Console.writeToBuffer(c, (char)1, 0x0B);
 }
 
 void renderBullet()

@@ -1,6 +1,6 @@
 #ifndef _QUIZ_H
 #define _QUIZ_H
-#include "game.h"
+#include "Framework\console.h"
 #include <vector>
 #include <string>
 #include <fstream>
@@ -37,7 +37,9 @@ public:
 
 	void quizResult(int choice, string* output, string* answers); //feedback for quiz- answers etc
 
-	void reset();
+private:
+
+	void reset(); //reinits the current answers, qns and attempt
 };
 
 #endif

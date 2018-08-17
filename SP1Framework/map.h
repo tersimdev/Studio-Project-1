@@ -1,6 +1,6 @@
 #ifndef _MAP_H
 #define _MAP_H
-#include "game.h"
+#include "Framework\console.h"
 #include <vector>
 #include <fstream>
 #include <string>
@@ -17,19 +17,29 @@ public:
 
 	vector<char> mapArray;
 
+	vector<char> colllidables = { 'Z' , 'U' , 'B' }; //add to this when needed
+
 	vector<string> mapNames;
-	void Map::mapNamesInit();
 	
 	int rows, cols, mapLevel = 0;
 	
-	void updateMap(int level);
+
 	void updateMap();
+	void updateMap(int level);	
 
 	void loadMap(string fileName); //loads map into array
 	
 	bool collideWithWall(COORD c); //check if there is wall at c
 
 	bool findChar(COORD c, char target); //check for a char in the map
+
+	void moveChar(char target, COORD c, COORD dir);
+
+private:
+
+	char prevChar = ' '; //for moveChar function to replace with non-collidable chars
+
+	void Map::mapNamesInit();
 };
 
 

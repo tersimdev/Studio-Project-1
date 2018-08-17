@@ -8,6 +8,8 @@ SGameChar::SGameChar(char symb, int hp, WORD col, COORD location)
 	this->health = hp;
 	this->color = col;
 	this->m_cLocation = location;
+	this->direction = { 1 , 0 };
+	this->m_futureLocation = ADDCOORDS(m_cLocation, direction);
 };
 
 
