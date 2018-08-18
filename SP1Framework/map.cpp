@@ -72,6 +72,63 @@ void Map::moveChar(char target, COORD c, COORD dir)
 	this->mapArray[(c.Y - 1) * this->cols + c.X] = target;
 }
 
+void Map::replaceAndRender(Console* console)
+{
+	COORD c = { 0, 1 };
+	string line = "";
+	char currChar;
+	WORD color;
+	for (int i = 0; i < this->rows; i++)
+	{
+		for (int j = 0; j < this->cols; j++)
+		{
+			//add characters to line, replacing depending on char
+			currChar = this->mapArray[i * this->cols + j];
+			switch (currChar)
+			{
+			case 'Z': //walls
+				currChar = _Z;
+				color = 0x08;
+				break;
+			case 'B': //boulder
+				currChar = _B;
+				color = 0x07;
+				break;
+			case 'D': //door
+				currChar = _D;
+				color = 0x0F;
+				break;
+			case 'E':
+				currChar = _E;
+				color = 0x0D;
+				break;
+			case 'P': //player1
+			case 'p': //player1 hp
+			case 'S': //player2
+			case 's': //player2 hp
+				currChar = ' ';
+				break;
+			case 'U':
+				currChar = _U;
+				color = 0x0B;
+				break;
+			case '0': //text
+				currChar = _0;
+				color = 0x03;
+				break;
+			default:
+				color = 0x0F;
+			}
+			c.X = j; //next char
+					 //write to buffer, one char
+			console->writeToBuffer(c, currChar, color);
+
+		}
+		c.Y++; //next line
+		line = ""; //clear line for next line
+	}
+}
+
 void Map::mapNamesInit()
 {
 	for (int i = 0; i < this->numOfLevels; i++)

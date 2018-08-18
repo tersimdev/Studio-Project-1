@@ -8,11 +8,23 @@
 class SGameChar : public Organism
 {
 public:
-	SGameChar(char symb, int hp, WORD col, Map* map, int player = 1);
+	SGameChar(char symb, WORD col, Map* map, int player = 1);
+
+	COORD playerUIPos = {10, 0};
+	string playerHPUI = "";
+	string playerHPText = "";
+	string playerLivesText = "";
+
 	struct Gun *gun = NULL;
 
+	string updateHealth(int playerNum, int dmg);
+	string updateLives(int playerNum, int loss);
+	string updateHealthUI(int playerNum);
+
 private:
-	int health;
+	int maxHealth = 30;
+	int health = maxHealth;
+	int lives = 3;
 };
 
 

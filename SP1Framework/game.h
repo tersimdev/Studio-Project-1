@@ -15,14 +15,6 @@ using std::string;
 extern CStopWatch g_swTimer;
 extern bool g_bQuitGame;
 
-//defining some chars
-#define _Z (char)219
-#define _B (char)81
-#define _D (char)159
-#define _E (char)2
-#define _U (char)164
-#define _0 (char)176
-
 //enum for flags
 enum FLAGS
 {
@@ -124,6 +116,7 @@ void actionsListener();		//listens to actions
 void checkForTiles();		//checks for special tiles which player can interact with
 void bossMode();			//new map and collision tiles and enemies
 void quizMode();			//captures keyboard input
+void renderHealth();		//renders the health of players
 void renderBullet();		//renders bullets from players
 void renderMainMenu();      //renders main menu
 void renderLoadSave();		//renders loading of saves

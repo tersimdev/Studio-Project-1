@@ -13,8 +13,8 @@ bool    g_abFlags[flagCount] = { 0 };
 int		g_menuSelection;
 // Game specific variables here
 Map			g_map(0); //map
-SGameChar	g_sChar1((char)3, 30, 0x0C, &g_map, 1); //player1
-//SGameChar	g_sChar2((char)3, 30, 0x0A, &g_map, 2); //player2
+SGameChar	g_sChar1((char)3, 0x0C, &g_map, 1); //player1
+//SGameChar	g_sChar2((char)3, 0x0A, &g_map, 2); //player2
 Quiz		g_quiz(0); //quiz
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 // these are to prevent key bouncing, so we won't trigger keypresses more than once
@@ -365,8 +365,10 @@ void processUserInput()
           
 	if (g_abKeyPressed[K_RCTRL])
 	{
-		g_quiz.query();
-		g_eGameState = S_QUIZ;
+		g_sChar1.updateHealth(1, 1);
+		g_sChar1.updateLives(1, 1);
+		//g_quiz.query();
+		//g_eGameState = S_QUIZ;
 		eventHappened = true;
 	}
 
@@ -431,72 +433,26 @@ void renderGame()
     renderMap();        // renders the map to the buffer first
     renderCharacter();  // renders the character into the buffer
 
-	if (g_abFlags[shooting]) //renders bullet if shooting
+	if (g_abFlags[shooting]) // renders bullet if shooting
 		renderBullet();
 }
 
 void renderMap()
 {
-	COORD c = { 0, 1 }; 
-	string line = "";
-	char currChar;
-	WORD color;
-	for (int i = 0; i < g_map.rows; i++)
-	{
-		for (int j = 0; j < g_map.cols; j++)
-		{
-			//add characters to line, replacing depending on char
-			currChar = g_map.mapArray[i * g_map.cols + j];
-			switch (currChar)
-			{
-			case 'Z': //walls
-				currChar = _Z;
-				color = 0x08;
-				break;
-			case 'B': //boulder
-				currChar = _B;
-				color = 0x07;
-				break;
-			case 'D': //door
-				currChar = _D;
-				color = 0x0F;
-				break;
-			case 'E':
-				currChar = _E;
-				color = 0x0D;
-				break;
-			case 'P': //player1
-				currChar = ' ';
-				break;
-			case 'S': //player2
-				currChar = (char)3;
-				color = 0x0A;
-				break;
-			case 'U':
-				currChar = _U;
-				color = 0x0B;
-				break;
-			case '0': //text
-				currChar = _0;
-				color = 0x03;
-				break;
-			default:
-				color = 0x0F;
-			}
-			c.X = j; //next char
-			//write to buffer, one char
-			g_Console.writeToBuffer(c, currChar, color);
-			
-		}		
-		c.Y++; //next line
-		line = ""; //clear line for next line
-	}
+	g_map.replaceAndRender(&g_Console); // render in map.cpp to prevent clutter here
 }
 
 void renderCharacter()
 {
 	// Draw the location of the character
 	g_Console.writeToBuffer(g_sChar1.m_cLocation, g_sChar1.symbol, g_sChar1.color);
+	renderHealth();
+}
+
+void renderHealth()
+{
+	g_Console.writeToBuffer(g_sChar1.playerUIPos, g_sChar1.playerHPUI, g_sChar1.color);
+	//g_Console.writeToBuffer(g_sChar2.playerUIPos, g_sChar2.playerHPUI, g_sChar2.color);
 }
 
 void renderBullet()

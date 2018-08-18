@@ -28,12 +28,16 @@ public:
 	void updateMap(int level);	
 
 	void loadMap(string fileName); //loads map into array
+
+	
 	
 	bool collideWithWall(COORD c); //check if there is wall at c
 
 	bool findChar(COORD c, char target); //check for a char in the map
 
 	void moveChar(char target, COORD c, COORD dir);
+	
+	void replaceAndRender(Console* console);
 
 private:
 
