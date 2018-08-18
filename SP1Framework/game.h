@@ -15,10 +15,13 @@ using std::string;
 extern CStopWatch g_swTimer;
 extern bool g_bQuitGame;
 
+const static int NumOfPlayers = 2;
+
 //enum for flags
 enum FLAGS
 {
-	moving = 0,
+	moving1 = 0,
+	moving2,
 	shooting,
 	quizzing,
 	flagCount

@@ -14,14 +14,14 @@ int		g_menuSelection;
 // Game specific variables here
 Map			g_map(0); //map
 SGameChar	g_sChar1((char)3, 0x0C, &g_map, 1); //player1
-//SGameChar	g_sChar2((char)3, 0x0A, &g_map, 2); //player2
+SGameChar	g_sChar2((char)3, 0x0A, &g_map, 2); //player2
 Quiz		g_quiz(0); //quiz
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 // these are to prevent key bouncing, so we won't trigger keypresses more than once
 double	g_dBounceTimeNorm;
 double  g_dBounceTimeUI; 
-double  g_dBounceTimeMove;
-double  g_dBounceTimeAction;
+double  g_dBounceTimeMove[NumOfPlayers];
+double  g_dBounceTimeAction[NumOfPlayers];
 // Console object
 Console g_Console(199, 51, "RISE OF THE TOMB EXPLORING N00BS");
 
@@ -38,8 +38,12 @@ void init(void)
 	g_dElapsedTime = 0.0;
 	g_dBounceTimeNorm = 0.0;
 	g_dBounceTimeUI = 0.0;
-	g_dBounceTimeMove = 0.0;
-	g_dBounceTimeAction = 0.0;
+	for (int i = 0; i < NumOfPlayers; i++)
+	{
+		g_dBounceTimeMove[i] = 0.0;
+		g_dBounceTimeAction[i] = 0.0;
+	}
+	
 
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
@@ -281,74 +285,136 @@ void gameplay()         // gameplay logic
 
 void moveCharacter()
 {
-	g_abFlags[moving] = false;
-	if (g_dBounceTimeMove > g_dElapsedTime)
-		return;
-	// Updating the location of the character based on the key press
-	// providing a beep sound whenver we shift the character
-	if (g_abKeyPressed[K_W] && g_sChar1.m_cLocation.Y > 1)
+	g_abFlags[moving1] = false;
+	g_abFlags[moving2] = false;
+	if (g_dBounceTimeMove[0] < g_dElapsedTime && g_sChar1.m_bActive)
 	{
-		//Beep(1440, 30);
-		g_sChar1.direction = { 0,-1 };
-		//calculating future location
-		g_sChar1.m_futureLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
-		if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
-			g_sChar1.m_cLocation.Y--;
-		g_abFlags[moving] = true;
+		//player 1
+		if (g_abKeyPressed[K_W] && g_sChar1.m_cLocation.Y > 1)
+		{
+			//Beep(1440, 30);
+			g_sChar1.direction = { 0,-1 };
+			//calculating future location
+			g_sChar1.m_futureLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
+			if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
+				g_sChar1.m_cLocation.Y--;
+			g_abFlags[moving1] = true;
+		}
+		else if (g_abKeyPressed[K_S] && g_sChar1.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
+		{
+			//Beep(1440, 30);
+			g_sChar1.direction = { 0, 1 };
+			//calculating future location
+			g_sChar1.m_futureLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
+			if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
+				g_sChar1.m_cLocation.Y++;
+			g_abFlags[moving1] = true;
+		}
+		else if (g_abKeyPressed[K_A] && g_sChar1.m_cLocation.X > 0)
+		{
+			//Beep(1440, 30)
+			g_sChar1.direction = { -1, 0 };
+			//calculating future location
+			g_sChar1.m_futureLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
+			if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
+				g_sChar1.m_cLocation.X--;
+			g_abFlags[moving1] = true;
+		}
+		else if (g_abKeyPressed[K_D] && g_sChar1.m_cLocation.X < g_Console.getConsoleSize().X - 1)
+		{
+			//Beep(1440, 30);
+			g_sChar1.direction = { 1, 0 };
+			//calculating future location
+			g_sChar1.m_futureLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
+			if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
+				g_sChar1.m_cLocation.X++;
+			g_abFlags[moving1] = true;
+		}
 	}
-	else if (g_abKeyPressed[K_S] && g_sChar1.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
+	if (g_dBounceTimeMove[1] < g_dElapsedTime&& g_sChar2.m_bActive)
 	{
-		//Beep(1440, 30);
-		g_sChar1.direction = { 0, 1 };
-		//calculating future location
-		g_sChar1.m_futureLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
-		if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
-			g_sChar1.m_cLocation.Y++;
-		g_abFlags[moving] = true;
-	}
-	else if (g_abKeyPressed[K_A] && g_sChar1.m_cLocation.X > 0)
-	{
-		//Beep(1440, 30)
-		g_sChar1.direction = { -1, 0 };
-		//calculating future location
-		g_sChar1.m_futureLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
-		if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
-			g_sChar1.m_cLocation.X--;
-		g_abFlags[moving] = true;
-	}
-	else if (g_abKeyPressed[K_D] && g_sChar1.m_cLocation.X < g_Console.getConsoleSize().X - 1)
-	{
-		//Beep(1440, 30);
-		g_sChar1.direction = { 1, 0 };
-		//calculating future location
-		g_sChar1.m_futureLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
-		if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
-			g_sChar1.m_cLocation.X++;
-		g_abFlags[moving] = true;
+		//player 2
+		if (g_abKeyPressed[K_UP] && g_sChar2.m_cLocation.Y > 1)
+		{
+			//Beep(1440, 30);
+			g_sChar2.direction = { 0,-1 };
+			//calculating future location
+			g_sChar2.m_futureLocation = ADDCOORDS(g_sChar2.m_cLocation, g_sChar2.direction);
+			if (!g_map.collideWithWall(g_sChar2.m_futureLocation))
+				g_sChar2.m_cLocation.Y--;
+			g_abFlags[moving2] = true;
+		}
+		else if (g_abKeyPressed[K_DOWN] && g_sChar2.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
+		{
+			//Beep(1440, 30);
+			g_sChar2.direction = { 0, 1 };
+			//calculating future location
+			g_sChar2.m_futureLocation = ADDCOORDS(g_sChar2.m_cLocation, g_sChar2.direction);
+			if (!g_map.collideWithWall(g_sChar2.m_futureLocation))
+				g_sChar2.m_cLocation.Y++;
+			g_abFlags[moving2] = true;
+		}
+		else if (g_abKeyPressed[K_LEFT] && g_sChar2.m_cLocation.X > 0)
+		{
+			//Beep(1440, 30)
+			g_sChar2.direction = { -1, 0 };
+			//calculating future location
+			g_sChar2.m_futureLocation = ADDCOORDS(g_sChar2.m_cLocation, g_sChar2.direction);
+			if (!g_map.collideWithWall(g_sChar2.m_futureLocation))
+				g_sChar2.m_cLocation.X--;
+			g_abFlags[moving2] = true;
+		}
+		else if (g_abKeyPressed[K_RIGHT] && g_sChar2.m_cLocation.X < g_Console.getConsoleSize().X - 1)
+		{
+			//Beep(1440, 30);
+			g_sChar2.direction = { 1, 0 };
+			//calculating future location
+			g_sChar2.m_futureLocation = ADDCOORDS(g_sChar2.m_cLocation, g_sChar2.direction);
+			if (!g_map.collideWithWall(g_sChar2.m_futureLocation))
+				g_sChar2.m_cLocation.X++;
+			g_abFlags[moving2] = true;
+		}
 	}
 
-	if (g_abFlags[moving])
+	if (g_abFlags[moving1])
 	{	
 		//check bounce time
-		g_dBounceTimeMove = g_dElapsedTime + 0.05; // fazt
+		g_dBounceTimeMove[0] = g_dElapsedTime + 0.05; // fazt
+	}
+	if (g_abFlags[moving2])
+	{
+		//check bounce time
+		g_dBounceTimeMove[1] = g_dElapsedTime + 0.05; // fazt
 	}
 }
 
 void actionsListener()
 {
-	bool eventHappened = false;
-	if (g_dBounceTimeAction > g_dElapsedTime)
-		return;
-
-	if (g_abKeyPressed[K_LSHIFT] && g_dBounceTimeAction < g_dElapsedTime && (g_sChar1.gun == NULL || !g_abFlags[shooting]))
+	bool eventHappened[NumOfPlayers] = { false, false };
+	if (g_dBounceTimeAction[0] < g_dElapsedTime)
 	{
-		g_abFlags[shooting] = true;
-		g_sChar1.gun = new Gun(g_sChar1.m_cLocation, g_sChar1.direction);
-		eventHappened = true;
-	}	
-
-	if (eventHappened)
-		g_dBounceTimeAction = g_dElapsedTime + 0.8; // slow
+		if (g_abKeyPressed[K_LSHIFT] && (g_sChar1.gun == NULL || !g_abFlags[shooting]))
+		{
+			g_abFlags[shooting] = true;
+			g_sChar1.gun = new Gun(g_sChar1.m_cLocation, g_sChar1.direction);
+			eventHappened[0] = true;
+		}
+	}
+	if (g_dBounceTimeAction[1] < g_dElapsedTime)
+	{
+		if (g_abKeyPressed[K_RCTRL])
+		{
+			g_sChar1.updateHealth(1, 1);
+			g_sChar2.updateLives(1, 1);
+			//g_quiz.query();
+			//g_eGameState = S_QUIZ;
+			eventHappened[1] = true;
+		}
+	}
+	if (eventHappened[0])
+		g_dBounceTimeAction[0] = g_dElapsedTime + 0.8; // slow
+	if (eventHappened[1])
+		g_dBounceTimeAction[1] = g_dElapsedTime + 0.5; // slow
 }
 
 void processUserInput()
@@ -362,15 +428,6 @@ void processUserInput()
 		g_bQuitGame = true;
 		eventHappened = true;
 	}
-          
-	if (g_abKeyPressed[K_RCTRL])
-	{
-		g_sChar1.updateHealth(1, 1);
-		g_sChar1.updateLives(1, 1);
-		//g_quiz.query();
-		//g_eGameState = S_QUIZ;
-		eventHappened = true;
-	}
 
 	if (eventHappened)
 		g_dBounceTimeNorm = g_dElapsedTime + 0.125; // avg
@@ -378,31 +435,37 @@ void processUserInput()
 
 void checkForTiles()
 {
-	if (g_abFlags[moving])
+	if (g_abFlags[moving1] || g_abFlags[moving2])
 	{
-		if (g_map.findChar(g_sChar1.m_futureLocation, 'D'))
+		SGameChar* player = &g_sChar1;
+		if (g_abFlags[moving2])
+			player = &g_sChar2;
+
+		if (g_map.findChar(player->m_futureLocation, 'D'))
 		{
 			g_map.updateMap(); //loads next map, wraping around
-			if (g_sChar1.m_cLocation.X > g_Console.getConsoleSize().X * 0.9)
+			if (player->m_cLocation.X > g_Console.getConsoleSize().X * 0.9)
 			{
-				g_sChar1.m_cLocation.X = 2;
+				player->m_cLocation.X = 2;
 			}
-			else if (g_sChar1.m_cLocation.X < g_Console.getConsoleSize().X * 0.1)
+			else if (player->m_cLocation.X < g_Console.getConsoleSize().X * 0.1)
 			{
-				g_sChar1.m_cLocation.X = g_Console.getConsoleSize().X - 3;
+				player->m_cLocation.X = g_Console.getConsoleSize().X - 3;
 			}	
-			else if (g_sChar1.m_cLocation.Y > g_Console.getConsoleSize().Y * 0.9)
+			else if (player->m_cLocation.Y > g_Console.getConsoleSize().Y * 0.9)
 			{
-				g_sChar1.m_cLocation.Y = 2;
+				player->m_cLocation.Y = 2;
 			}
-			else if (g_sChar1.m_cLocation.Y < g_Console.getConsoleSize().Y * 0.1)
-				g_sChar1.m_cLocation.Y = g_Console.getConsoleSize().Y - 3;
+			else if (player->m_cLocation.Y < g_Console.getConsoleSize().Y * 0.1)
+				player->m_cLocation.Y = g_Console.getConsoleSize().Y - 3;
 		}
-		else if (g_map.findChar(g_sChar1.m_futureLocation, 'U'))
+		else if (g_map.findChar(player->m_futureLocation, 'U'))
 		{
 			//intialising position of player
 			g_sChar1.m_cLocation.X = g_Console.getConsoleSize().X * 0.5 - 1;
 			g_sChar1.m_cLocation.Y = g_Console.getConsoleSize().Y * 0.5 - 1;
+			g_sChar2.m_cLocation.X = g_Console.getConsoleSize().X * 0.5 - 1;
+			g_sChar2.m_cLocation.Y = g_Console.getConsoleSize().Y * 0.5 + 1;
 			g_map.loadMap("Levels/BOSS1.txt");
 			g_eGameState = S_BOSS;
 		}
@@ -444,15 +507,18 @@ void renderMap()
 
 void renderCharacter()
 {
-	// Draw the location of the character
-	g_Console.writeToBuffer(g_sChar1.m_cLocation, g_sChar1.symbol, g_sChar1.color);
+	// Draw the location of the players
+	if (g_sChar1.m_bActive)
+		g_Console.writeToBuffer(g_sChar1.m_cLocation, g_sChar1.symbol, g_sChar1.color);
+	if (g_sChar2.m_bActive)
+		g_Console.writeToBuffer(g_sChar2.m_cLocation, g_sChar2.symbol, g_sChar2.color);
 	renderHealth();
 }
 
 void renderHealth()
 {
 	g_Console.writeToBuffer(g_sChar1.playerUIPos, g_sChar1.playerHPUI, g_sChar1.color);
-	//g_Console.writeToBuffer(g_sChar2.playerUIPos, g_sChar2.playerHPUI, g_sChar2.color);
+	g_Console.writeToBuffer(g_sChar2.playerUIPos, g_sChar2.playerHPUI, g_sChar2.color);
 }
 
 void renderBullet()

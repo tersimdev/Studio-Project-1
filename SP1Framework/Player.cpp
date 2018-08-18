@@ -54,6 +54,8 @@ string SGameChar::updateLives(int playerNum, int loss)
 {
 	if (this->lives != 0)
 		this->lives -= loss;
+	if (this->lives == 0)
+		this->m_bActive = false;
 	return updateHealthUI(playerNum);
 }
 
