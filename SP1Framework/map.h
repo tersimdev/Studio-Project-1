@@ -22,28 +22,27 @@ public:
 	vector<string> mapNames;
 	
 	int rows, cols, mapLevel = 0;
-	
 
 	void updateMap();
 	void updateMap(int level);	
 
 	void loadMap(string fileName); //loads map into array
-
-	
 	
 	bool collideWithWall(COORD c); //check if there is wall at c
 
 	bool findChar(COORD c, char target); //check for a char in the map
 
 	void moveChar(char target, COORD c, COORD dir);
+
+	char addChar(COORD c, char add); //returns replaced char
+
+	void removeChar(COORD c); //removes char at c with ' '
 	
 	void replaceAndRender(Console* console);
 
 private:
 
-	char prevChar = ' '; //for moveChar function to replace with non-collidable chars
-
-	void Map::mapNamesInit();
+	void mapNamesInit();
 };
 
 

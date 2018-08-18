@@ -23,6 +23,7 @@ enum FLAGS
 	moving1 = 0,
 	moving2,
 	shooting,
+	hasPickaxe,
 	quizzing,
 	flagCount
 };

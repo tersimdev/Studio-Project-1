@@ -64,12 +64,16 @@ bool Map::findChar(COORD c, char target)
 	else return false;
 }
 
-void Map::moveChar(char target, COORD c, COORD dir)
+char Map::addChar(COORD c, char add)
 {
-	this->mapArray[(c.Y - 1) * this->cols + c.X] = prevChar;
-	c = ADDCOORDS(c, dir);
-	prevChar = this->mapArray[(c.Y - 1) * this->cols + c.X];
-	this->mapArray[(c.Y - 1) * this->cols + c.X] = target;
+	char replacedChar = this->mapArray[(c.Y - 1) * this->cols + c.X];
+	this->mapArray[(c.Y - 1) * this->cols + c.X] = add;
+	return replacedChar;
+}
+
+void Map::removeChar(COORD c)
+{
+	this->mapArray[(c.Y - 1) * this->cols + c.X] = ' ';
 }
 
 void Map::replaceAndRender(Console* console)

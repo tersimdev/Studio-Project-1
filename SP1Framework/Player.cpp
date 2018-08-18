@@ -9,7 +9,6 @@ SGameChar::SGameChar(char symb, WORD col, Map* map, int player)
 	this->symbol = symb;
 	this->color = col;
 	this->direction = { 1 , 0 };
-	this->m_futureLocation = ADDCOORDS(m_cLocation, direction);
 	this->playerHPUI = updateHealth(player, 0);
 
 	//setting positions, based on map
@@ -41,6 +40,8 @@ SGameChar::SGameChar(char symb, WORD col, Map* map, int player)
 			}
 		}
 	}
+	//setting default future location
+	this->m_futureLocation = ADDCOORDS(m_cLocation, direction);
 };
 
 string SGameChar::updateHealth(int playerNum, int dmg)
