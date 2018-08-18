@@ -2,18 +2,24 @@
 #define _BOULDER_H
 #include "Framework\console.h"
 #include "trigger.h"
-#include "player.h"
+#include <vector>
+using std::vector;
+
+class Boulders 
+{
+public:
+	Boulders(vector<COORD>* c);
+};
+
 
 class Boulder : public Trigger
 {
 public:
 	Boulder(COORD location);
 
-	char prevChar = ' '; //for moveChar function to replace with non-collidable chars
+	//void moveBoulder(Map* map, Console* console, SGameChar* player);
 
-	void moveBoulder(Map* map, Console* console, SGameChar* player);
-
-	void destroyBoulder(Map* map);
+	//void destroyBoulder();
 };
 
 #endif

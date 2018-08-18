@@ -5,6 +5,7 @@ Map::Map(int index)
 {
 	mapNamesInit();
 	loadMap(mapNames[index]);
+	loadObjects();
 }
 
 /*FUNCTIONS*/
@@ -30,6 +31,15 @@ void Map::loadMap(string fileName)
 		}
 	}
 	file.close();
+	this->loadObjects();
+}
+
+void Map::loadObjects()
+{
+	vector<COORD> c;
+	//boulders
+	this->findChars('B', &c);
+	Boulders boulders(&c);
 }
 
 void Map::updateMap(int level)
@@ -49,19 +59,50 @@ bool Map::collideWithWall(COORD c)
 {
 	for (int i = 0; i < colllidables.size(); i++)
 	{ 
-		if (this->findChar(c, this->colllidables[i]))
+		if (this->findCharExists(c, this->colllidables[i]))
 			return true;
 	}
 	return false;
 }
 
-bool Map::findChar(COORD c, char target)
+bool Map::findCharExists(COORD c, char target)
 {
 	if (this->mapArray[(c.Y - 1) * this->cols + c.X] == target)
 	{
 		return true;
 	}
 	else return false;
+}
+
+COORD Map::findChar(char target)
+{
+	COORD c;
+	for (int i = 0; i < this->rows; i++)
+	{
+		for (int j = 0; j < this->cols; j++)
+		{
+			if (this->mapArray[i * this->cols + j] == target)
+			{
+				c.X = j;
+				c.Y = i + 1;
+				return c;
+			}
+		}
+	}
+}
+
+void Map::findChars(char target, vector<COORD>* c)
+{
+	for (int i = 0; i < this->rows; i++)
+	{
+		for (int j = 0; j < this->cols; j++)
+		{
+			if (this->mapArray[i * this->cols + j] == target)
+			{
+				c->push_back({ (SHORT)j, (SHORT)(i + 1) });
+			}
+		}
+	}
 }
 
 char Map::addChar(COORD c, char add)

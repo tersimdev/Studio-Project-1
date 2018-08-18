@@ -16,7 +16,6 @@ Map			g_map(0); //map
 SGameChar	g_sChar1((char)3, 0x0C, &g_map, 1); //player1
 SGameChar	g_sChar2((char)3, 0x0A, &g_map, 2); //player2
 Quiz		g_quiz(0); //quiz
-Boulder* boulder;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 // these are to prevent key bouncing, so we won't trigger keypresses more than once
 double	g_dBounceTimeNorm;
@@ -444,7 +443,7 @@ void checkForTiles()
 		if (g_abFlags[moving2])
 			player = &g_sChar2;
 
-		if (g_map.findChar(player->m_futureLocation, 'D'))
+		if (g_map.findCharExists(player->m_futureLocation, 'D'))
 		{
 			g_map.updateMap(); //loads next map, wraping around
 			if (player->m_cLocation.X > g_Console.getConsoleSize().X * 0.9)
@@ -463,7 +462,7 @@ void checkForTiles()
 				player->m_cLocation.Y = g_Console.getConsoleSize().Y - 3;
 		}
 		
-		if (g_map.findChar(player->m_futureLocation, 'U'))
+		if (g_map.findCharExists(player->m_futureLocation, 'U'))
 		{
 			//intialising position of player
 			g_sChar1.m_cLocation.X = g_Console.getConsoleSize().X * 0.5 - 1;
@@ -475,18 +474,18 @@ void checkForTiles()
 		}		
 	}
 
-	if (g_map.findChar(g_sChar1.m_futureLocation, 'B'))
+	if (g_map.findCharExists(g_sChar1.m_futureLocation, 'B'))
 	{
-		boulder = new Boulder (g_sChar1.m_futureLocation);
-		boulder->moveBoulder(&g_map, &g_Console, &g_sChar1);
+		//boulder = new Boulder (g_sChar1.m_futureLocation);
+		//boulder->moveBoulder(&g_map, &g_Console, &g_sChar1);
 	}
-	else if (g_map.findChar(g_sChar2.m_futureLocation, 'B'))
+	else if (g_map.findCharExists(g_sChar2.m_futureLocation, 'B'))
 	{
 		if (g_abFlags[hasPickaxe] && g_abKeyPressed[K_RCTRL])
 		{
-			boulder = new Boulder(g_sChar2.m_futureLocation); 
-			boulder->destroyBoulder(&g_map);
-			delete boulder;
+			//boulder = new Boulder(g_sChar2.m_futureLocation); 
+			//boulder->destroyBoulder(&g_map);
+			//delete boulder;
 		}
 	}
 }

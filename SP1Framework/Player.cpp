@@ -12,33 +12,16 @@ SGameChar::SGameChar(char symb, WORD col, Map* map, int player)
 	this->playerHPUI = updateHealth(player, 0);
 
 	//setting positions, based on map
-	COORD c;
-	for (int i = 0; i < map->rows; i++)
+	switch(player)
 	{
-		for (int j = 0; j < map->cols; j++)
-		{
-			
-			if (player == 1 && map->mapArray[i * map->cols + j] == 'P')
-			{
-				c = { (SHORT) j,(SHORT)(i + 1) };
-				this->m_cLocation = c;
-			}	
-			else if (player == 1 && map->mapArray[i * map->cols + j] == 'p')
-			{
-				c = { (SHORT)j,(SHORT)(i + 1) };
-				this->playerUIPos = c;
-			}
-			if (player == 2 && map->mapArray[i * map->cols + j] == 'S')
-			{
-				c = { (SHORT)j,(SHORT)(i + 1) };
-				this->m_cLocation = c;
-			}
-			else if (player == 2 && map->mapArray[i * map->cols + j] == 's')
-			{
-				c = { (SHORT)j,(SHORT)(i + 1) };
-				this->playerUIPos = c;
-			}
-		}
+	case 1:
+		this->m_cLocation = map->findChar('P');
+		this->playerUIPos = map->findChar('p');
+		break;
+	case 2:
+		this->m_cLocation = map->findChar('S');
+		this->playerUIPos = map->findChar('s');
+		break;
 	}
 	//setting default future location
 	this->m_futureLocation = ADDCOORDS(m_cLocation, direction);
