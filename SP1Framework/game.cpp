@@ -306,7 +306,7 @@ void moveCharacter()
 			g_sChar1.m_cLocation.Y++;
 		g_abFlags[moving] = true;
 	}
-	if (g_abKeyPressed[K_A] && g_sChar1.m_cLocation.X > 0)
+	else if (g_abKeyPressed[K_A] && g_sChar1.m_cLocation.X > 0)
 	{
 		//Beep(1440, 30)
 		g_sChar1.direction = { -1, 0 };
@@ -474,7 +474,7 @@ void renderMap()
 				break;
 			case 'U':
 				currChar = _U;
-				color = 0x05;
+				color = 0x0B;
 				break;
 			case '0': //text
 				currChar = _0;

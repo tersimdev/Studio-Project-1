@@ -17,10 +17,10 @@ extern bool g_bQuitGame;
 
 //defining some chars
 #define _Z (char)220
-#define _B (char)234
+#define _B (char)81
 #define _D (char)159
-#define _E (char)237
-#define _U (char)239
+#define _E (char)2
+#define _U (char)164
 #define _0 (char)176
 
 //enum for flags
