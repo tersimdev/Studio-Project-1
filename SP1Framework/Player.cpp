@@ -25,28 +25,26 @@ SGameChar::SGameChar(char symb, int hp, WORD col, Map* map, int player)
 };
 
 
-Gun::Gun(COORD loc)
+Gun::Gun(COORD loc, COORD dir)
 {
 	this->bulletPos = loc;
+	this->playerPos = loc;
+	this->direction = dir;
 }
 
 /*FUNCTIONS*/
 
 void Gun::shoot(SGameChar* player)
-{
-	//change direction if none initialized
-	if (this->direction.X == 0 && this->direction.Y == 0)
-		this->direction = player->direction;
-	
+{	
 	int range = this->range;
 	//if bullet within range, add to bullet position
-	if ( ((player->direction.X == 1 && bulletPos.X < player->m_cLocation.X + range) 
-		|| (player->direction.X == -1 && bulletPos.X > player->m_cLocation.X - range) )
-		|| ( (player->direction.Y == 1 && bulletPos.Y < player->m_cLocation.Y + (range >> 1))
-		|| (player->direction.Y == -1 && bulletPos.Y > player->m_cLocation.Y - (range >> 1))) )
+	if ( ((direction.X == 1 && bulletPos.X < playerPos.X + range) 
+		|| (direction.X == -1 && bulletPos.X > playerPos.X - range) )
+		|| ( (direction.Y == 1 && bulletPos.Y < playerPos.Y + (range >> 1))
+		|| (direction.Y == -1 && bulletPos.Y > playerPos.Y - (range >> 1))) )
 	{
-		this->bulletPos.X += player->direction.X;
-		this->bulletPos.Y += player->direction.Y;
+		this->bulletPos.X += this->direction.X;
+		this->bulletPos.Y += this->direction.Y;
 		outOfRange = false;
 	}
 	else outOfRange = true;

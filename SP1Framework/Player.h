@@ -20,9 +20,10 @@ private:
 struct Gun
 {
 public:
-	Gun(COORD loc);
+	Gun(COORD loc, COORD dir);
 
 	COORD bulletPos;
+	COORD playerPos;
 	COORD direction = { 0,0 };
 
 	bool outOfRange = false;

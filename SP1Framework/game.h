@@ -16,7 +16,7 @@ extern CStopWatch g_swTimer;
 extern bool g_bQuitGame;
 
 //defining some chars
-#define _Z (char)220
+#define _Z (char)219
 #define _B (char)81
 #define _D (char)159
 #define _E (char)2

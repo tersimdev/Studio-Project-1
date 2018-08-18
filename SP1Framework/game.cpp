@@ -343,7 +343,7 @@ void actionsListener()
 	if (g_abKeyPressed[K_LSHIFT] && g_dBounceTimeAction < g_dElapsedTime && (g_sChar1.gun == NULL || !g_abFlags[shooting]))
 	{
 		g_abFlags[shooting] = true;
-		g_sChar1.gun = new Gun(g_sChar1.m_cLocation);
+		g_sChar1.gun = new Gun(g_sChar1.m_cLocation, g_sChar1.direction);
 		eventHappened = true;
 	}	
 
@@ -449,7 +449,7 @@ void renderMap()
 			currChar = g_map.mapArray[i * g_map.cols + j];
 			switch (currChar)
 			{
-			case 'Z': //wall
+			case 'Z': //walls
 				currChar = _Z;
 				color = 0x08;
 				break;
