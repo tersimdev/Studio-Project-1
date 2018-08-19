@@ -17,9 +17,9 @@ void Boulder::moveBoulder(Map* map, SGameChar* player, Console* console)
 		if (!map->findCharExists(ADDCOORDS(this->m_cLocation, { player->direction.X << 1,  player->direction.Y << 1 }), 'Z')
 			&& !map->collideWithWall(ADDCOORDS(this->m_cLocation, { player->direction.X,  player->direction.Y }))) //if boulder not colliding with walls
 		{
-			map->removeChar(this->m_cLocation, this->prevChar); //remove the B
+			map->removeChar(this->m_cLocation, this->prevChar); //remove the B and replace with prevchar
 			this->m_cLocation = ADDCOORDS(this->m_cLocation, player->direction);
-			this->prevChar = map->addChar(this->m_cLocation, 'B'); //places the new B
+			this->prevChar = map->addChar(this->m_cLocation, 'B'); //places the new B and store as prevchar
 			player->m_cLocation = ADDCOORDS(player->m_cLocation, player->direction);
 		}
 	}
@@ -28,5 +28,5 @@ void Boulder::moveBoulder(Map* map, SGameChar* player, Console* console)
 void Boulder::destroyBoulder(Map* map)
 {
 	map->removeChar(this->m_cLocation);
-	delete this;
+	//deletion handled when re-initializing
 }

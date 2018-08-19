@@ -13,9 +13,9 @@ void Trigger::initTrigger(Map* map)
 void Trigger::boulderInit(Map* map)
 {
 	//deletes all previous boulder
-	for (int i = 0; i < allBoulders.size(); i++)
+	for (Boulder* b : allBoulders)
 	{
-		delete allBoulders[i];		
+		delete b;
 	}
 	allBoulders.clear();
 	//finds all boulder sand places into vector
