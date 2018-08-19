@@ -4,14 +4,6 @@
 #include <windows.h>
 #include <string>
 
-//defining some chars
-#define _Z (char)219
-#define _B (char)81
-#define _D (char)159
-#define _E (char)2
-#define _U (char)164
-#define _0 (char)176
-
 //=============================================================================
 // Slower write to screen functions
 // Left here for posterity's sake to see how it was done

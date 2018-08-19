@@ -424,7 +424,7 @@ void checkForTiles()
 		if (g_abFlags[moving2])
 			player = &g_sChar2;
 
-		if (g_map.findCharExists(player->m_futureLocation, 'D'))
+		if (g_map.findCharExists(player->m_futureLocation, 'N'))
 		{
 			g_map.updateMap(); //loads next map, wraping around
 			g_trigger.initTrigger(&g_map); //reinits all triggers for new map
@@ -448,9 +448,9 @@ void checkForTiles()
 		{
 			//intialising position of player
 			g_sChar1.m_cLocation.X = g_Console.getConsoleSize().X * 0.5 - 1;
-			g_sChar1.m_cLocation.Y = g_Console.getConsoleSize().Y * 0.5 - 1;
+			g_sChar1.m_cLocation.Y = g_Console.getConsoleSize().Y * 0.75 - 1;
 			g_sChar2.m_cLocation.X = g_Console.getConsoleSize().X * 0.5 - 1;
-			g_sChar2.m_cLocation.Y = g_Console.getConsoleSize().Y * 0.5 + 1;
+			g_sChar2.m_cLocation.Y = g_Console.getConsoleSize().Y * 0.75 + 1;
 			g_map.loadMap("Levels/BOSS1.txt");
 			g_eGameState = S_BOSS;
 		}

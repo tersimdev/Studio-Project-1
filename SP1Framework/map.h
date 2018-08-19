@@ -7,6 +7,15 @@
 using std::vector;
 using std::string;
 
+
+//defining some chars
+#define _Z (char)219
+#define _B (char)81
+#define _E (char)2
+#define _N (char)159
+#define _U (char)164
+#define _0 (char)176
+
 class Map
 {
 public:

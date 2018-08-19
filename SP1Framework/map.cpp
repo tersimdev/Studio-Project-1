@@ -129,13 +129,13 @@ void Map::replaceAndRender(Console* console)
 				currChar = _B;
 				color = 0x07;
 				break;
-			case 'D': //door
-				currChar = _D;
-				color = 0x0F;
-				break;
 			case 'E':
 				currChar = _E;
 				color = 0x0D;
+				break;
+			case 'N': //transitions
+				currChar = _N;
+				color = 0x0F;
 				break;
 			case 'P': //player1
 			case 'p': //player1 hp
