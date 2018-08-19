@@ -1,5 +1,15 @@
 #include "boulders.h"
 
+Boulder* boulder = NULL;
+Boulders* boulders = NULL;
+
+void bouldersInit(Map* map)
+{
+	vector<COORD> c;
+	map->findChars('B', &c);
+	
+}
+
 Boulders::Boulders(vector<COORD>* c)
 {
 	for (int i = 0; i < c->size(); i++)
@@ -8,12 +18,12 @@ Boulders::Boulders(vector<COORD>* c)
 	}
 }
 
-Boulder Boulders::findBoulder(COORD thisPos)
+Boulder* Boulders::findBoulder(COORD thisPos)
 {
 	for (int i = 0; i < this->allBoulders.size(); i++)
 	{
 		if (allBoulders[i].m_cLocation.X == thisPos.X && allBoulders[i].m_cLocation.Y == thisPos.Y)
-			return allBoulders[i];
+			return &(allBoulders[i]);
 	}
 }
 

@@ -455,7 +455,14 @@ void checkForTiles()
 		if (g_map.findCharExists(g_sChar1.m_futureLocation, 'B'))
 		{
 			g_map.boulder = g_map.boulders->findBoulder(g_sChar1.m_futureLocation);
-			g_map.removeChar(g_map.boulder.m_cLocation);
+			if (!g_map.findCharExists(ADDCOORDS(g_map.boulder->m_cLocation, { g_sChar1.direction.X << 1,  g_sChar1.direction.Y << 1 }), 'Z')
+				&& !g_map.collideWithWall(ADDCOORDS(g_map.boulder->m_cLocation, { g_sChar1.direction.X,  g_sChar1.direction.Y }))) //if boulder not colliding with walls
+			{
+				g_map.removeChar(g_map.boulder->m_cLocation);
+				g_map.boulder->m_cLocation = ADDCOORDS(g_map.boulder->m_cLocation, g_sChar1.direction);
+				g_map.addChar(g_map.boulder->m_cLocation, 'B');
+				g_sChar1.m_cLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
+			}
 		}
 		else if (g_map.findCharExists(g_sChar2.m_futureLocation, 'B'))
 		{

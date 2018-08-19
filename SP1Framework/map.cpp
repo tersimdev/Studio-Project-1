@@ -31,15 +31,6 @@ void Map::loadMap(string fileName)
 		}
 	}
 	file.close();
-	this->loadObjects();
-}
-
-void Map::loadObjects()
-{
-	vector<COORD> c;
-	//boulders
-	this->findChars('B', &c);
-	boulders = new Boulders (&c);
 }
 
 void Map::updateMap(int level)

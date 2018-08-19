@@ -1,7 +1,6 @@
 #ifndef _MAP_H
 #define _MAP_H
 #include "Framework\console.h"
-#include "boulders.h"
 #include <vector>
 #include <fstream>
 #include <string>
@@ -13,9 +12,6 @@ class Map
 public:
 
 	Map(int index);
-
-	Boulder boulder;
-	Boulders* boulders = NULL;
 
 	const static int numOfLevels = 6;
 
@@ -31,8 +27,6 @@ public:
 	void updateMap(int level); //loads new level
 
 	void loadMap(string fileName); //loads map into array
-
-	void loadObjects(); //loads in game objects in map like boulders
 	
 	bool collideWithWall(COORD c); //check if there is wall at c
 

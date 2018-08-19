@@ -2,8 +2,11 @@
 #define _BOULDER_H
 #include "Framework\console.h"
 #include "trigger.h"
+#include "map.h"
 #include <vector>
 using std::vector;
+
+void bouldersInit(Map* map);
 
 class Boulder : public Trigger
 {
@@ -23,6 +26,6 @@ public:
 
 	vector<Boulder> allBoulders;
 
-	Boulder findBoulder(COORD thisPos);
+	Boulder* findBoulder(COORD thisPos);
 };
 #endif
