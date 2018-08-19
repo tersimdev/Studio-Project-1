@@ -39,7 +39,7 @@ void Map::loadObjects()
 	vector<COORD> c;
 	//boulders
 	this->findChars('B', &c);
-	Boulders boulders(&c);
+	boulders = new Boulders (&c);
 }
 
 void Map::updateMap(int level)

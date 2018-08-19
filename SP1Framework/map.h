@@ -14,6 +14,9 @@ public:
 
 	Map(int index);
 
+	Boulder boulder;
+	Boulders* boulders = NULL;
+
 	const static int numOfLevels = 6;
 
 	vector<char> mapArray;

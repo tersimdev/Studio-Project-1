@@ -29,8 +29,19 @@ SGameChar::SGameChar(char symb, WORD col, Map* map, int player)
 
 string SGameChar::updateHealth(int playerNum, int dmg)
 {
-	if (this->health != 0 && this->health <= this->maxHealth)
+	//taking damage
+	if (this->health != 0)
+	{
 		this->health -= dmg;
+	}
+	else
+	{
+		this->updateLives(playerNum, 1);
+		this->health = this->maxHealth;
+	}
+	//if more then max health
+	if (this->health > this->maxHealth)
+		this->health = this->maxHealth;
 	return updateHealthUI(playerNum);
 }
 

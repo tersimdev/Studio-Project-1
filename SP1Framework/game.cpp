@@ -231,7 +231,7 @@ void render()
 
 void splashScreenWait()    // waits for time to pass in splash screen
 {
-    if (g_dElapsedTime > 1.5) // wait for 3 seconds to switch to main menu mode, else do nothing
+    if (g_dElapsedTime > 1.0) // wait for 3 seconds to switch to main menu mode, else do nothing
         g_eGameState = S_MENU;
 }
 
@@ -295,40 +295,24 @@ void moveCharacter()
 		{
 			//Beep(1440, 30);
 			g_sChar1.direction = { 0,-1 };
-			//calculating future location
-			g_sChar1.m_futureLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
-			if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
-				g_sChar1.m_cLocation.Y--;
 			g_abFlags[moving1] = true;
 		}
 		else if (g_abKeyPressed[K_S] && g_sChar1.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
 		{
 			//Beep(1440, 30);
 			g_sChar1.direction = { 0, 1 };
-			//calculating future location
-			g_sChar1.m_futureLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
-			if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
-				g_sChar1.m_cLocation.Y++;
 			g_abFlags[moving1] = true;
 		}
 		else if (g_abKeyPressed[K_A] && g_sChar1.m_cLocation.X > 0)
 		{
 			//Beep(1440, 30)
 			g_sChar1.direction = { -1, 0 };
-			//calculating future location
-			g_sChar1.m_futureLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
-			if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
-				g_sChar1.m_cLocation.X--;
 			g_abFlags[moving1] = true;
 		}
 		else if (g_abKeyPressed[K_D] && g_sChar1.m_cLocation.X < g_Console.getConsoleSize().X - 1)
 		{
 			//Beep(1440, 30);
 			g_sChar1.direction = { 1, 0 };
-			//calculating future location
-			g_sChar1.m_futureLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
-			if (!g_map.collideWithWall(g_sChar1.m_futureLocation))
-				g_sChar1.m_cLocation.X++;
 			g_abFlags[moving1] = true;
 		}
 	}
@@ -339,51 +323,47 @@ void moveCharacter()
 		{
 			//Beep(1440, 30);
 			g_sChar2.direction = { 0,-1 };
-			//calculating future location
-			g_sChar2.m_futureLocation = ADDCOORDS(g_sChar2.m_cLocation, g_sChar2.direction);
-			if (!g_map.collideWithWall(g_sChar2.m_futureLocation))
-				g_sChar2.m_cLocation.Y--;
 			g_abFlags[moving2] = true;
 		}
 		else if (g_abKeyPressed[K_DOWN] && g_sChar2.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
 		{
 			//Beep(1440, 30);
 			g_sChar2.direction = { 0, 1 };
-			//calculating future location
-			g_sChar2.m_futureLocation = ADDCOORDS(g_sChar2.m_cLocation, g_sChar2.direction);
-			if (!g_map.collideWithWall(g_sChar2.m_futureLocation))
-				g_sChar2.m_cLocation.Y++;
 			g_abFlags[moving2] = true;
 		}
 		else if (g_abKeyPressed[K_LEFT] && g_sChar2.m_cLocation.X > 0)
 		{
 			//Beep(1440, 30)
 			g_sChar2.direction = { -1, 0 };
-			//calculating future location
-			g_sChar2.m_futureLocation = ADDCOORDS(g_sChar2.m_cLocation, g_sChar2.direction);
-			if (!g_map.collideWithWall(g_sChar2.m_futureLocation))
-				g_sChar2.m_cLocation.X--;
 			g_abFlags[moving2] = true;
 		}
 		else if (g_abKeyPressed[K_RIGHT] && g_sChar2.m_cLocation.X < g_Console.getConsoleSize().X - 1)
 		{
 			//Beep(1440, 30);
 			g_sChar2.direction = { 1, 0 };
-			//calculating future location
-			g_sChar2.m_futureLocation = ADDCOORDS(g_sChar2.m_cLocation, g_sChar2.direction);
-			if (!g_map.collideWithWall(g_sChar2.m_futureLocation))
-				g_sChar2.m_cLocation.X++;
 			g_abFlags[moving2] = true;
 		}
 	}
 
 	if (g_abFlags[moving1])
 	{	
+		//calculating future location
+		g_sChar1.m_futureLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
+		//check if colliding with collidables in map, or if moving towards player 2
+		if (!g_map.collideWithWall(g_sChar1.m_futureLocation) && (
+			g_sChar1.m_futureLocation.X != g_sChar2.m_cLocation.X || g_sChar1.m_futureLocation.Y != g_sChar2.m_cLocation.Y))
+				g_sChar1.m_cLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
 		//check bounce time
 		g_dBounceTimeMove[0] = g_dElapsedTime + 0.05; // fazt
 	}
 	if (g_abFlags[moving2])
 	{
+		//calculating future location
+		g_sChar2.m_futureLocation = ADDCOORDS(g_sChar2.m_cLocation, g_sChar2.direction);
+		//check if colliding with collidables in map, or if moving towards player 2
+		if (!g_map.collideWithWall(g_sChar2.m_futureLocation) && (
+			g_sChar2.m_futureLocation.X != g_sChar1.m_cLocation.X || g_sChar2.m_futureLocation.Y != g_sChar1.m_cLocation.Y))
+				g_sChar2.m_cLocation = ADDCOORDS(g_sChar2.m_cLocation, g_sChar2.direction);
 		//check bounce time
 		g_dBounceTimeMove[1] = g_dElapsedTime + 0.05; // fazt
 	}
@@ -406,8 +386,8 @@ void actionsListener()
 		if (g_abKeyPressed[K_SPACE])
 		{
 			g_abFlags[hasPickaxe] = !g_abFlags[hasPickaxe];
-			//g_sChar1.updateHealth(1, 1);
-			//g_sChar2.updateLives(1, 1);
+			g_sChar1.updateHealth(1, 10);
+			g_sChar2.updateHealth(1, -1);
 			//g_quiz.query();
 			//g_eGameState = S_QUIZ;
 			eventHappened[1] = true;
@@ -471,23 +451,24 @@ void checkForTiles()
 			g_sChar2.m_cLocation.Y = g_Console.getConsoleSize().Y * 0.5 + 1;
 			g_map.loadMap("Levels/BOSS1.txt");
 			g_eGameState = S_BOSS;
-		}		
-	}
-
-	if (g_map.findCharExists(g_sChar1.m_futureLocation, 'B'))
-	{
-		//boulder = new Boulder (g_sChar1.m_futureLocation);
-		//boulder->moveBoulder(&g_map, &g_Console, &g_sChar1);
-	}
-	else if (g_map.findCharExists(g_sChar2.m_futureLocation, 'B'))
-	{
-		if (g_abFlags[hasPickaxe] && g_abKeyPressed[K_RCTRL])
+		}
+		if (g_map.findCharExists(g_sChar1.m_futureLocation, 'B'))
 		{
-			//boulder = new Boulder(g_sChar2.m_futureLocation); 
-			//boulder->destroyBoulder(&g_map);
-			//delete boulder;
+			g_map.boulder = g_map.boulders->findBoulder(g_sChar1.m_futureLocation);
+			g_map.removeChar(g_map.boulder.m_cLocation);
+		}
+		else if (g_map.findCharExists(g_sChar2.m_futureLocation, 'B'))
+		{
+			if (g_abFlags[hasPickaxe] && g_abKeyPressed[K_RCTRL])
+			{
+				//boulder = new Boulder(g_sChar2.m_futureLocation); 
+				//boulder->destroyBoulder(&g_map);
+				//delete boulder;
+			}
 		}
 	}
+
+	
 }
 
 void renderSplashScreen()  // renders the splash screen

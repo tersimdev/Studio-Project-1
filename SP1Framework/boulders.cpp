@@ -2,17 +2,28 @@
 
 Boulders::Boulders(vector<COORD>* c)
 {
-	vector<Boulder> boulder;
 	for (int i = 0; i < c->size(); i++)
 	{
-		boulder.emplace_back(Boulder ((*c)[i]));
+		allBoulders.emplace_back(Boulder ((*c)[i]));
 	}
 }
+
+Boulder Boulders::findBoulder(COORD thisPos)
+{
+	for (int i = 0; i < this->allBoulders.size(); i++)
+	{
+		if (allBoulders[i].m_cLocation.X == thisPos.X && allBoulders[i].m_cLocation.Y == thisPos.Y)
+			return allBoulders[i];
+	}
+}
+
+Boulder::Boulder() {}
 
 Boulder::Boulder(COORD location)
 {
 	this->m_cLocation = location;
 }
+
 
 /*void Boulder::moveBoulder(Map* map, Console* console, SGameChar* player)
 {

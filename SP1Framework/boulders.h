@@ -5,16 +5,10 @@
 #include <vector>
 using std::vector;
 
-class Boulders 
-{
-public:
-	Boulders(vector<COORD>* c);
-};
-
-
 class Boulder : public Trigger
 {
 public:
+	Boulder();
 	Boulder(COORD location);
 
 	//void moveBoulder(Map* map, Console* console, SGameChar* player);
@@ -22,4 +16,13 @@ public:
 	//void destroyBoulder();
 };
 
+class Boulders 
+{
+public:
+	Boulders(vector<COORD>* c);
+
+	vector<Boulder> allBoulders;
+
+	Boulder findBoulder(COORD thisPos);
+};
 #endif
