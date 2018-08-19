@@ -1,32 +1,5 @@
 #include "boulders.h"
 
-Boulder* boulder = NULL;
-Boulders* boulders = NULL;
-
-void bouldersInit(Map* map)
-{
-	vector<COORD> c;
-	map->findChars('B', &c);
-	
-}
-
-Boulders::Boulders(vector<COORD>* c)
-{
-	for (int i = 0; i < c->size(); i++)
-	{
-		allBoulders.emplace_back(Boulder ((*c)[i]));
-	}
-}
-
-Boulder* Boulders::findBoulder(COORD thisPos)
-{
-	for (int i = 0; i < this->allBoulders.size(); i++)
-	{
-		if (allBoulders[i].m_cLocation.X == thisPos.X && allBoulders[i].m_cLocation.Y == thisPos.Y)
-			return &(allBoulders[i]);
-	}
-}
-
 Boulder::Boulder() {}
 
 Boulder::Boulder(COORD location)
@@ -35,7 +8,7 @@ Boulder::Boulder(COORD location)
 }
 
 
-/*void Boulder::moveBoulder(Map* map, Console* console, SGameChar* player)
+void Boulder::moveBoulder(Map* map, SGameChar* player, Console* console)
 {
 	if (m_cLocation.Y > 1 && m_cLocation.X > 0
 		&& m_cLocation.Y < console->getConsoleSize().Y - 1
@@ -44,15 +17,16 @@ Boulder::Boulder(COORD location)
 		if (!map->findCharExists(ADDCOORDS(this->m_cLocation, { player->direction.X << 1,  player->direction.Y << 1 }), 'Z')
 			&& !map->collideWithWall(ADDCOORDS(this->m_cLocation, { player->direction.X,  player->direction.Y }))) //if boulder not colliding with walls
 		{
-			map->removeChar(this->m_cLocation);
+			map->removeChar(this->m_cLocation, this->prevChar); //remove the B
 			this->m_cLocation = ADDCOORDS(this->m_cLocation, player->direction);
-			map->addChar(this->m_cLocation, 'B');
+			this->prevChar = map->addChar(this->m_cLocation, 'B'); //places the new B
 			player->m_cLocation = ADDCOORDS(player->m_cLocation, player->direction);
 		}
 	}
 }
 
-void Boulder::destroyBoulder()
+void Boulder::destroyBoulder(Map* map)
 {
-	removeChar(this->m_cLocation);
-}*/
+	map->removeChar(this->m_cLocation);
+	delete this;
+}

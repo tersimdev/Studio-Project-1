@@ -5,7 +5,6 @@ Map::Map(int index)
 {
 	mapNamesInit();
 	loadMap(mapNames[index]);
-	loadObjects();
 }
 
 /*FUNCTIONS*/
@@ -103,9 +102,9 @@ char Map::addChar(COORD c, char add)
 	return replacedChar;
 }
 
-void Map::removeChar(COORD c)
+void Map::removeChar(COORD c, char replace)
 {
-	this->mapArray[(c.Y - 1) * this->cols + c.X] = ' ';
+	this->mapArray[(c.Y - 1) * this->cols + c.X] = replace;
 }
 
 void Map::replaceAndRender(Console* console)

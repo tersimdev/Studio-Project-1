@@ -87,6 +87,7 @@
     <ClCompile Include="map.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="quiz.cpp" />
+    <ClCompile Include="trigger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boulders.h" />

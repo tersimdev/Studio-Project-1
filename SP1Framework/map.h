@@ -10,7 +10,6 @@ using std::string;
 class Map
 {
 public:
-
 	Map(int index);
 
 	const static int numOfLevels = 6;
@@ -38,7 +37,7 @@ public:
 
 	char addChar(COORD c, char add); //returns replaced char
 
-	void removeChar(COORD c); //removes char at c with ' '
+	void removeChar(COORD c, char replace = ' '); //removes char at c with ' '
 	
 	void replaceAndRender(Console* console); //render to console, replacing the chars
 

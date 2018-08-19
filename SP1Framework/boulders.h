@@ -1,31 +1,23 @@
 #ifndef _BOULDER_H
 #define _BOULDER_H
 #include "Framework\console.h"
-#include "trigger.h"
 #include "map.h"
+#include "player.h"
 #include <vector>
 using std::vector;
 
-void bouldersInit(Map* map);
-
-class Boulder : public Trigger
+class Boulder
 {
 public:
 	Boulder();
 	Boulder(COORD location);
 
-	//void moveBoulder(Map* map, Console* console, SGameChar* player);
+	COORD m_cLocation; //position
 
-	//void destroyBoulder();
-};
+	char prevChar = ' ';
 
-class Boulders 
-{
-public:
-	Boulders(vector<COORD>* c);
+	void moveBoulder(Map* map, SGameChar* player, Console* console);
 
-	vector<Boulder> allBoulders;
-
-	Boulder* findBoulder(COORD thisPos);
+	void destroyBoulder(Map* map);
 };
 #endif

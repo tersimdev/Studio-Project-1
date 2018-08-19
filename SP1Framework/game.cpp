@@ -15,6 +15,7 @@ int		g_menuSelection;
 Map			g_map(0); //map
 SGameChar	g_sChar1((char)3, 0x0C, &g_map, 1); //player1
 SGameChar	g_sChar2((char)3, 0x0A, &g_map, 2); //player2
+Trigger		g_trigger(&g_map);
 Quiz		g_quiz(0); //quiz
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 // these are to prevent key bouncing, so we won't trigger keypresses more than once
@@ -426,6 +427,7 @@ void checkForTiles()
 		if (g_map.findCharExists(player->m_futureLocation, 'D'))
 		{
 			g_map.updateMap(); //loads next map, wraping around
+			g_trigger.initTrigger(&g_map); //reinits all triggers for new map
 			if (player->m_cLocation.X > g_Console.getConsoleSize().X * 0.9)
 			{
 				player->m_cLocation.X = 2;
@@ -454,23 +456,15 @@ void checkForTiles()
 		}
 		if (g_map.findCharExists(g_sChar1.m_futureLocation, 'B'))
 		{
-			g_map.boulder = g_map.boulders->findBoulder(g_sChar1.m_futureLocation);
-			if (!g_map.findCharExists(ADDCOORDS(g_map.boulder->m_cLocation, { g_sChar1.direction.X << 1,  g_sChar1.direction.Y << 1 }), 'Z')
-				&& !g_map.collideWithWall(ADDCOORDS(g_map.boulder->m_cLocation, { g_sChar1.direction.X,  g_sChar1.direction.Y }))) //if boulder not colliding with walls
-			{
-				g_map.removeChar(g_map.boulder->m_cLocation);
-				g_map.boulder->m_cLocation = ADDCOORDS(g_map.boulder->m_cLocation, g_sChar1.direction);
-				g_map.addChar(g_map.boulder->m_cLocation, 'B');
-				g_sChar1.m_cLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
-			}
+			g_trigger.boulder = g_trigger.findBoulder(g_sChar1.m_futureLocation);
+			g_trigger.boulder->moveBoulder(&g_map, &g_sChar1, &g_Console);
 		}
 		else if (g_map.findCharExists(g_sChar2.m_futureLocation, 'B'))
 		{
 			if (g_abFlags[hasPickaxe] && g_abKeyPressed[K_RCTRL])
 			{
-				//boulder = new Boulder(g_sChar2.m_futureLocation); 
-				//boulder->destroyBoulder(&g_map);
-				//delete boulder;
+				g_trigger.boulder = g_trigger.findBoulder(g_sChar2.m_futureLocation);
+				g_trigger.boulder->destroyBoulder(&g_map);
 			}
 		}
 	}
