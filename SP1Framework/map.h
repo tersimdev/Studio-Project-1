@@ -25,7 +25,7 @@ public:
 
 	vector<char> mapArray;
 
-	vector<char> colllidables = { 'Z' , 'U' , 'B' }; //add to this when needed
+	vector<char> colllidables = { 'Z' , 'U' , 'B' , 'E' }; //add to this when needed
 
 	vector<string> mapNames;
 	

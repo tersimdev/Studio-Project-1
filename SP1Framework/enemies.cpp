@@ -23,7 +23,8 @@ void Enemy::locationGen(Map* map, Console* console)
 
 void Enemy::moveEnemy(Map* map, Console* console, COORD dir)
 {
-	map->removeChar(this->m_cLocation, this->prevChar); //remove the E and replace with prevchar
+	if (!EQUCOORDS(dir, {0,0}))
+		map->removeChar(this->m_cLocation, this->prevChar); //remove the E and replace with prevchar
 	this->m_cLocation = ADDCOORDS(this->m_cLocation, dir);
 	this->prevChar = map->addChar(this->m_cLocation, 'E'); //places the new E and store as prevchar
 }

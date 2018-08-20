@@ -520,16 +520,11 @@ void renderBullet()
 	//check if bullet exceeds console or hits wall or out of range
 	if (g_sChar1.gun->collision(&g_map, &g_Console))
 	{
+		if (g_trigger.enemy != NULL) //found enemy at bullet
+			g_trigger.enemy->destroyEnemy(&g_map);
 		delete g_sChar1.gun; //no more visual bullet
 		g_abFlags[shooting] = false; //stops rendering
-	}
-	if (g_trigger.enemy != NULL) //found enemy at bullet
-	{
-		g_trigger.enemy->destroyEnemy(&g_map);
-		delete g_sChar1.gun; //no more visual bullet
-		g_abFlags[shooting] = false; //stops rendering
-	}
-			
+	}		
 	else
 		g_Console.writeToBuffer(g_sChar1.gun->bulletPos, (char)254, 0x0E);
 }

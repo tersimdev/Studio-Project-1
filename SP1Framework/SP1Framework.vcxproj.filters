@@ -51,6 +51,9 @@
     <ClCompile Include="enemies.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="COORDS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\console.h">
@@ -83,6 +86,9 @@
     <ClInclude Include="enemies.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="COORDS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Quiz\Questions.txt">
@@ -95,15 +101,6 @@
       <Filter>Resource Files</Filter>
     </Text>
     <Text Include="Levels\2.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-    <Text Include="Levels\3.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-    <Text Include="Levels\4.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-    <Text Include="Levels\5.txt">
       <Filter>Resource Files</Filter>
     </Text>
     <Text Include="Quiz\Answers.txt">

@@ -1,4 +1,10 @@
-#include "COORDS.h"
+/*#include "COORDS.h"
+
+COORDS::COORDS() {}
+COORDS::COORDS(COORD c)
+{
+	
+}
 
 COORDS COORDS::operator+ (COORDS &obj)
 {
@@ -27,3 +33,6 @@ bool COORDS::operator!= (COORDS &obj)
 		return false;
 	else return true;
 }
+*/
+
+//doesn't work as intended...

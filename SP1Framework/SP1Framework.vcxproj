@@ -80,6 +80,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="boulders.cpp" />
+    <ClCompile Include="COORDS.cpp" />
     <ClCompile Include="enemies.cpp" />
     <ClCompile Include="Framework\console.cpp" />
     <ClCompile Include="Framework\timer.cpp" />
@@ -92,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boulders.h" />
+    <ClInclude Include="COORDS.h" />
     <ClInclude Include="enemies.h" />
     <ClInclude Include="Framework\console.h" />
     <ClInclude Include="Framework\timer.h" />
@@ -106,9 +108,6 @@
     <Text Include="Levels\0.txt" />
     <Text Include="Levels\1.txt" />
     <Text Include="Levels\2.txt" />
-    <Text Include="Levels\3.txt" />
-    <Text Include="Levels\4.txt" />
-    <Text Include="Levels\5.txt" />
     <Text Include="Levels\BOSS1.txt" />
     <Text Include="Quiz\Answers.txt" />
     <Text Include="Quiz\Questions.txt" />
