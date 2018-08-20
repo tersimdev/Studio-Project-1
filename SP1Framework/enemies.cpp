@@ -44,46 +44,43 @@ COORD Enemy::directionGen(float seed = 1)
 		break;
 	}
 }
-
-void Enemy::generalDir(COORD playerPos)
-{
-	if (playerPos.X - this->m_cLocation.X > 0)
-		this->dirToPLayer = { 1, 0 };
-	else if (playerPos.X - this->m_cLocation.X < 0)
-		this->dirToPLayer = { -1, 0 };
-	else if (playerPos.Y - this->m_cLocation.Y > 0)
-		this->dirToPLayer = { 0, 1 };
-	else if (playerPos.Y - this->m_cLocation.Y < 0)
-		this->dirToPLayer = { 0, -1 };
-	else
-		this->dirToPLayer = { 0, 0 };
-}
-
 bool Enemy::isAggro(COORD playerPos)
 {
 	if ((this->m_cLocation.X + this->aggroRange >= playerPos.X
 		&& this->m_cLocation.X - this->aggroRange <= playerPos.X)
 		&& (this->m_cLocation.Y + this->aggroRange >= playerPos.Y
-			&& this->m_cLocation.Y - this->aggroRange <= playerPos.Y))
-		return true;
+		&& this->m_cLocation.Y - this->aggroRange <= playerPos.Y))
+			return true;
 	else return false;
 }
 
-void Enemy::pathFind(COORD playerPos)
+void Enemy::setGeneralDir(COORD playerPos)
 {
-	if (EQUCOORDS(this->dirToPLayer, { -1, 0 }) || EQUCOORDS(this->dirToPLayer, { 1, 0 }))
+	if (playerPos.X - this->m_cLocation.X > 0)
+		this->dirToPlayerX = { 1, 0 };
+	else if (playerPos.X - this->m_cLocation.X < 0)
+		this->dirToPlayerX = { -1, 0 };
+
+	if (playerPos.Y - this->m_cLocation.Y > 0)
+		this->dirToPlayerY = { 0, 1 };
+	else if (playerPos.Y - this->m_cLocation.Y < 0)
+		this->dirToPlayerY = { 0, -1 };
+
+	dirToPlayerInvX.X = dirToPlayerX.X * -1;
+	dirToPlayerInvY.Y = dirToPlayerY.Y * -1;
+	this->direction = { dirToPlayerX.X, dirToPlayerY.Y };
+}
+
+void Enemy::setAltDir(Map* map)
+{
+
+	if (map->collideWithWall(ADDCOORDS(this->m_cLocation, this->dirToPlayerY)))
 	{
-		if (playerPos.Y - this->m_cLocation.Y > 0)
-			this->direction = { 0 , 1 };
-		else
-			this->direction = { 0, -1 };
+		this->direction = dirToPlayerX;
 	}
-	else if (EQUCOORDS(this->dirToPLayer, { 0, 1 }) || EQUCOORDS(this->dirToPLayer, { 0, -1 }))
+	else if (map->collideWithWall(ADDCOORDS(this->m_cLocation, this->dirToPlayerX)))
 	{
-		if (playerPos.X - this->m_cLocation.X > 0)
-			this->direction = { 1 , 0 };
-		else
-			this->direction = { -1, 0 };
+			this->direction = dirToPlayerY;
 	}
 }
 

@@ -13,7 +13,10 @@ public:
 
 	char prevChar = ' ';
 
-	COORD dirToPLayer = { 0 , 0 };
+	COORD dirToPlayerX = { 0 , 0 };
+	COORD dirToPlayerY = { 0 , 0 };
+	COORD dirToPlayerInvX = { 0 , 0 }; 
+	COORD dirToPlayerInvY = { 0 , 0 };;
 	
 	void locationGen(Map* map, Console* console);
 	
@@ -21,9 +24,9 @@ public:
 
 	bool isAggro(COORD playerPos);
 
-	void generalDir(COORD playerPos);
+	void setGeneralDir(COORD playerPos);
 
-	void pathFind(COORD playerPos);
+	void setAltDir(Map* map);
 
 	void moveEnemy(Map* map, Console* console);
 
