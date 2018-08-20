@@ -79,6 +79,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="aStar.cpp" />
     <ClCompile Include="boulders.cpp" />
     <ClCompile Include="COORDS.cpp" />
     <ClCompile Include="enemies.cpp" />
@@ -92,6 +93,7 @@
     <ClCompile Include="trigger.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="aStar.h" />
     <ClInclude Include="boulders.h" />
     <ClInclude Include="COORDS.h" />
     <ClInclude Include="enemies.h" />

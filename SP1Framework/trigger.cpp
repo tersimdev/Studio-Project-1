@@ -23,7 +23,7 @@ void Trigger::boulderInit(Map* map)
 	//finds all boulder sand places into vector
 	vector<COORD> c;
 	map->findChars('B', &c);
-	for (int i = 0; i < c.size(); i++)
+	for (unsigned int i = 0; i < c.size(); i++)
 	{
 		allBoulders.emplace_back(new Boulder(c[i]));
 	}
@@ -31,7 +31,7 @@ void Trigger::boulderInit(Map* map)
 
 Boulder* Trigger::findBoulder(COORD c)
 {
-	for (int i = 0; i < allBoulders.size(); i++)
+	for (unsigned int i = 0; i < allBoulders.size(); i++)
 	{
 		if (EQUCOORDS(allBoulders[i]->m_cLocation, c))
 		{
@@ -54,7 +54,7 @@ void Trigger::enemyInit(Map* map, Console* console)
 	//finds all boulder sand places into vector
 	vector<COORD> c;
 	map->findChars('e', &c);
-	for (int i = 0; i < c.size(); i++)
+	for (unsigned int i = 0; i < c.size(); i++)
 	{
 		allEnemies.emplace_back(new Enemy(c[i], map, console));
 	}
@@ -62,7 +62,7 @@ void Trigger::enemyInit(Map* map, Console* console)
 
 Enemy* Trigger::findEnemy(COORD c)
 {
-	for (int i = 0; i < allEnemies.size(); i++)
+	for (unsigned int i = 0; i < allEnemies.size(); i++)
 	{
 		if (EQUCOORDS(allEnemies[i]->m_cLocation, c))
 		{

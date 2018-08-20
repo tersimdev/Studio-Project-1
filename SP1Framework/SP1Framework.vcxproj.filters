@@ -54,6 +54,9 @@
     <ClCompile Include="COORDS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="aStar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\console.h">
@@ -87,6 +90,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="COORDS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="aStar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

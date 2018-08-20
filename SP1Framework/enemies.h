@@ -20,13 +20,13 @@ public:
 	
 	void locationGen(Map* map, Console* console);
 	
-	COORD directionGen(float seed);
+	COORD directionGen(double seed);
 
 	bool isAggro(COORD playerPos);
 
 	void setGeneralDir(COORD playerPos);
 
-	void setAltDir(Map* map);
+	void setAltDir(Map* map, COORD playerPos);
 
 	void moveEnemy(Map* map, Console* console);
 
@@ -37,7 +37,7 @@ public:
 private:
 	COORD spawnNonce = { 20, 10 };
 
-	int aggroRange = 50;
+	int aggroRange = 20;
 };
 
 #endif

@@ -444,10 +444,10 @@ void checkForTiles()
 		if (g_map.findCharExists(player->m_futureLocation, 'U'))
 		{
 			//intialising position of player
-			g_sChar1.m_cLocation.X = g_Console.getConsoleSize().X * 0.5 - 1;
-			g_sChar1.m_cLocation.Y = g_Console.getConsoleSize().Y * 0.75 - 1;
-			g_sChar2.m_cLocation.X = g_Console.getConsoleSize().X * 0.5 - 1;
-			g_sChar2.m_cLocation.Y = g_Console.getConsoleSize().Y * 0.75 + 1;
+			g_sChar1.m_cLocation.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 1);
+			g_sChar1.m_cLocation.Y = (SHORT)(g_Console.getConsoleSize().Y * 0.75 - 1);
+			g_sChar2.m_cLocation.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 1);
+			g_sChar2.m_cLocation.Y = (SHORT)(g_Console.getConsoleSize().Y * 0.75 + 1);
 			g_map.loadMap("Levels/BOSS1.txt");
 			g_eGameState = S_BOSS;
 		}
@@ -471,38 +471,60 @@ void checkForTiles()
 
 void enemyMovement()
 {	
-
 	bool bChangeDir = false;
 	bool bMoving = false;
-	
 	if (g_dBounceTimeEnemy[0] > g_dElapsedTime)
 		return;
-
-	for (int i = 0; i < g_trigger.allEnemies.size(); i++)
+	for (unsigned int i = 0; i < g_trigger.allEnemies.size(); i++)
 	{
-		/*if (g_dBounceTimeEnemy[1] < g_dElapsedTime)
+		if (g_dBounceTimeEnemy[1] < g_dElapsedTime)
 		{
-			//calculate general direction to player
-			g_trigger.allEnemies[i]->setGeneralDir(g_sChar1.m_cLocation);
-			//sets the direction to move
-			g_trigger.allEnemies[i]->setAltDir(&g_map);
+			if (g_trigger.allEnemies[i]->isAggro(g_sChar2.m_cLocation))
+			{
+				//calculate general direction to player
+				g_trigger.allEnemies[i]->setGeneralDir(g_sChar2.m_cLocation);
+				//sets the direction to move
+				g_trigger.allEnemies[i]->setAltDir(&g_map, g_sChar2.m_cLocation);
+			}
+			else if (g_trigger.allEnemies[i]->isAggro(g_sChar1.m_cLocation))
+			{
+				//calculate general direction to player
+				g_trigger.allEnemies[i]->setGeneralDir(g_sChar1.m_cLocation);
+				//sets the direction to move
+				g_trigger.allEnemies[i]->setAltDir(&g_map, g_sChar1.m_cLocation);
+			}
+			else
+			{
+				g_trigger.allEnemies[i]->direction = g_trigger.allEnemies[i]->directionGen(g_dBounceTimeEnemy[0]);
+			}
 			//calculating future location
 			g_trigger.allEnemies[i]->m_futureLocation
 				= ADDCOORDS(g_trigger.allEnemies[i]->m_cLocation, g_trigger.allEnemies[i]->direction);
-			
-			g_trigger.allEnemies[i]->moveEnemy(&g_map, &g_Console);
-			bMoving = true;
-		//if quiz triggered
-		if (g_trigger.allEnemies[i]->enemyAttack(g_sChar1.m_cLocation))
-		{
-			g_quiz.query();
-			g_eGameState = S_QUIZ;
-		}*/
+			if (!g_map.collideWithWall(g_trigger.allEnemies[i]->m_futureLocation))
+			{
+				g_trigger.allEnemies[i]->moveEnemy(&g_map, &g_Console);
+				bMoving = true;
+			}
+
+			//if quiz triggered
+			if (g_trigger.allEnemies[i]->enemyAttack(g_sChar1.m_cLocation))
+			{
+				g_trigger.allEnemies[i]->destroyEnemy(&g_map);
+				g_quiz.query();
+				g_eGameState = S_QUIZ;
+				if (!g_quiz.checkAns())
+				{
+					int random = rand() % 5 + 1;
+					g_sChar1.updateHealth(1, random);
+					g_sChar2.updateHealth(2, random);
+				}
+			}
+		}
 	}
 
 	if (bMoving)
 	{
-		g_dBounceTimeEnemy[0] = g_dElapsedTime + 0.125;
+		g_dBounceTimeEnemy[0] = g_dElapsedTime + 0.055;
 	}
 	if (bChangeDir)
 	{
@@ -516,13 +538,13 @@ void renderSplashScreen()  // renders the splash screen
 {
 	COORD c = g_Console.getConsoleSize();
 	c.Y /= 3;
-	c.X = c.X * 0.5 - 7;
+	c.X = (SHORT)(c.X * 0.5 - 7);
 	g_Console.writeToBuffer(c, "Starting in 3s", 0x03);
 	c.Y += 1;
-	c.X = g_Console.getConsoleSize().X * 0.5 - 21;
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 21);
 	g_Console.writeToBuffer(c, "Change console font-size to suit your needs", 0x09);
 	c.Y += 1;
-	c.X = g_Console.getConsoleSize().X * 0.5 - 9;
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 9);
 	g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x09);
 }
 
@@ -687,14 +709,13 @@ void renderMainMenu()
 
 	COORD c = g_Console.getConsoleSize();
 	c.Y /= 3;
-	c.X = c.X * 0.5 - 3;
-
+	c.X = (SHORT)(c.X * 0.5 - 3);
 	g_Console.writeToBuffer(c, "1. PLAY", attri1);
 	c.Y += 1;
-	c.X = g_Console.getConsoleSize().X * 0.5 - 3;
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 3);
 	g_Console.writeToBuffer(c, "2. LOAD", attri2);
 	c.Y += 1;
-	c.X = g_Console.getConsoleSize().X * 0.5 - 3;
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 3);
 	g_Console.writeToBuffer(c, "3. EXIT", attri3);
 }
 
@@ -793,17 +814,16 @@ void renderLoadSave()
 
 	COORD c = g_Console.getConsoleSize();
 	c.Y /= 3;
-	c.X = c.X * 0.5 - 4;
-
+	c.X = (SHORT)(c.X * 0.5 - 4);
 	g_Console.writeToBuffer(c, "1. EMPTY", attri1);
 	c.Y += 1;
-	c.X = g_Console.getConsoleSize().X * 0.5 - 4;
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 4);
 	g_Console.writeToBuffer(c, "2. EMPTY", attri2);
 	c.Y += 1;
-	c.X = g_Console.getConsoleSize().X * 0.5 - 4;
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 4);
 	g_Console.writeToBuffer(c, "3. EMPTY", attri3);
 	c.Y += 1;
-	c.X = g_Console.getConsoleSize().X * 0.5 - 4;
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 4);
 	g_Console.writeToBuffer(c, "4. BACK", attri4);
 }
 

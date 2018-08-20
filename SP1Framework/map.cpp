@@ -47,7 +47,7 @@ void Map::updateMap()
 
 bool Map::collideWithWall(COORD c)
 {
-	for (int i = 0; i < colllidables.size(); i++)
+	for (unsigned int i = 0; i < colllidables.size(); i++)
 	{ 
 		if (this->findCharExists(c, this->colllidables[i]))
 			return true;
@@ -79,6 +79,7 @@ COORD Map::findChar(char target)
 			}
 		}
 	}
+	return { NULL, NULL };
 }
 
 void Map::findChars(char target, vector<COORD>* c)

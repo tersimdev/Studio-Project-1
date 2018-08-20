@@ -29,7 +29,7 @@ void Quiz::query(int index)
 	this->reset();
 	this->currQn = this->questions[index];
 	string answer = "";
-	for (int i = 0; i < this->answers[index].length() + 1; i++)
+	for (unsigned int i = 0; i < this->answers[index].length() + 1; i++)
 	{
 		if (i == this->answers[index].length() || this->answers[index][i] == '|')
 		{
@@ -67,10 +67,10 @@ void Quiz::quizResult(int choice, string* output, string* answers)
 	switch (choice)
 	{
 	case WIN_ENEMY:
-		*output = "CORRECT! enemy.die()";
+		*output = "CORRECT!";
 		break;
 	case LOSE_ENEMY:
-		*output = "WRONG! player.health--";
+		*output = "WRONG! YOU LOSE SOME HEALTH";
 		break;
 	case WIN_BOSS:
 		*output = "CORRECT! enemy.health--";
@@ -80,7 +80,7 @@ void Quiz::quizResult(int choice, string* output, string* answers)
 		break;
 	}
 
-	for (int i = 0; i < this->currAns.size(); i++)
+	for (unsigned int i = 0; i < this->currAns.size(); i++)
 	{
 		*answers += this->currAns[i];
 		if (i != this->currAns.size() - 1) 

@@ -4,7 +4,7 @@ Enemy::Enemy(COORD loc, Map* map, Console* console)
 {
 	this->m_cLocation = loc;
 	this->direction = { 0, 0 }; //default val
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 	locationGen(map, console);
 }
 
@@ -22,7 +22,7 @@ void Enemy::locationGen(Map* map, Console* console)
 	moveEnemy(map, console); // move to new location
 }
 
-COORD Enemy::directionGen(float seed = 1)
+COORD Enemy::directionGen(double seed = 1)
 {
 	int random = (int)(rand() * seed) % 5;
 	switch (random)
@@ -39,19 +39,17 @@ COORD Enemy::directionGen(float seed = 1)
 	case 3:
 		return { 0, -1 };
 		break;
-	case 4:
+	default:
 		return { 0, 0 };
 		break;
 	}
 }
 bool Enemy::isAggro(COORD playerPos)
 {
-	if ((this->m_cLocation.X + this->aggroRange >= playerPos.X
+	return ((this->m_cLocation.X + this->aggroRange >= playerPos.X
 		&& this->m_cLocation.X - this->aggroRange <= playerPos.X)
 		&& (this->m_cLocation.Y + this->aggroRange >= playerPos.Y
-		&& this->m_cLocation.Y - this->aggroRange <= playerPos.Y))
-			return true;
-	else return false;
+			&& this->m_cLocation.Y - this->aggroRange <= playerPos.Y));
 }
 
 void Enemy::setGeneralDir(COORD playerPos)
@@ -60,28 +58,41 @@ void Enemy::setGeneralDir(COORD playerPos)
 		this->dirToPlayerX = { 1, 0 };
 	else if (playerPos.X - this->m_cLocation.X < 0)
 		this->dirToPlayerX = { -1, 0 };
+	else
+		this->dirToPlayerY = { 0, 0 };
 
 	if (playerPos.Y - this->m_cLocation.Y > 0)
 		this->dirToPlayerY = { 0, 1 };
 	else if (playerPos.Y - this->m_cLocation.Y < 0)
 		this->dirToPlayerY = { 0, -1 };
+	else
+		this->dirToPlayerY = { 0, 0 };
 
 	dirToPlayerInvX.X = dirToPlayerX.X * -1;
 	dirToPlayerInvY.Y = dirToPlayerY.Y * -1;
-	this->direction = { dirToPlayerX.X, dirToPlayerY.Y };
+	this->direction = dirToPlayerX;
 }
 
-void Enemy::setAltDir(Map* map)
+//imperfect pathfinding
+void Enemy::setAltDir(Map* map, COORD playerPos)
 {
-
-	if (map->collideWithWall(ADDCOORDS(this->m_cLocation, this->dirToPlayerY)))
+	//track to x, then to y pos
+	if (map->collideWithWall(ADDCOORDS(this->m_cLocation, this->dirToPlayerX)) 
+		|| this->m_cLocation.X == playerPos.X)
 	{
-		this->direction = dirToPlayerX;
-	}
-	else if (map->collideWithWall(ADDCOORDS(this->m_cLocation, this->dirToPlayerX)))
-	{
+		
+		if (map->collideWithWall(ADDCOORDS(this->m_cLocation, this->dirToPlayerY)))
+		{
+			if (map->collideWithWall(ADDCOORDS(this->m_cLocation, this->dirToPlayerInvX)))
+			{
+				this->direction = dirToPlayerInvY;
+			}
+			else
+				this->direction = dirToPlayerInvX;
+		}
+		else 
 			this->direction = dirToPlayerY;
-	}
+	}	
 }
 
 void Enemy::moveEnemy(Map* map, Console* console)
@@ -104,7 +115,5 @@ void Enemy::destroyEnemy(Map* map)
 
 bool Enemy::enemyAttack(COORD playerPos)
 {
-	if (EQUCOORDS(this->m_futureLocation, playerPos))
-		return true;
-	else return false;
+	return (this->m_bActive && EQUCOORDS(this->m_futureLocation, playerPos));
 }

@@ -80,8 +80,8 @@ class Console
 		{
 			RECT desktop;
 			GetWindowRect(GetDesktopWindow(), &desktop);
-			short width = desktop.right / 10;
-			short height = desktop.bottom / 25;
+			SHORT width = (SHORT)(desktop.right / 10);
+			SHORT height = (SHORT)(desktop.bottom / 25);
 			return { width, height };
 		}
 
