@@ -46,7 +46,6 @@ void init(void)
 		g_dBounceTimeAction[i] = 0.0;
 	}
 	
-
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
 
