@@ -3,7 +3,7 @@
 Enemy::Enemy(COORD loc, Map* map, Console* console)
 {
 	this->m_cLocation = loc;
-	this->direction = { 0,0 }; //default val
+	this->direction = { 0, 0 }; //default val
 	srand(time(NULL));
 	locationGen(map, console);
 }
@@ -45,32 +45,46 @@ COORD Enemy::directionGen(float seed = 1)
 	}
 }
 
-COORD Enemy::playerHoming(COORD playerPos1, COORD playerPos2)
+void Enemy::generalDir(COORD playerPos)
 {
-	COORD res;
-	if (EQUCOORDS(playerPos1, this->m_cLocation) || EQUCOORDS(playerPos2, this->m_cLocation))
-		return res = { 0, 0 };
-	if (playerPos1.X - this->m_cLocation.X > 0)
-		res.X = 1;
-	else if (playerPos1.X == this->m_cLocation.X)
-		res.X = 0;
+	if (playerPos.X - this->m_cLocation.X > 0)
+		this->dirToPLayer = { 1, 0 };
+	else if (playerPos.X - this->m_cLocation.X < 0)
+		this->dirToPLayer = { -1, 0 };
+	else if (playerPos.Y - this->m_cLocation.Y > 0)
+		this->dirToPLayer = { 0, 1 };
+	else if (playerPos.Y - this->m_cLocation.Y < 0)
+		this->dirToPLayer = { 0, -1 };
 	else
-		res.X = -1;
-	if (playerPos1.Y - this->m_cLocation.Y > 0)
-		res.Y = 1;
-	else if (playerPos1.Y == this->m_cLocation.Y)
-		res.Y = 0;
-	else
-		res.Y = -1;
-	return res;
+		this->dirToPLayer = { 0, 0 };
 }
 
-void Enemy::pathFind(COORD &currDir)
+bool Enemy::isAggro(COORD playerPos)
 {
-	if (!currDir.X)
-		currDir = { currDir.Y, 0 };
-	else if (!currDir.Y)
-		currDir = { 0, currDir.X };
+	if ((this->m_cLocation.X + this->aggroRange >= playerPos.X
+		&& this->m_cLocation.X - this->aggroRange <= playerPos.X)
+		&& (this->m_cLocation.Y + this->aggroRange >= playerPos.Y
+			&& this->m_cLocation.Y - this->aggroRange <= playerPos.Y))
+		return true;
+	else return false;
+}
+
+void Enemy::pathFind(COORD playerPos)
+{
+	if (EQUCOORDS(this->dirToPLayer, { -1, 0 }) || EQUCOORDS(this->dirToPLayer, { 1, 0 }))
+	{
+		if (playerPos.Y - this->m_cLocation.Y > 0)
+			this->direction = { 0 , 1 };
+		else
+			this->direction = { 0, -1 };
+	}
+	else if (EQUCOORDS(this->dirToPLayer, { 0, 1 }) || EQUCOORDS(this->dirToPLayer, { 0, -1 }))
+	{
+		if (playerPos.X - this->m_cLocation.X > 0)
+			this->direction = { 1 , 0 };
+		else
+			this->direction = { -1, 0 };
+	}
 }
 
 void Enemy::moveEnemy(Map* map, Console* console)
@@ -89,4 +103,11 @@ void Enemy::destroyEnemy(Map* map)
 	map->removeChar(this->m_cLocation, this->prevChar);
 	this->m_bActive = false;
 	//deletion handled when re-initializing
+}
+
+bool Enemy::enemyAttack(COORD playerPos)
+{
+	if (EQUCOORDS(this->m_futureLocation, playerPos))
+		return true;
+	else return false;
 }

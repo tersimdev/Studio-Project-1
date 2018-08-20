@@ -471,43 +471,73 @@ void checkForTiles()
 
 void enemyMovement()
 {	
-	bool bSomeBool[2]= { false, false };
+/*
+	bool bChangeDir = false;
+	bool bMoving = false;
 	
 	if (g_dBounceTimeEnemy[0] > g_dElapsedTime)
 		return;
 
 	for (int i = 0; i < g_trigger.allEnemies.size(); i++)
 	{
-
 		if (g_dBounceTimeEnemy[1] < g_dElapsedTime)
 		{
-			g_trigger.allEnemies[i]->direction = g_trigger.allEnemies[i]->directionGen(g_dBounceTimeEnemy[0]);
-			bSomeBool[1] = true;
-		}
-		//calculating future location
-		g_trigger.allEnemies[i]->m_futureLocation = ADDCOORDS(g_trigger.allEnemies[i]->m_cLocation, g_trigger.allEnemies[i]->direction);
-		if (!g_map.collideWithWall(g_trigger.allEnemies[i]->m_futureLocation))
-		{
-			g_trigger.allEnemies[i]->moveEnemy(&g_map, &g_Console);
-			bSomeBool[0] = true;
+			if (g_trigger.allEnemies[i]->isAggro(g_sChar1.m_cLocation))
+			{
+				//calculate general direction
+				g_trigger.allEnemies[i]->generalDir(g_sChar1.m_cLocation);
+				//checking if there is wall in general direction
+				if (g_map.collideWithWall(ADDCOORDS(g_trigger.allEnemies[i]->m_cLocation, g_trigger.allEnemies[i]->dirToPLayer)))
+				{
+					//find direction to go in
+					g_trigger.allEnemies[i]->pathFind(g_sChar1.m_cLocation);
+					//calculating future location
+					g_trigger.allEnemies[i]->m_futureLocation = ADDCOORDS(g_trigger.allEnemies[i]->m_cLocation, g_trigger.allEnemies[i]->direction);
+				}
+				else
+				{
+					g_trigger.allEnemies[i]->direction = g_trigger.allEnemies[i]->dirToPLayer;
+					//calculating future location
+					g_trigger.allEnemies[i]->m_futureLocation = ADDCOORDS(g_trigger.allEnemies[i]->m_cLocation, g_trigger.allEnemies[i]->direction);
+				}
+
+				//movement based on calculated direction
+				if (!EQUCOORDS({0,0}, g_trigger.allEnemies[i]->direction) && !g_map.collideWithWall(g_trigger.allEnemies[i]->m_futureLocation))
+				{
+					g_trigger.allEnemies[i]->moveEnemy(&g_map, &g_Console);
+					bMoving = true;
+				}
+				
+			}
+			else
+			{
+				g_trigger.allEnemies[i]->direction = g_trigger.allEnemies[i]->directionGen(g_dBounceTimeEnemy[0]);
+				g_trigger.allEnemies[i]->m_futureLocation = ADDCOORDS(g_trigger.allEnemies[i]->m_cLocation, g_trigger.allEnemies[i]->direction);
+				if (!EQUCOORDS({ 0,0 }, g_trigger.allEnemies[i]->direction) && !g_map.collideWithWall(g_trigger.allEnemies[i]->m_futureLocation))
+				{
+					g_trigger.allEnemies[i]->moveEnemy(&g_map, &g_Console);
+					bMoving = true;
+				}
+			}
+			bChangeDir = true;
 		}
 		//if quiz triggered
-		if (g_trigger.allEnemies[i]->enemyAttack)
+		if (g_trigger.allEnemies[i]->enemyAttack(g_sChar1.m_cLocation))
 		{
 			g_quiz.query();
 			g_eGameState = S_QUIZ;
 		}
 	}
 
-	if (bSomeBool[0])
+	if (bMoving)
 	{
 		g_dBounceTimeEnemy[0] = g_dElapsedTime + 0.125;
 	}
-	if (bSomeBool[1])
+	if (bChangeDir)
 	{
 		g_dBounceTimeEnemy[1] = g_dElapsedTime + 0.35;
 	}
-	
+	*/
 }
 
 

@@ -11,28 +11,30 @@ class Enemy : public Organism
 public:
 	Enemy(COORD loc, Map* map, Console* console);
 
-	bool enemyAttack = false;
-
-	COORD m_cLocation;
-
 	char prevChar = ' ';
+
+	COORD dirToPLayer = { 0 , 0 };
 	
 	void locationGen(Map* map, Console* console);
 	
 	COORD directionGen(float seed);
 
-	COORD playerHoming(COORD playerPos1, COORD playerPos2);
+	bool isAggro(COORD playerPos);
 
-	void pathFind(COORD &currDir);
+	void generalDir(COORD playerPos);
+
+	void pathFind(COORD playerPos);
 
 	void moveEnemy(Map* map, Console* console);
 
 	void destroyEnemy(Map* map);
+	
+	bool enemyAttack(COORD playerPos);
 
 private:
 	COORD spawnNonce = { 20, 10 };
 
-	int aggroRange = 15;
+	int aggroRange = 50;
 };
 
 #endif
