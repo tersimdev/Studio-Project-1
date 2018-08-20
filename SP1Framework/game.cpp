@@ -382,12 +382,8 @@ void actionsListener()
 	if (g_dBounceTimeAction[1] < g_dElapsedTime)
 	{
 		if (g_abKeyPressed[K_SPACE])
-		{
-			g_abFlags[hasPickaxe] = !g_abFlags[hasPickaxe];
-			g_sChar1.updateHealth(1, 10);
-			g_sChar2.updateHealth(1, -1);
-			//g_quiz.query();
-			//g_eGameState = S_QUIZ;
+		{	
+			//temp key to test stuff
 			eventHappened[1] = true;
 		}
 	}
@@ -428,18 +424,18 @@ void checkForTiles()
 			//moving the player that triggered it
 			if (player->m_cLocation.X > g_Console.getConsoleSize().X * 0.9)
 			{
-				player->m_cLocation.X = 2;
+				player->m_cLocation.X = 3;
 			}
 			else if (player->m_cLocation.X < g_Console.getConsoleSize().X * 0.1)
 			{
-				player->m_cLocation.X = g_Console.getConsoleSize().X - 3;
+				player->m_cLocation.X = g_Console.getConsoleSize().X - 4;
 			}
 			else if (player->m_cLocation.Y > g_Console.getConsoleSize().Y * 0.9)
 			{
-				player->m_cLocation.Y = 2;
+				player->m_cLocation.Y = 3;
 			}
 			else if (player->m_cLocation.Y < g_Console.getConsoleSize().Y * 0.1)
-				player->m_cLocation.Y = g_Console.getConsoleSize().Y - 3;
+				player->m_cLocation.Y = g_Console.getConsoleSize().Y - 4;
 			//moving the otehr player
 			if (g_abFlags[moving2])
 			{
@@ -463,6 +459,7 @@ void checkForTiles()
 			g_map.loadMap("Levels/BOSS1.txt");
 			g_eGameState = S_BOSS;
 		}
+
 		if (g_map.findCharExists(g_sChar1.m_futureLocation, 'B'))
 		{
 			g_trigger.boulder = g_trigger.findBoulder(g_sChar1.m_futureLocation);
@@ -475,6 +472,12 @@ void checkForTiles()
 				g_trigger.boulder = g_trigger.findBoulder(g_sChar2.m_futureLocation);
 				g_trigger.boulder->destroyBoulder(&g_map);
 			}
+		}
+
+		if (g_map.findCharExists(g_sChar2.m_futureLocation, 'I'))
+		{
+			g_abFlags[hasPickaxe] = true;
+			g_map.removeChar(g_sChar2.m_futureLocation);
 		}
 	}
 }
