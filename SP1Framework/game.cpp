@@ -11,11 +11,13 @@ double  g_dDeltaTime;
 bool    g_abKeyPressed[K_COUNT];
 bool    g_abFlags[flagCount] = { 0 };
 int		g_menuSelection;
+// Console object
+Console g_Console(199, 51, "RISE OF THE TOMB EXPLORING N00BS");
 // Game specific variables here
 Map			g_map(0); //map
 SGameChar	g_sChar1((char)3, 0x0C, &g_map, 1); //player1
 SGameChar	g_sChar2((char)3, 0x0A, &g_map, 2); //player2
-Trigger		g_trigger(&g_map);
+Trigger		g_trigger(&g_map, &g_Console);
 Quiz		g_quiz(0); //quiz
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 // these are to prevent key bouncing, so we won't trigger keypresses more than once
@@ -23,8 +25,6 @@ double	g_dBounceTimeNorm;
 double  g_dBounceTimeUI; 
 double  g_dBounceTimeMove[NumOfPlayers];
 double  g_dBounceTimeAction[NumOfPlayers];
-// Console object
-Console g_Console(199, 51, "RISE OF THE TOMB EXPLORING N00BS");
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -51,9 +51,6 @@ void init(void)
 
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
-
-	// setting seed for srand
-	srand(time(NULL));
 
 	//prevent selection of text- disable quick edit mode
 	g_Console.setConsoleMode(ENABLE_EXTENDED_FLAGS | ENABLE_MOUSE_INPUT);
@@ -351,8 +348,8 @@ void moveCharacter()
 		//calculating future location
 		g_sChar1.m_futureLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
 		//check if colliding with collidables in map, or if moving towards player 2
-		if (!g_map.collideWithWall(g_sChar1.m_futureLocation) && (
-			g_sChar1.m_futureLocation.X != g_sChar2.m_cLocation.X || g_sChar1.m_futureLocation.Y != g_sChar2.m_cLocation.Y))
+		if (!g_map.collideWithWall(g_sChar1.m_futureLocation) 
+			&& !EQUCOORDS(g_sChar1.m_futureLocation, g_sChar2.m_cLocation))
 				g_sChar1.m_cLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
 		//check bounce time
 		g_dBounceTimeMove[0] = g_dElapsedTime + 0.05; // fazt
@@ -362,8 +359,8 @@ void moveCharacter()
 		//calculating future location
 		g_sChar2.m_futureLocation = ADDCOORDS(g_sChar2.m_cLocation, g_sChar2.direction);
 		//check if colliding with collidables in map, or if moving towards player 2
-		if (!g_map.collideWithWall(g_sChar2.m_futureLocation) && (
-			g_sChar2.m_futureLocation.X != g_sChar1.m_cLocation.X || g_sChar2.m_futureLocation.Y != g_sChar1.m_cLocation.Y))
+		if (!g_map.collideWithWall(g_sChar2.m_futureLocation) 
+			&& !EQUCOORDS(g_sChar2.m_futureLocation, g_sChar1.m_cLocation))
 				g_sChar2.m_cLocation = ADDCOORDS(g_sChar2.m_cLocation, g_sChar2.direction);
 		//check bounce time
 		g_dBounceTimeMove[1] = g_dElapsedTime + 0.05; // fazt
@@ -427,7 +424,7 @@ void checkForTiles()
 		if (g_map.findCharExists(player->m_futureLocation, 'N'))
 		{
 			g_map.updateMap(); //loads next map, wraping around
-			g_trigger.initTrigger(&g_map); //reinits all triggers for new map
+			g_trigger.initTrigger(&g_map, &g_Console); //reinits all triggers for new map
 			if (player->m_cLocation.X > g_Console.getConsoleSize().X * 0.9)
 			{
 				player->m_cLocation.X = 2;
@@ -519,14 +516,20 @@ void renderHealth()
 void renderBullet()
 {	
 	g_sChar1.gun->shoot(&g_sChar1);
+	g_trigger.enemy = g_trigger.findEnemy(g_sChar1.gun->bulletPos);
 	//check if bullet exceeds console or hits wall or out of range
-	if (g_sChar1.gun->outOfRange || g_sChar1.gun->bulletPos.X < 0 || g_sChar1.gun->bulletPos.Y < 1 ||
-		g_sChar1.gun->bulletPos.X > g_Console.getConsoleSize().X - 1 || g_sChar1.gun->bulletPos.Y > g_Console.getConsoleSize().Y - 1 || 
-		g_map.collideWithWall(g_sChar1.gun->bulletPos))
+	if (g_sChar1.gun->collision(&g_map, &g_Console))
 	{
 		delete g_sChar1.gun; //no more visual bullet
 		g_abFlags[shooting] = false; //stops rendering
 	}
+	if (g_trigger.enemy != NULL) //found enemy at bullet
+	{
+		g_trigger.enemy->destroyEnemy(&g_map);
+		delete g_sChar1.gun; //no more visual bullet
+		g_abFlags[shooting] = false; //stops rendering
+	}
+			
 	else
 		g_Console.writeToBuffer(g_sChar1.gun->bulletPos, (char)254, 0x0E);
 }

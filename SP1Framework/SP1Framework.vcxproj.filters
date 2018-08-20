@@ -48,6 +48,9 @@
     <ClCompile Include="trigger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="enemies.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\console.h">
@@ -75,6 +78,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="boulders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="enemies.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

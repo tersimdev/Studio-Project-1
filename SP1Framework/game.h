@@ -8,7 +8,6 @@
 #include "map.h"
 #include "quiz.h"
 #include "trigger.h"
-#include "boulders.h"
 #include <string>
 using std::string;
 

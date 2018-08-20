@@ -276,10 +276,27 @@ void Console::setConsoleMode(DWORD mode)
 	SetConsoleMode(consoleInputBufferHandle, mode);
 }
 
+bool Console::isInsideConsole(COORD c)
+{
+	if (c.Y > 1 && c.X > 0
+		&& c.Y < this->getConsoleSize().Y - 1
+		&& c.X < this->getConsoleSize().X - 1)
+		return true;
+	else return false;
+}
+
 //add coords together
 COORD ADDCOORDS(COORD c1, COORD c2)
 {
 	c1.X += c2.X;
 	c1.Y += c2.Y;
 	return c1;
+}
+
+//equate two coords
+bool EQUCOORDS(COORD c1, COORD c2)
+{
+	if (c1.X == c2.X && c1.Y == c2.Y)
+		return true;
+	else return false;
 }

@@ -42,6 +42,8 @@ public:
 
 	void shoot(SGameChar* player); //updates position of bullet to be rendered
 
+	bool collision(Map* map, Console* console); //checks if bullet hits wall or out of range
+
 private:
 	int range = 25; //range of gun
 };

@@ -33,12 +33,13 @@ string SGameChar::updateHealth(int playerNum, int dmg)
 	if (this->health != 0)
 	{
 		this->health -= dmg;
+		if (this->health == 0)
+		{
+			this->updateLives(playerNum, 1);
+			this->health = this->maxHealth;
+		}
 	}
-	else
-	{
-		this->updateLives(playerNum, 1);
-		this->health = this->maxHealth;
-	}
+	
 	//if more then max health
 	if (this->health > this->maxHealth)
 		this->health = this->maxHealth;
@@ -108,4 +109,12 @@ void Gun::shoot(SGameChar* player)
 		outOfRange = false;
 	}
 	else outOfRange = true;		
+}
+
+bool Gun::collision(Map* map, Console* console)
+{
+	if (this->outOfRange || !console->isInsideConsole(this->bulletPos)
+		|| map->collideWithWall(this->bulletPos))
+		return true;
+	else return false;
 }

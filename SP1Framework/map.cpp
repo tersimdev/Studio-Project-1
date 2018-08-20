@@ -141,6 +141,7 @@ void Map::replaceAndRender(Console* console)
 			case 'p': //player1 hp
 			case 'S': //player2
 			case 's': //player2 hp
+			case 'e': //enemy spawn reference
 				currChar = ' ';
 				break;
 			case 'U':

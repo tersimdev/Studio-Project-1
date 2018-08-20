@@ -72,6 +72,9 @@ class Console
 		// this allows for flags to be changed
 		void setConsoleMode(DWORD mode);
 
+		//function to check if a COORD is within console bounds
+		bool isInsideConsole(COORD c);
+
 		//static function to change console size before passing to constructor
 		static COORD maximizeConsole()
 		{
@@ -102,8 +105,10 @@ class Console
         void shutDownConsole();
 };
 
-
 //adds two coords together
 COORD ADDCOORDS(COORD c1, COORD c2);
+
+//equates two coords
+bool EQUCOORDS(COORD c1, COORD c2);
 
 #endif // _CONSOLE_H
