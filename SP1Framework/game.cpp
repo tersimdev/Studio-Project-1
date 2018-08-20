@@ -25,6 +25,7 @@ double	g_dBounceTimeNorm;
 double  g_dBounceTimeUI; 
 double  g_dBounceTimeMove[NumOfPlayers];
 double  g_dBounceTimeAction[NumOfPlayers];
+double  g_dBounceTimeEnemy[NumOfPlayers];
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -279,7 +280,7 @@ void gameplay()         // gameplay logic
     moveCharacter();    // moves the character, collision detection, physics, etc
 	checkForTiles();	// checks for special tiles which player can interact with
 	actionsListener();	// other action keys like shooting, etc
-						// sound can be played here too.
+	enemyMovement();		// sound can be played here too.
 }
 
 void moveCharacter()
@@ -469,6 +470,48 @@ void checkForTiles()
 	
 }
 
+void enemyMovement()
+{	
+	bool bSomeBool[2]= { false, false };
+	
+	if (g_dBounceTimeEnemy[0] > g_dElapsedTime)
+		return;
+
+	for (int i = 0; i < g_trigger.allEnemies.size(); i++)
+	{
+
+		if (g_dBounceTimeEnemy[1] < g_dElapsedTime)
+		{
+			g_trigger.allEnemies[i]->direction = g_trigger.allEnemies[i]->directionGen(g_dBounceTimeEnemy[0]);
+			bSomeBool[1] = true;
+		}
+		//calculating future location
+		g_trigger.allEnemies[i]->m_futureLocation = ADDCOORDS(g_trigger.allEnemies[i]->m_cLocation, g_trigger.allEnemies[i]->direction);
+		if (!g_map.collideWithWall(g_trigger.allEnemies[i]->m_futureLocation))
+		{
+			g_trigger.allEnemies[i]->moveEnemy(&g_map, &g_Console);
+			bSomeBool[0] = true;
+		}
+		//if quiz triggered
+		if (g_trigger.allEnemies[i]->enemyAttack)
+		{
+			g_quiz.query();
+			g_eGameState = S_QUIZ;
+		}
+	}
+
+	if (bSomeBool[0])
+	{
+		g_dBounceTimeEnemy[0] = g_dElapsedTime + 0.125;
+	}
+	if (bSomeBool[1])
+	{
+		g_dBounceTimeEnemy[1] = g_dElapsedTime + 0.35;
+	}
+	
+}
+
+
 void renderSplashScreen()  // renders the splash screen
 {
 	COORD c = g_Console.getConsoleSize();
@@ -517,7 +560,7 @@ void renderBullet()
 {	
 	g_sChar1.gun->shoot(&g_sChar1);
 	g_trigger.enemy = g_trigger.findEnemy(g_sChar1.gun->bulletPos);
-	//check if bullet exceeds console or hits wall or out of range
+	//check if bullet exceeds console or hits wall or out of range or hits enemy
 	if (g_sChar1.gun->collision(&g_map, &g_Console))
 	{
 		if (g_trigger.enemy != NULL) //found enemy at bullet
