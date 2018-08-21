@@ -19,6 +19,7 @@ SGameChar	g_sChar1((char)3, 0x0C, &g_map, 1); //player1
 SGameChar	g_sChar2((char)3, 0x0A, &g_map, 2); //player2
 Trigger		g_trigger(&g_map, &g_Console);
 Quiz		g_quiz(0); //quiz
+Boss*		g_boss = NULL;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 // these are to prevent key bouncing, so we won't trigger keypresses more than once
 double	g_dBounceTimeNorm;
@@ -57,6 +58,9 @@ void init(void)
 
 	//init variables
 	g_menuSelection = 0;
+
+	//to pass tutorial level
+	g_abFlags[tutoDone] = true;
 }
 
 //--------------------------------------------------------------
@@ -412,10 +416,15 @@ void checkForTiles()
 		if (g_abFlags[moving2])
 			player = &g_sChar2;
 
-		if (g_map.findCharExists(player->m_futureLocation, 'N'))
+		if (g_map.findCharExists(player->m_futureLocation, 'N') 
+			&& (g_abFlags[tutoDone] || g_abFlags[bossDone] || g_abFlags[snakeDone]))
 		{
 			g_map.updateMap(); //loads next map, wraping around
 			g_trigger.initTrigger(&g_map, &g_Console); //reinits all triggers for new map
+			g_abFlags[hasKey] = false; //lose key
+			g_abFlags[tutoDone] = false;
+			g_abFlags[snakeDone] = false; //lose key
+			g_abFlags[bossDone] = false; //lose key
 			//moving the player that triggered it
 			if (player->m_cLocation.X > g_Console.getConsoleSize().X * 0.9)
 			{
@@ -425,12 +434,14 @@ void checkForTiles()
 			{
 				player->m_cLocation.X = g_Console.getConsoleSize().X - 4;
 			}
-			else if (player->m_cLocation.Y > g_Console.getConsoleSize().Y * 0.9)
+			else if (player->m_cLocation.Y > g_Console.getConsoleSize().Y * 0.75)
 			{
 				player->m_cLocation.Y = 3;
 			}
-			else if (player->m_cLocation.Y < g_Console.getConsoleSize().Y * 0.1)
+			else if (player->m_cLocation.Y < g_Console.getConsoleSize().Y * 0.25)
+			{
 				player->m_cLocation.Y = g_Console.getConsoleSize().Y - 4;
+			}
 			//moving the otehr player
 			if (g_abFlags[moving2])
 			{
@@ -446,12 +457,12 @@ void checkForTiles()
 		//gates
 		if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'U')) //boss
 		{
-			//intialising position of player
-			g_sChar1.m_cLocation.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 1);
-			g_sChar1.m_cLocation.Y = (SHORT)(g_Console.getConsoleSize().Y * 0.75 - 1);
-			g_sChar2.m_cLocation.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 1);
-			g_sChar2.m_cLocation.Y = (SHORT)(g_Console.getConsoleSize().Y * 0.75 + 1);
-			g_map.loadMap("Levels/BOSS1.txt");
+			g_boss = new Boss (&g_map, &g_Console, &g_sChar1.m_cLocation, &g_sChar2.m_cLocation);
+			g_trigger = Trigger(&g_map, &g_Console); //to access leftover enemies
+			for (auto i : g_trigger.allEnemies)
+			{
+				i->destroyEnemy(&g_map);
+			}
 			g_eGameState = S_BOSS;
 		}
 		else if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'M')) //snake
@@ -572,7 +583,8 @@ void renderGame()
 {
     renderMap();        // renders the map to the buffer first
     renderCharacter();  // renders the character into the buffer
-	renderItems();		//renders items into buffer
+	renderHealth();		// render character health bar
+	renderItems();		// renders items into buffer
 
 	if (g_abFlags[shooting]) // renders bullet if shooting
 		renderBullet();
@@ -590,7 +602,6 @@ void renderCharacter()
 		g_Console.writeToBuffer(g_sChar1.m_cLocation, g_sChar1.symbol, g_sChar1.color);
 	if (g_sChar2.m_bActive)
 		g_Console.writeToBuffer(g_sChar2.m_cLocation, g_sChar2.symbol, g_sChar2.color);
-	renderHealth();
 }
 
 void renderHealth()
@@ -633,6 +644,8 @@ void renderBossMode()
 {
 	renderMap();
 	renderCharacter();
+	if (g_boss->bossElapsedTime > -1)
+		g_boss->renderBossAttack(1, &g_Console);
 }
 
 

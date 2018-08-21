@@ -8,6 +8,7 @@
 #include "map.h"
 #include "quiz.h"
 #include "trigger.h"
+#include "boss.h"
 #include <string>
 using std::string;
 
@@ -25,6 +26,7 @@ enum FLAGS
 	hasPickaxe,
 	quizzing,
 	hasKey,
+	tutoDone,
 	snakeDone,
 	bossDone,
 	flagCount

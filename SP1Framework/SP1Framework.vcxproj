@@ -80,6 +80,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="aStar.cpp" />
+    <ClCompile Include="boss.cpp" />
     <ClCompile Include="boulders.cpp" />
     <ClCompile Include="COORDS.cpp" />
     <ClCompile Include="enemies.cpp" />
@@ -94,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aStar.h" />
+    <ClInclude Include="boss.h" />
     <ClInclude Include="boulders.h" />
     <ClInclude Include="COORDS.h" />
     <ClInclude Include="enemies.h" />
