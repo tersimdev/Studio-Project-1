@@ -532,21 +532,12 @@ void enemyMovement()
 			}
 
 			//if quiz triggered
-			if (g_trigger.allEnemies[i]->enemyAttack(g_sChar1.m_cLocation))
+			if (g_trigger.allEnemies[i]->enemyAttack(g_sChar1.m_cLocation) || g_trigger.allEnemies[i]->enemyAttack(g_sChar2.m_cLocation))
 			{
 				g_trigger.allEnemies[i]->destroyEnemy(&g_map);
 				g_quiz.query();
 				g_eGameState = S_QUIZ;
-				if (!g_quiz.checkAns())
-					g_sChar1.updateHealth(1, rand() % 5 + 1);
-			}
-			else if (g_trigger.allEnemies[i]->enemyAttack(g_sChar2.m_cLocation))
-			{
-				g_trigger.allEnemies[i]->destroyEnemy(&g_map);
-				g_quiz.query();
-				g_eGameState = S_QUIZ;
-				if (!g_quiz.checkAns())
-					g_sChar2.updateHealth(2, rand() % 5 + 1);
+				
 			}
 		}
 	}
@@ -937,9 +928,13 @@ void quizMode()
 		{
 			g_eGameState = S_GAME;
 			g_abFlags[quizzing] = false;
+			if (!g_quiz.checkAns())
+			{
+				g_sChar1.updateHealth(1, rand() % 5 + 1);
+				g_sChar2.updateHealth(2, rand() % 5 + 1);
+			}
 		}
 		else g_abFlags[quizzing] = true;
-		g_quiz.checkAns();
 		bSomethingHappened = true;
 	}
 	if (bSomethingHappened)
