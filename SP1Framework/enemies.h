@@ -37,7 +37,7 @@ public:
 private:
 	COORD spawnNonce = { 20, 10 };
 
-	int aggroRange = 20;
+	int aggroRange = 15;
 };
 
 #endif

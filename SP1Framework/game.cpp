@@ -506,14 +506,16 @@ void enemyMovement()
 			{
 				//calculate general direction to player
 				g_trigger.allEnemies[i]->setGeneralDir(g_sChar2.m_cLocation);
-				//sets the direction to move
+				//sets the direction to move if collide
 				g_trigger.allEnemies[i]->setAltDir(&g_map, g_sChar2.m_cLocation);
 			}
+			
 			else if (g_trigger.allEnemies[i]->isAggro(g_sChar1.m_cLocation))
 			{
-				//calculate general direction to player
+				//calculate general direction to player	
 				g_trigger.allEnemies[i]->setGeneralDir(g_sChar1.m_cLocation);
-				//sets the direction to move
+				//sets the direction to move if collide
+
 				g_trigger.allEnemies[i]->setAltDir(&g_map, g_sChar1.m_cLocation);
 			}
 			else
@@ -551,7 +553,7 @@ void enemyMovement()
 
 	if (bMoving)
 	{
-		g_dBounceTimeEnemy[0] = g_dElapsedTime + 0.055;
+		g_dBounceTimeEnemy[0] = g_dElapsedTime + 0.07;
 	}
 	if (bChangeDir)
 	{

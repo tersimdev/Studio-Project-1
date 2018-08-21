@@ -70,29 +70,29 @@ void Enemy::setGeneralDir(COORD playerPos)
 
 	dirToPlayerInvX.X = dirToPlayerX.X * -1;
 	dirToPlayerInvY.Y = dirToPlayerY.Y * -1;
-	this->direction = dirToPlayerX;
+	this->direction = dirToPlayerX; //default to X
 }
 
 //imperfect pathfinding
 void Enemy::setAltDir(Map* map, COORD playerPos)
 {
-	//track to x, then to y pos
-	if (map->collideWithWall(ADDCOORDS(this->m_cLocation, this->dirToPlayerX)) 
-		|| this->m_cLocation.X == playerPos.X)
+	if (!map->collideWithWall(ADDCOORDS(this->m_cLocation, this->dirToPlayerX)))
 	{
-		
-		if (map->collideWithWall(ADDCOORDS(this->m_cLocation, this->dirToPlayerY)))
-		{
-			if (map->collideWithWall(ADDCOORDS(this->m_cLocation, this->dirToPlayerInvX)))
-			{
-				this->direction = dirToPlayerInvY;
-			}
-			else
-				this->direction = dirToPlayerInvX;
-		}
-		else 
-			this->direction = dirToPlayerY;
-	}	
+		this->direction = dirToPlayerX;
+	}
+	else if (this->m_cLocation.X == dirToPlayerX.X)
+	{
+		this->direction = { 0, dirToPlayerY.Y };
+	}
+
+	if (!map->collideWithWall(ADDCOORDS(this->m_cLocation, this->dirToPlayerY)))
+	{
+		this->direction = dirToPlayerY;
+	}
+	else if (this->m_cLocation.Y == dirToPlayerY.Y)
+	{
+		this->direction = { dirToPlayerX.X, 0 };
+	}
 }
 
 void Enemy::moveEnemy(Map* map, Console* console)
