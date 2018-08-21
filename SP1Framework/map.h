@@ -14,7 +14,8 @@ using std::string;
 #define _E (char)2
 #define _N (char)159
 #define _U (char)164
-#define _I (char)209
+#define _I (char)89
+#define _K (char)184
 #define _0 (char)176
 
 class Map

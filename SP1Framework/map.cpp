@@ -153,6 +153,10 @@ void Map::replaceAndRender(Console* console)
 				currChar = _I;
 				color = 0x0A;
 				break;
+			case 'K':
+				currChar = _K;
+				color = 0x0E;
+				break;
 			case '0': //text
 				currChar = _0;
 				color = 0x03;

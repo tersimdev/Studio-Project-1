@@ -92,7 +92,6 @@ void getInput( void )
 	case S_SPLASHSCREEN: //none
 		break;
 	case S_MENU: //ui
-	case S_LOADSAVE: //ui
 	case S_GAME: //game
 	case S_BOSS: //boss
 		{
@@ -187,8 +186,6 @@ void update(double dt)
             break;
 		case S_MENU: mainMenu();
 			break;
-		case S_LOADSAVE: loadSave();
-			break;
         case S_GAME: gameplay(); // gameplay logic when we are in the game
             break;
 		case S_BOSS: bossMode();
@@ -213,8 +210,6 @@ void render()
 	case S_SPLASHSCREEN: renderSplashScreen();
 		break;
 	case S_MENU: renderMainMenu();
-		break;
-	case S_LOADSAVE: renderLoadSave();
 		break;
 	case S_GAME: renderGame();
 		break;
@@ -448,8 +443,8 @@ void checkForTiles()
 				g_sChar2.m_cLocation.Y = player->m_cLocation.Y;
 			}
 		}
-		
-		if (g_map.findCharExists(player->m_futureLocation, 'U'))
+		//gates
+		if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'U')) //boss
 		{
 			//intialising position of player
 			g_sChar1.m_cLocation.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 1);
@@ -459,7 +454,11 @@ void checkForTiles()
 			g_map.loadMap("Levels/BOSS1.txt");
 			g_eGameState = S_BOSS;
 		}
-
+		else if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'M')) //snake
+		{
+			//g_eGameState = S_BOSS;
+		}
+		//boulders
 		if (g_map.findCharExists(g_sChar1.m_futureLocation, 'B'))
 		{
 			g_trigger.boulder = g_trigger.findBoulder(g_sChar1.m_futureLocation);
@@ -473,11 +472,22 @@ void checkForTiles()
 				g_trigger.boulder->destroyBoulder(&g_map);
 			}
 		}
-
+		//pickaxe
 		if (g_map.findCharExists(g_sChar2.m_futureLocation, 'I'))
 		{
 			g_abFlags[hasPickaxe] = true;
 			g_map.removeChar(g_sChar2.m_futureLocation);
+		}
+		//key
+		if (g_map.findCharExists(g_sChar2.m_futureLocation, 'K'))
+		{
+			g_abFlags[hasKey] = true;
+			g_map.removeChar(g_sChar2.m_futureLocation);
+		}
+		else if (g_map.findCharExists(g_sChar1.m_futureLocation, 'K'))
+		{
+			g_abFlags[hasKey] = true;
+			g_map.removeChar(g_sChar1.m_futureLocation);
 		}
 	}
 }
@@ -569,6 +579,7 @@ void renderGame()
 {
     renderMap();        // renders the map to the buffer first
     renderCharacter();  // renders the character into the buffer
+	renderItems();		//renders items into buffer
 
 	if (g_abFlags[shooting]) // renders bullet if shooting
 		renderBullet();
@@ -656,11 +667,6 @@ void mainMenu()
 			g_eGameState = S_GAME;
 			break;
 		case 1:
-			g_eGameState = S_LOADSAVE;
-			g_menuSelection = 1;
-			//currentgamestate = 2;
-			break;
-		case 2:
 			g_bQuitGame = true;
 			break;
 		}
@@ -671,13 +677,13 @@ void mainMenu()
 	{
 		g_menuSelection--;
 		if (g_menuSelection == -1)
-			g_menuSelection = 2;
+			g_menuSelection = 1;
 		bSomethingHappened = true;
 	}
 	else if (g_abKeyPressed[K_DOWN] || g_abKeyPressed[K_S])
 	{
 		g_menuSelection++;
-		g_menuSelection %= 3;
+		g_menuSelection %= 2;
 		bSomethingHappened = true;
 	}
 
@@ -686,11 +692,6 @@ void mainMenu()
 		g_eGameState = S_GAME;
 	}
 	else if (g_abKeyPressed[K_2])
-	{
-		g_eGameState = S_LOADSAVE;
-		g_menuSelection = 0;
-	}
-	else if (g_abKeyPressed[K_3])
 	{
 		g_bQuitGame = true;
 	}
@@ -709,7 +710,7 @@ void mainMenu()
 
 void renderMainMenu()					
 {
-	WORD attri1 = 0x07, attri2 = 0x07, attri3 = 0x07;
+	WORD attri1 = 0x07, attri2 = 0x07;
 
 	switch (g_menuSelection)
 	{
@@ -718,132 +719,17 @@ void renderMainMenu()
 		break;
 	case 1:
 		attri2 = 0x03;
-		break;
-	case 2:
-		attri3 = 0x03;
 		break;
 	}
 
 	COORD c = g_Console.getConsoleSize();
 	c.Y /= 3;
 	c.X = (SHORT)(c.X * 0.5 - 3);
-	g_Console.writeToBuffer(c, "1. PLAY", attri1);
+	g_Console.writeToBuffer(c, "PLAY", attri1);
 	c.Y += 1;
 	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 3);
-	g_Console.writeToBuffer(c, "2. LOAD", attri2);
-	c.Y += 1;
-	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 3);
-	g_Console.writeToBuffer(c, "3. EXIT", attri3);
+	g_Console.writeToBuffer(c, "EXIT", attri2);
 }
-
-void loadSave()
-{
-	//handling input
-	bool bSomethingHappened = false;
-	if (g_dBounceTimeUI > g_dElapsedTime)
-		return;
-
-	if (g_abKeyPressed[K_ENTER])
-	{
-		switch (g_menuSelection)
-		{
-		case 0:
-			//load saved file 1
-			break;
-		case 1:
-			//load saved file 2
-			break;
-		case 2:
-			//load saved file 3
-			break;
-		case 3:
-			g_eGameState = S_MENU;
-			g_menuSelection = 1;
-			break;
-		}
-		bSomethingHappened = true;
-	}
-
-	if (g_abKeyPressed[K_UP] || g_abKeyPressed[K_W])
-	{
-		g_menuSelection--;
-		if (g_menuSelection == -1)
-			g_menuSelection = 3;
-		bSomethingHappened = true;
-	}
-	else if (g_abKeyPressed[K_DOWN] || g_abKeyPressed[K_S])
-	{
-		g_menuSelection++;
-		g_menuSelection %= 4;
-		bSomethingHappened = true;
-	}
-
-	if (g_abKeyPressed[K_1])
-	{
-		//load saved file 1
-	}
-	else if (g_abKeyPressed[K_2])
-	{
-		//load saved file 2
-	}
-	else if (g_abKeyPressed[K_3])
-	{
-		//load saved file 3
-	}
-	else if (g_abKeyPressed[K_4])
-	{
-		g_eGameState = S_MENU;
-		g_menuSelection = 0;
-	}
-
-	if (g_abKeyPressed[K_BACKSPACE] || g_abKeyPressed[K_ESCAPE])
-	{
-		g_eGameState = S_MENU;
-		g_menuSelection = 0;
-	}
-
-	if (bSomethingHappened)
-	{
-		// set the bounce time to some time in the future to prevent accidental triggers
-		g_dBounceTimeUI = g_dElapsedTime + 0.2;
-	}
-}
-
-void renderLoadSave()
-{
-	WORD attri1 = 0x07, attri2 = 0x07, attri3 = 0x07, attri4 = 0x07;
-
-	switch (g_menuSelection)
-	{
-	case 0:
-		attri1 = 0x03;
-		break;
-	case 1:
-		attri2 = 0x03;
-		break;
-	case 2:
-		attri3 = 0x03;
-		break;
-	case 3:
-		attri4 = 0x03;
-		break;
-	}
-
-	COORD c = g_Console.getConsoleSize();
-	c.Y /= 3;
-	c.X = (SHORT)(c.X * 0.5 - 4);
-	g_Console.writeToBuffer(c, "1. EMPTY", attri1);
-	c.Y += 1;
-	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 4);
-	g_Console.writeToBuffer(c, "2. EMPTY", attri2);
-	c.Y += 1;
-	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 4);
-	g_Console.writeToBuffer(c, "3. EMPTY", attri3);
-	c.Y += 1;
-	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 4);
-	g_Console.writeToBuffer(c, "4. BACK", attri4);
-}
-
 
 void quizMode()
 {
@@ -1074,4 +960,19 @@ void renderQuiz()
 		result = "";
 	g_Console.writeToBuffer({ 10, 28 }, result, 0x0F);
 	g_Console.writeToBuffer({ 10, 29 }, answers, 0x0F);
+}
+
+void renderItems()
+{
+	g_Console.writeToBuffer({ 185, 5 }, "PISTOL", 0x0E);
+	
+	if (g_abFlags[hasPickaxe])
+	{
+		g_Console.writeToBuffer({ 164, 5 }, "PICKAXE", 0x0E);
+	}
+	
+	if (g_abFlags[hasKey])
+	{
+		g_Console.writeToBuffer({ 145, 5 }, "KEY", 0x0E);
+	}
 }

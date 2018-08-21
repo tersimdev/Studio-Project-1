@@ -24,6 +24,9 @@ enum FLAGS
 	shooting,
 	hasPickaxe,
 	quizzing,
+	hasKey,
+	snakeDone,
+	bossDone,
 	flagCount
 };
 
@@ -84,7 +87,6 @@ enum EKEYS
 // Enumeration for the different screen states
 enum EGAMESTATES
 {
-	S_LOADSAVE,
     S_SPLASHSCREEN,
 	S_MENU,
     S_GAME,
@@ -114,7 +116,6 @@ void renderToScreen();      // dump the contents of the buffer to the screen, on
 
 /*new*/
 void mainMenu();			//captures events for navigating UI
-void loadSave();			//captures events for navigating UI
 void actionsListener();		//listens to actions
 void checkForTiles();		//checks for special tiles which player can interact with
 void enemyMovement();		//moves the enemy and collision detection
@@ -123,9 +124,9 @@ void quizMode();			//captures keyboard input
 void renderHealth();		//renders the health of players
 void renderBullet();		//renders bullets from players
 void renderMainMenu();      //renders main menu
-void renderLoadSave();		//renders loading of saves
 void renderBossMode();		//renders the boss' attacks etc
 void renderQuiz();			//renders the quiz to console
+void renderItems();			//renders currently owned items
 
 
 
