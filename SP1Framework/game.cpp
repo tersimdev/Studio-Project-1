@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <sstream>
 
+#include "aStar.h"
 #include "snakeMini.h"
 
 double  g_dElapsedTime;
@@ -15,7 +16,7 @@ bool    g_abFlags[flagCount] = { 0 };
 int		g_menuSelection;
 
 /*For Snake*/
-int i;
+unsigned int i;
 unsigned int j;
 bool goleft;
 bool goright;
@@ -38,7 +39,9 @@ std::vector<SNAKELAD> SnakeBody;
 // Console object
 Console g_Console(199, 51, "RISE OF THE TOMB EXPLORING N00BS");
 // Game specific variables here
-Map			g_map(0); //map
+Map			g_map("Levels/astarTest.txt"); //map
+aStar		astar(g_map.cols, g_map.rows, &g_Console);
+//Map			g_map(0); //map
 SGameChar	g_sChar1((char)3, 0x0C, &g_map, 1); //player1
 SGameChar	g_sChar2((char)3, 0x0A, &g_map, 2); //player2
 Trigger		g_trigger(&g_map, &g_Console);
@@ -327,7 +330,7 @@ void gameplay()         // gameplay logic
     moveCharacter();    // moves the character, collision detection, physics, etc
 	checkForTiles();	// checks for special tiles which player can interact with
 	actionsListener();	// other action keys like shooting, etc
-	enemyMovement();		// sound can be played here too.
+	enemyMovement();	//enemy movement
 }
 
 void moveCharacter()
@@ -645,6 +648,21 @@ void renderGame()
 
 	if (g_abFlags[shooting]) // renders bullet if shooting
 		renderBullet();
+
+	Node start, dest;
+	start.X = g_sChar1.m_cLocation.X;
+	start.Y = g_sChar1.m_cLocation.Y;
+	dest.X = g_map.findChar('E').X;
+	dest.Y = g_map.findChar('E').Y;
+	vector<Node> test;
+	test = astar.aStarSearch(start, dest);
+	if (test.size() != 0)
+		for (auto i : test)
+		{
+			g_Console.writeToBuffer(i, "H", 0x0F);
+		}
+	g_Console.writeToBuffer({ g_map.findChar('E').X + 1 , g_map.findChar('E').Y }, "FOUND", 0x0F);
+		
 }
 
 void renderMap()
@@ -950,11 +968,11 @@ void SnakerenderCharacter()
 void applelocation(bool spawnapple)
 {
 
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 
 	unsigned int randomlocationX = rand() % 118 + 50;
 	unsigned int randomlocationY = rand() % 37 + 3;
-	COORD C = { randomlocationX,randomlocationY };
+	COORD C = { (SHORT)randomlocationX, (SHORT)randomlocationY };
 
 
 	if (spawnapple == true)//changes location of apple

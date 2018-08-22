@@ -1,24 +1,24 @@
-/*#ifndef _ASTAR_H
+#ifndef _ASTAR_H
 #define _ASTAR_H
 #include "Framework/console.h"
 #include <vector>
+#include <algorithm>
 using std::vector;
 
-struct Node
+struct Node : public COORD
 {
-	COORD c;
 	COORD parent;
-	float gCost, hCost, fCost;
+	double gCost, hCost, fCost;
 };
 
 class aStar
 {
 public:
-	aStar(Console* console);
+	aStar(int x, int y, Console* console);
 
 	Console* console;
 
-	COORD consoleSize;
+	COORD mapSize;
 
 	bool isValid(COORD c);
 
@@ -26,9 +26,9 @@ public:
 
 	double calcH(COORD c, Node dest);
 
-	vector<Node> makePath(Node* map, Node dest);
+	vector<Node> makePath(vector<Node> &map, Node dest);
 	
 	vector<Node> aStarSearch(Node player, Node dest);
 };
 
-#endif*/
+#endif

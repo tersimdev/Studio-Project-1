@@ -113,6 +113,7 @@
     <Text Include="Levels\0.txt" />
     <Text Include="Levels\1.txt" />
     <Text Include="Levels\2.txt" />
+    <Text Include="Levels\astarTest.txt" />
     <Text Include="Levels\BOSS1.txt" />
     <Text Include="Levels\snakemap.txt" />
     <Text Include="Quiz\Answers.txt" />

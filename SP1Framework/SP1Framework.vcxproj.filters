@@ -127,5 +127,8 @@
     <Text Include="Levels\snakemap.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="Levels\astarTest.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>
