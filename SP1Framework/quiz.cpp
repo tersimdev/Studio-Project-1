@@ -66,20 +66,13 @@ void Quiz::quizResult(int choice, string* output, string* answers)
 {
 	switch (choice)
 	{
-	case WIN_ENEMY:
+	case WIN:
 		*output = "CORRECT!";
 		break;
-	case LOSE_ENEMY:
-		*output = "WRONG! YOU LOSE SOME HEALTH";
-		break;
-	case WIN_BOSS:
-		*output = "CORRECT! enemy.health--";
-		break;
-	case LOSE_BOSS:
-		*output = "WRONG! player.health--";
+	case LOSE:
+		*output = "WRONG!";
 		break;
 	}
-
 	for (unsigned int i = 0; i < this->currAns.size(); i++)
 	{
 		*answers += this->currAns[i];

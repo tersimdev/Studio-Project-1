@@ -94,7 +94,8 @@ enum EGAMESTATES
 	S_LOADSAVE,
     S_GAME,
 	S_BOSS,
-	S_QUIZ,
+	S_QUIZ_E,
+	S_QUIZ_B,
     S_COUNT
 };
 

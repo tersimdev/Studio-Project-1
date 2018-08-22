@@ -117,7 +117,8 @@ void getInput( void )
 		g_abKeyPressed[K_BACKSPACE] = isKeyPressed(VK_BACK);
 		}
 		break;
-	case S_QUIZ:
+	case S_QUIZ_B:
+	case S_QUIZ_E:
 		{
 		g_abKeyPressed[K_A] = isKeyPressed(0x41);
 		g_abKeyPressed[K_B] = isKeyPressed(0x42);
@@ -197,7 +198,8 @@ void update(double dt)
             break;
 		case S_BOSS: bossMode();
 			break;
-		case S_QUIZ: quizMode();
+		case S_QUIZ_B:
+		case S_QUIZ_E: quizMode();
 			break;
     }
 }
@@ -224,7 +226,8 @@ void render()
 		break;
 	case S_BOSS: renderBossMode();
 		break;
-	case S_QUIZ: renderQuiz();
+	case S_QUIZ_B:
+	case S_QUIZ_E: renderQuiz();
 		break;
 	}
 	renderFramerate();  // renders debug information, frame rate, elapsed time, etc
@@ -405,7 +408,15 @@ void processUserInput()
 		// quits the game if player hits the escape key
 	if (g_abKeyPressed[K_ESCAPE])
 	{
-		g_bQuitGame = true;
+		switch (g_eGameState)
+		{
+		case S_GAME:
+			g_bQuitGame = true;
+			break;
+		case S_BOSS:
+			g_eGameState = S_GAME;
+			break;
+		}
 		eventHappened = true;
 	}
 
@@ -462,7 +473,7 @@ void checkForTiles()
 		//gates
 		if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'U')) //boss
 		{
-			g_boss = new Boss (&g_map, &g_Console, &g_sChar1.m_cLocation, &g_sChar2.m_cLocation);
+			g_boss = new Boss (&g_map, &g_Console, &g_sChar1.m_cLocation, &g_sChar2.m_cLocation, g_dElapsedTime);
 			g_trigger = Trigger(&g_map, &g_Console); //to access leftover enemies
 			for (auto i : g_trigger.allEnemies)
 			{
@@ -552,7 +563,7 @@ void enemyMovement()
 			{
 				g_trigger.allEnemies[i]->destroyEnemy(&g_map);
 				g_quiz.query();
-				g_eGameState = S_QUIZ;
+				g_eGameState = S_QUIZ_E;
 				
 			}
 		}
@@ -611,7 +622,9 @@ void renderCharacter()
 
 void renderHealth()
 {
+	g_sChar1.playerUIPos = g_map.findChar('p');
 	g_Console.writeToBuffer(g_sChar1.playerUIPos, g_sChar1.playerHPUI, g_sChar1.color);
+	g_sChar2.playerUIPos = g_map.findChar('s');
 	g_Console.writeToBuffer(g_sChar2.playerUIPos, g_sChar2.playerHPUI, g_sChar2.color);
 }
 
@@ -643,14 +656,73 @@ void renderBullet()
 void bossMode()
 {
 	moveCharacter();    // moves the character, collision detection, physics, etc
+	processUserInput(); // for escaping the fight
+	if (g_boss->dBounceTime > g_dElapsedTime)
+		return;
+	if (g_boss->numOfAttacks <= 0)
+	{
+		g_sChar1.color = 0x0C;
+		g_sChar2.color = 0x0A;
+		g_quiz.query();
+		g_eGameState = S_QUIZ_B; //quiz
+	}
+	if (g_boss->active)
+	{
+		//collison for each player
+		if (g_sChar1.m_bActive && g_boss->collision(g_sChar1.m_cLocation))
+		{
+			g_sChar1.updateHealth(1, g_boss->getDmg(rand() % 15));
+		}
+		if (g_sChar2.m_bActive && g_boss->collision(g_sChar2.m_cLocation))
+		{
+			g_sChar2.updateHealth(2, g_boss->getDmg(rand() % 15));
+		}
+
+		//attacks
+		if (g_dElapsedTime > g_boss->bossElapsedTime + g_boss->attackDura + g_boss->renderDelay)
+		{
+			//inits, called once every attack
+			g_boss->attackIndex = rand() % 2;
+			g_boss->initAttacks();
+			g_boss->numOfAttacks--;
+			g_boss->bossElapsedTime = g_dElapsedTime;
+		}
+		else if (g_dElapsedTime > g_boss->bossElapsedTime + g_boss->renderDelay + g_boss->attackDelay)
+		{
+			//attack, this is looped
+			if (g_boss->attackIndex == 1)
+			{
+				g_boss->changePlayerColor(1, &g_sChar1.color);
+				g_boss->changePlayerColor(2, &g_sChar2.color);
+			}
+			else
+				g_boss->attack();
+		}
+		g_boss->dBounceTime = g_dElapsedTime + 0.07;
+	}
+	else
+	{
+		//TEMP, temporary, replace with loading last saved state function
+		g_sChar1.m_cLocation = { 10, 45 };
+		g_sChar2.m_cLocation = { 12, 45 };
+		g_map.loadMap("Levels/0.txt");
+		g_eGameState = S_GAME;
+	}
 }
 
 void renderBossMode()
 {
 	renderMap();
 	renderCharacter();
-	if (g_boss->bossElapsedTime > -1)
-		g_boss->renderBossAttack(1, &g_Console);
+	renderHealth();
+	if (g_boss->active)
+	{
+		if (g_dElapsedTime > g_boss->bossElapsedTime + g_boss->renderDelay)
+		{
+			g_boss->renderBossAttack(&g_Console);
+		}
+		
+	}	
 }
 
 
@@ -1070,12 +1142,26 @@ void quizMode()
 	{	
 		if (g_abFlags[quizzing])
 		{
-			g_eGameState = S_GAME;
 			g_abFlags[quizzing] = false;
-			if (!g_quiz.checkAns())
+			if (!g_quiz.checkAns() && g_eGameState == S_QUIZ_E)
 			{
 				g_sChar1.updateHealth(1, rand() % 5 + 1);
 				g_sChar2.updateHealth(2, rand() % 5 + 1);
+			}
+			else if (g_quiz.checkAns() && g_eGameState == S_QUIZ_B)
+			{
+				g_boss->updateLives(1);
+			}
+			//TEMP, temporary, replace with loading last saved state function
+			if (g_eGameState == S_QUIZ_E)
+			{
+				g_eGameState = S_GAME;
+			}
+			else if (g_eGameState == S_QUIZ_B)
+			{
+				g_boss->bossElapsedTime = g_dElapsedTime;
+				g_boss->setNumOfAttacks(3);
+				g_eGameState = S_BOSS;
 			}
 		}
 		else g_abFlags[quizzing] = true;
@@ -1095,8 +1181,8 @@ void renderQuiz()
 	string result = "", answers = "";
 	if (g_abFlags[quizzing])
 		g_quiz.checkAns() ? 
-			g_quiz.quizResult(WIN_ENEMY, &result, &answers) : 
-			g_quiz.quizResult(LOSE_ENEMY, &result, &answers);
+			g_quiz.quizResult(WIN, &result, &answers) : 
+			g_quiz.quizResult(LOSE, &result, &answers);
 	else
 		result = "";
 	g_Console.writeToBuffer({ 10, 28 }, result, 0x0F);

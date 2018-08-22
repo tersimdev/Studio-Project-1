@@ -9,10 +9,8 @@ using std::string;
 
 enum OUTCOMES
 {
-	WIN_ENEMY = 0,
-	LOSE_ENEMY,
-	WIN_BOSS,
-	LOSE_BOSS
+	WIN = 0,
+	LOSE,
 };
 
 class Quiz

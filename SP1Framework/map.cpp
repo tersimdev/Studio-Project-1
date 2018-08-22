@@ -143,6 +143,7 @@ void Map::replaceAndRender(Console* console)
 			case 'S': //player2
 			case 's': //player2 hp
 			case 'e': //enemy spawn reference
+			case 'h': //boss hp
 				currChar = ' ';
 				break;
 			case 'U':

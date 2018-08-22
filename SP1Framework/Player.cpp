@@ -4,6 +4,8 @@
 
 /*CONSTRUCTORS*/
 
+SGameChar::SGameChar() {}
+
 SGameChar::SGameChar(char symb, WORD col, Map* map, int player)
 {
 	this->symbol = symb;
@@ -33,10 +35,11 @@ string SGameChar::updateHealth(int playerNum, int dmg)
 	if (this->health != 0)
 	{
 		this->health -= dmg;
-		if (this->health == 0)
+		if (this->health <= 0)
 		{
 			this->updateLives(playerNum, 1);
-			this->health = this->maxHealth;
+			if (this->lives > 0)
+				this->health = this->maxHealth;
 		}
 	}
 	
@@ -50,8 +53,11 @@ string SGameChar::updateLives(int playerNum, int loss)
 {
 	if (this->lives != 0)
 		this->lives -= loss;
-	if (this->lives == 0)
+	if (this->lives <= 0)
+	{
 		this->m_bActive = false;
+		this->health = 0;
+	}
 	return updateHealthUI(playerNum);
 }
 

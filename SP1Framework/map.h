@@ -10,12 +10,12 @@ using std::string;
 
 //defining some chars
 #define _Z (char)219
-#define _B (char)81
-#define _E (char)2
-#define _N (char)159
+#define _B (char)234
+#define _E (char)227
+#define _N (char)178
 #define _U (char)164
-#define _I (char)89
-#define _K (char)184
+#define _I (char)209
+#define _K (char)213
 #define _0 (char)176
 
 class Map

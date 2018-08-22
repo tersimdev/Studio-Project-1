@@ -8,6 +8,7 @@
 class SGameChar : public Organism
 {
 public:
+	SGameChar::SGameChar();
 	SGameChar(char symb, WORD col, Map* map, int player = 1);
 
 	COORD playerUIPos = {10, 0};
