@@ -115,10 +115,10 @@
     <Text Include="Quiz\Answers.txt">
       <Filter>Resource Files</Filter>
     </Text>
-    <Text Include="Levels\BOSS1.txt">
+    <Text Include="Levels\2.txt">
       <Filter>Resource Files</Filter>
     </Text>
-    <Text Include="Levels\2.txt">
+    <Text Include="Levels\BOSS1.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>

@@ -682,7 +682,7 @@ void bossMode()
 		if (g_dElapsedTime > g_boss->bossElapsedTime + g_boss->attackDura + g_boss->renderDelay)
 		{
 			//inits, called once every attack
-			g_boss->attackIndex = rand() % 2;
+			g_boss->attackIndex = rand() % 3;
 			g_boss->initAttacks();
 			g_boss->numOfAttacks--;
 			g_boss->bossElapsedTime = g_dElapsedTime;
@@ -820,14 +820,13 @@ void renderMainMenu()
 
 	COORD c = g_Console.getConsoleSize();
 	c.Y /= 3;
-	c.X = c.X * 0.5 - 3;
-
+	c.X = (SHORT)(c.X * 0.5 - 3);
 	g_Console.writeToBuffer(c, "1. PLAY", attri1);
 	c.Y += 1;
-	c.X = g_Console.getConsoleSize().X * 0.5 - 3;
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 3);
 	g_Console.writeToBuffer(c, "2. LOAD", attri2);
 	c.Y += 1;
-	c.X = g_Console.getConsoleSize().X * 0.5 - 3;
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 3);
 	g_Console.writeToBuffer(c, "3. EXIT", attri3);
 }
 
@@ -926,17 +925,17 @@ void renderLoadSave()
 
 	COORD c = g_Console.getConsoleSize();
 	c.Y /= 3;
-	c.X = c.X * 0.5 - 4;
+	c.X = (SHORT)(c.X * 0.5 - 4);
 
 	g_Console.writeToBuffer(c, "1. EMPTY", attri1);
 	c.Y += 1;
-	c.X = g_Console.getConsoleSize().X * 0.5 - 4;
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 4);
 	g_Console.writeToBuffer(c, "2. EMPTY", attri2);
 	c.Y += 1;
-	c.X = g_Console.getConsoleSize().X * 0.5 - 4;
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 4);
 	g_Console.writeToBuffer(c, "3. EMPTY", attri3);
 	c.Y += 1;
-	c.X = g_Console.getConsoleSize().X * 0.5 - 4;
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 4);
 	g_Console.writeToBuffer(c, "4. BACK", attri4);
 }
 

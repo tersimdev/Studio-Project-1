@@ -24,7 +24,7 @@ void Boss::bossInit(Map* map, Console* console, COORD* playerPos1, COORD* player
     initAttacks();
 
 	//setting seed
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 }
 
 void Boss::initAttacks()
@@ -32,11 +32,30 @@ void Boss::initAttacks()
 	switch (this->attackIndex)
 	{
 	case 0:
+	case 2:
 		this->initBullets();
+		//some dialogue for fun
+		switch (rand() % 5)
+		{
+		case 0:
+			this->message = "TAKE THIS!";
+			break;
+		case 1:
+			this->message = "...";
+			break;
+		case 2:
+			this->message = "I MUST CAPTURE YOU!";
+			break;
+		case 3:
+			this->message = "UNPARALLED SPHAGETTORE";
+			break;
+		case 4:
+			this->message = "DON'T MAKE ME...";
+			break;
+		}
 		break;
 	case 1:
-		break;
-	case 2:
+		this->message = "YOU'RE BLUE NOW...THAT'S MY ATTACK";
 		break;
 	}
 }
@@ -46,22 +65,10 @@ void Boss::initBullets()
 	vector<COORD> pos;
 	vector <COORD> dir;
 	COORD cp, cd;
-	switch (rand() % 2)
+	switch (rand() % 9)
 	{
-	case 0:
-		for (int i = 0; i < boxWidth; i++)
-		{
-			if (i % 2)
-			{
-				cp.X = boxLeftTop.X + i;
-				cp.Y = boxLeftTop.Y - 2;
-				pos.push_back(cp);
-				cd = { 0 , 1 };
-				dir.push_back(cd);
-			}
-		}
-		break;
-	case 1:
+	case 2: //up and down
+			//same as case 1
 		for (int i = 1; i < boxWidth; i++)
 		{
 			if (!(i % 2))
@@ -73,8 +80,119 @@ void Boss::initBullets()
 				dir.push_back(cd);
 			}
 		}
+		//fallthrough
+	case 0: //down
+	
+		for (int i = 0; i < boxWidth; i++)
+		{
+			if (i % 2)
+			{
+				cp.X = boxLeftTop.X + i;
+				cp.Y = boxLeftTop.Y - 2;
+				pos.push_back(cp);
+				cd = { 0 , 1 };
+				dir.push_back(cd);
+			}
+		}
+		this->bulletAttack.bullet = (char)233;
 		break;
-	case 2:
+	case 1: //up
+		for (int i = 1; i < boxWidth; i++)
+		{
+			if (!(i % 2))
+			{
+				cp.X = boxLeftTop.X + i;
+				cp.Y = boxLeftTop.Y + boxHeight + 1;
+				pos.push_back(cp);
+				cd = { 0 , -1 };
+				dir.push_back(cd);
+			}
+		}
+		this->bulletAttack.bullet = (char)233;
+		break;
+	case 5: //right and ;=left
+		//same as case 4
+		for (int i = 0; i < boxHeight; i++)
+		{
+			if (!(i % 2))
+			{
+				cp.X = boxLeftTop.X + boxWidth + 2;
+				cp.Y = boxLeftTop.Y + i;
+				pos.push_back(cp);
+				cd = { -1 , 0 };
+				dir.push_back(cd);
+			}
+		}
+		//fallthrough
+	case 3: //right
+		for (int i = 1; i < boxHeight; i++)
+		{
+			if (i % 2)
+			{
+				cp.X = boxLeftTop.X - 2;
+				cp.Y = boxLeftTop.Y + i;
+				pos.push_back(cp);
+				cd = { 1 , 0 };
+				dir.push_back(cd);
+			}
+		}
+		this->bulletAttack.bullet = (char)222;
+		break;
+	case 4: //left
+		for (int i = 0; i < boxHeight; i++)
+		{
+			if (!(i % 2))
+			{
+				cp.X = boxLeftTop.X + boxWidth + 2;
+				cp.Y = boxLeftTop.Y + i;
+				pos.push_back(cp);
+				cd = { -1 , 0 };
+				dir.push_back(cd);
+			}
+		}
+		this->bulletAttack.bullet = (char)222;
+		break;
+	case 8: //middle
+		//same as case 7
+		for (int i = 0; i < boxHeight; i++)
+		{
+			if (!(i % 2))
+			{
+				cp.X = boxLeftTop.X + (boxWidth >> 1) + 2;
+				cp.Y = boxLeftTop.Y + i;
+				pos.push_back(cp);
+				cd = { -1 , 0 };
+				dir.push_back(cd);
+			}
+		}
+		//fallthrough
+	case 6: //middle right
+		for (int i = 1; i < boxHeight; i++)
+		{
+			if (i % 2)
+			{
+				cp.X = boxLeftTop.X + (boxWidth >> 1) - 2;
+				cp.Y = boxLeftTop.Y + i;
+				pos.push_back(cp);
+				cd = { 1 , 0 };
+				dir.push_back(cd);
+			}
+		}
+		this->bulletAttack.bullet = (char)221;
+		break;
+	case 7: //middle left
+		for (int i = 0; i < boxHeight; i++)
+		{
+			if (!(i % 2))
+			{
+				cp.X = boxLeftTop.X + (boxWidth >> 1) + 2;
+				cp.Y = boxLeftTop.Y + i;
+				pos.push_back(cp);
+				cd = { -1 , 0 };
+				dir.push_back(cd);
+			}
+		}
+		this->bulletAttack.bullet = (char)221;
 		break;
 	}
 	this->bulletAttack.bulletPosts = pos;
@@ -94,21 +212,20 @@ void Boss::attack()
 	{
 	default:
 	case 0:
-		for (int i = 0; i < this->bulletAttack.bulletPosts.size(); i++)
+	case 2:
+		for (unsigned int i = 0; i < this->bulletAttack.bulletPosts.size(); i++)
 		{
 			this->bulletAttack.bulletPosts[i] = ADDCOORDS(this->bulletAttack.bulletPosts[i], this->bulletAttack.bulletDirs[i]);
 		}
 		break;
 	case 1: //change player color in game.cpp
 		break;
-	case 2:
-		break;
 	}
 }
 
 bool Boss::collision(COORD playerPos)
 {
-	for (int i = 0; i < this->bulletAttack.bulletPosts.size(); i++)
+	for (unsigned int i = 0; i < this->bulletAttack.bulletPosts.size(); i++)
 	{
 		if (EQUCOORDS(playerPos, this->bulletAttack.bulletPosts[i]))
 		{
@@ -142,16 +259,16 @@ void Boss::renderBossAttack(Console* console)
 		this->renderBulletAtk(console);
 		break;
 	case 1:
-		console->writeToBuffer({(SHORT)this->boxLeftTop.X, (SHORT)(this->boxLeftTop.Y - 2)}, "YOU'RE BLUE NOW...THAT'S MY ATTACK", 0x0F);
 		break;
 	}
+	console->writeToBuffer(this->dialoguePos, message, 0x0F);
 }
 
 
 
 void Boss::renderBulletAtk(Console* console)
 {
-	for (int i = 0; i < this->bulletAttack.bulletPosts.size(); i++)
+	for (unsigned int i = 0; i < this->bulletAttack.bulletPosts.size(); i++)
 	{
 		if (console->isInsideConsole(this->bulletAttack.bulletPosts[i])
 			&& this->bulletAttack.bulletPosts[i].Y > this->boxLeftTop.Y - 5

@@ -31,7 +31,7 @@ public:
 
 	const double attackDelay = 0.5;
 
-	const double attackDura = 3.0;
+	const double attackDura = 4.0;
 	
 	int attackIndex = 0;
 
@@ -66,12 +66,14 @@ public:
 	struct BulletAttack bulletAttack;
 
 private:
-	const int dmg = 5;
-	int lives = 1;
+	const int dmg = 5; //base dmg
+	int lives = 1; //num of quiz needed t oget correct to beat boss
 
+	string message;
 	const int boxWidth = 80 - 2;
 	const int boxHeight = 20 - 2;
 	const COORD boxLeftTop = { 59, 29 };
+	const COORD dialoguePos = { 137, 13 };
 };
 
 #endif
