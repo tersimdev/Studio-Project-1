@@ -661,7 +661,7 @@ void renderGame()
 		{
 			g_Console.writeToBuffer(i, "H", 0x0F);
 		}
-	g_Console.writeToBuffer({ g_map.findChar('E').X + 1 , g_map.findChar('E').Y }, "FOUND", 0x0F);
+	g_Console.writeToBuffer({ g_map.findChar('E').X + 1 , g_map.findChar('E').Y }, "FOUND", 0x0A);
 		
 }
 

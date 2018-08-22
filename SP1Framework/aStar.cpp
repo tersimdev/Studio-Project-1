@@ -18,6 +18,7 @@ bool aStar::isDest(COORD c, Node dest)
 
 double aStar::calcH(COORD c, Node dest)
 {
+	//square rooting makes it more accurate, but is it worth it?
 	return (c.X - dest.X) *(c.X - dest.X) + (c.Y - dest.Y) * (c.Y - dest.Y);
 }
 
