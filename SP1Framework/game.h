@@ -96,6 +96,7 @@ enum EGAMESTATES
 	S_BOSS,
 	S_QUIZ_E,
 	S_QUIZ_B,
+	S_SNAKEMINIGAME,
     S_COUNT
 };
 
@@ -131,6 +132,7 @@ void renderBullet();		//renders bullets from players
 void renderMainMenu();      //renders main menu
 void renderLoadSave();		//renders load saves menu
 void renderBossMode();		//renders the boss' attacks etc
+void moveCharacterBoss();
 void renderQuiz();			//renders the quiz to console
 void renderItems();			//renders currently owned items
 

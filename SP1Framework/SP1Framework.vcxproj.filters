@@ -101,6 +101,9 @@
     <ClInclude Include="boss.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="snakeMini.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Quiz\Questions.txt">
@@ -119,6 +122,9 @@
       <Filter>Resource Files</Filter>
     </Text>
     <Text Include="Levels\BOSS1.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="Levels\snakemap.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>

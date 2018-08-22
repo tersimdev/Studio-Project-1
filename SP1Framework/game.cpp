@@ -6,11 +6,35 @@
 #include <iomanip>
 #include <sstream>
 
+#include "snakeMini.h"
+
 double  g_dElapsedTime;
 double  g_dDeltaTime;
 bool    g_abKeyPressed[K_COUNT];
 bool    g_abFlags[flagCount] = { 0 };
 int		g_menuSelection;
+
+/*For Snake*/
+int i;
+unsigned int j;
+bool goleft;
+bool goright;
+bool goup;
+bool godown;
+bool spawnapple;
+unsigned int lastbutton; //1=up,2=left,3=right,4=down
+unsigned int score = 0;
+unsigned int index = 0;
+bool spawnonsnake;
+std::vector<unsigned int> snakepart;
+int snakeini = 0;
+COORD PrevLoc;//previous location of apple
+int Snakewincondition = 15;
+string playerscore = "Score: ";
+SNAKELAD g_snake;
+SNAKELAD g_apple;
+std::vector<SNAKELAD> SnakeBody;
+
 // Console object
 Console g_Console(199, 51, "RISE OF THE TOMB EXPLORING N00BS");
 // Game specific variables here
@@ -55,12 +79,24 @@ void init(void)
 
 	//prevent selection of text- disable quick edit mode
 	g_Console.setConsoleMode(ENABLE_EXTENDED_FLAGS | ENABLE_MOUSE_INPUT);
-
+	
+	//to pass tutorial level
+	g_abFlags[tutoDone] = true;
+	
 	//init variables
 	g_menuSelection = 0;
 
-	//to pass tutorial level
-	g_abFlags[tutoDone] = true;
+	/*Snake*/
+	spawnapple = true;
+	applelocation(spawnapple);
+	g_snake.m_cLocation.X = g_Console.getConsoleSize().X / 2;
+	g_snake.m_cLocation.Y = g_Console.getConsoleSize().Y / 2;
+	g_snake.m_bActive = true;
+	g_apple.m_cLocation.X;
+	g_apple.m_cLocation.Y;
+	g_apple.m_bActive = true;
+	spawnapple = false;
+
 }
 
 //--------------------------------------------------------------
@@ -98,6 +134,7 @@ void getInput( void )
 	case S_MENU: //ui
 	case S_LOADSAVE: //ui
 	case S_GAME: //game
+	case S_SNAKEMINIGAME: //snek
 	case S_BOSS: //boss
 		{
 		g_abKeyPressed[K_UP] = isKeyPressed(VK_UP);
@@ -201,6 +238,8 @@ void update(double dt)
 		case S_QUIZ_B:
 		case S_QUIZ_E: quizMode();
 			break;
+		case S_SNAKEMINIGAME:SnakeGameplay();
+			break;
     }
 }
 //--------------------------------------------------------------
@@ -228,6 +267,8 @@ void render()
 		break;
 	case S_QUIZ_B:
 	case S_QUIZ_E: renderQuiz();
+		break;
+	case S_SNAKEMINIGAME: snakeminigame();
 		break;
 	}
 	renderFramerate();  // renders debug information, frame rate, elapsed time, etc
@@ -483,7 +524,7 @@ void checkForTiles()
 		}
 		else if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'M')) //snake
 		{
-			//g_eGameState = S_BOSS;
+			g_eGameState = S_SNAKEMINIGAME;
 		}
 		//boulders
 		if (g_map.findCharExists(g_sChar1.m_futureLocation, 'B'))
@@ -666,7 +707,7 @@ void bossMode()
 		g_quiz.query();
 		g_eGameState = S_QUIZ_B; //quiz
 	}
-	if (g_boss->active)
+	if (g_boss->active && (g_sChar1.m_bActive || g_sChar2.m_bActive))
 	{
 		//collison for each player
 		if (g_sChar1.m_bActive && g_boss->collision(g_sChar1.m_cLocation))
@@ -700,9 +741,17 @@ void bossMode()
 		}
 		g_boss->dBounceTime = g_dElapsedTime + 0.07;
 	}
+	else if (!g_sChar1.m_bActive && !g_sChar2.m_bActive)
+	{
+		//TEMPO, temporary, replace with loading last saved state function
+		g_sChar1.m_cLocation = { 10, 45 };
+		g_sChar2.m_cLocation = { 12, 45 };
+		g_map.loadMap("Levels/0.txt");
+		g_eGameState = S_GAME;
+	}
 	else
 	{
-		//TEMP, temporary, replace with loading last saved state function
+		//TEMPO, temporary, replace with loading last saved state function
 		g_sChar1.m_cLocation = { 10, 45 };
 		g_sChar2.m_cLocation = { 12, 45 };
 		g_map.loadMap("Levels/0.txt");
@@ -723,6 +772,354 @@ void renderBossMode()
 		}
 		
 	}	
+}
+
+
+
+
+
+
+
+
+
+/***************************************SNAKE GAME***************************************/
+
+
+void snakeminigame() //run mini game snake
+{
+
+	SnakeRenderMap();
+	SnakerenderCharacter();
+	Snakerenderapple();
+
+	// sets the initial state for the game
+}
+
+void SnakeGameplay()
+{
+	Snakecollisiondetection();
+	SnakemoveCharacter();
+}
+
+void SnakeRenderMap()
+{
+
+	COORD C = { 48,1 };
+	std::string line;
+	unsigned char box; //truncation error
+	unsigned int rows;
+	std::string map;
+	std::ifstream snakegame("Levels/snakemap.txt");
+	box = 219;
+	rows = 48;
+	if (!snakegame)
+	{
+		std::cerr << "File could not be opened" << std::endl;
+		exit(1);
+	}
+
+	for (j = 0; j < rows; j++)
+	{
+		C.Y++;
+		getline(snakegame, line);
+		for (i = 0; i < line.length(); i++)
+		{
+			if (line[i] == 'z')
+			{
+				line[i] = box;
+			}
+			g_Console.writeToBuffer(C, line, 0x0F);
+		}
+	}
+	snakegame.close();
+	g_Console.writeToBuffer({ g_Console.getConsoleSize().X / 2,43 }, playerscore + std::to_string(score) + '/' + std::to_string(Snakewincondition), 0x0C);
+}
+
+SNAKELAD createSnakeBody(int X, int Y)
+{
+	SNAKELAD temp;
+	temp.m_cLocation.X = X;
+	temp.m_cLocation.Y = Y;
+	temp.m_bActive = true;
+	return temp;
+}
+
+void Snakerenderapple()
+{
+	int X = 0;
+	int Y = 0;
+
+	// Draw the location of the character
+	WORD charColor = 0x0C;
+	if (g_apple.m_bActive == true)
+	{
+		charColor = 0x0C;
+	}
+	g_Console.writeToBuffer(g_apple.m_cLocation, (char)235, charColor);
+
+	if (((g_snake.m_cLocation.X) == (g_apple.m_cLocation.X)) && ((g_snake.m_cLocation.Y) == (g_apple.m_cLocation.Y)))
+	{
+		spawnapple = true;
+
+		do
+		{
+			applelocation(spawnapple);
+			for (i = 0; i < SnakeBody.size(); i++)
+			{
+				if (((g_apple.m_cLocation.X == SnakeBody[i].m_cLocation.X) && (g_apple.m_cLocation.Y == SnakeBody[i].m_cLocation.Y)) || ((g_apple.m_cLocation.X == g_snake.m_cLocation.X) && (g_apple.m_cLocation.Y == g_snake.m_cLocation.Y)))
+				{
+					spawnonsnake = true;
+				}
+
+				else
+				{
+					spawnonsnake = false;
+				}
+
+
+			}
+		} while (((PrevLoc.X == g_apple.m_cLocation.X) && (PrevLoc.Y == g_apple.m_cLocation.Y)) && (spawnonsnake = true));// if the new location is same as old location, call the function again
+
+
+		PrevLoc.X = g_apple.m_cLocation.X;
+		PrevLoc.Y = g_apple.m_cLocation.Y;//updates the last position of the apple 
+
+
+
+		spawnapple = false;
+		score++;
+		SnakeBody.push_back(createSnakeBody(X, Y));
+
+	}
+}
+
+void SnakerenderCharacter()
+{
+
+	// Draw the location of the character
+	WORD charColor = 0x0C;
+	if (g_snake.m_bActive)
+	{
+		charColor = 0x0A;
+	}
+	g_Console.writeToBuffer(g_snake.m_cLocation, char(1), charColor);
+
+
+
+	charColor = 0x0A;
+
+	g_Console.writeToBuffer(g_snake.m_cLocation, char(1), charColor);
+
+
+	for (j = 0; j < SnakeBody.size(); j++)
+	{
+		if (SnakeBody[j].m_bActive == true)
+		{
+			charColor = 0x0A;
+			g_Console.writeToBuffer(SnakeBody[j].m_cLocation, char(1), charColor);
+		}
+	}
+
+	//eat itself
+	for (j = 0; j < SnakeBody.size(); j++)
+	{
+		if ((g_snake.m_cLocation.X == SnakeBody[j].m_cLocation.X) && (g_snake.m_cLocation.Y == SnakeBody[j].m_cLocation.Y))
+		{
+			g_eGameState = S_GAME;
+			spawnapple = true;
+			applelocation(spawnapple);
+			g_snake.m_cLocation.X = g_Console.getConsoleSize().X / 2;
+			g_snake.m_cLocation.Y = g_Console.getConsoleSize().Y / 2;
+			g_snake.m_bActive = true;
+			g_apple.m_cLocation.X;
+			g_apple.m_cLocation.Y;
+			g_apple.m_bActive = true;
+			spawnapple = false;
+			lastbutton = 0;
+			SnakeBody.clear();
+			score = 0;
+			goup = false;
+			goleft = false;
+			goright = false;
+			godown = false;
+		}
+	}
+
+}
+
+void applelocation(bool spawnapple)
+{
+
+	srand(time(NULL));
+
+	unsigned int randomlocationX = rand() % 118 + 50;
+	unsigned int randomlocationY = rand() % 37 + 3;
+	COORD C = { randomlocationX,randomlocationY };
+
+
+	if (spawnapple == true)//changes location of apple
+	{
+		g_apple.m_cLocation.X = C.X;
+		g_apple.m_cLocation.Y = C.Y;
+	}
+}
+
+void movebodypart() //makes the body parts follow the head
+{
+	if (SnakeBody.size() != 0)
+	{
+		for (i = (SnakeBody.size() - 1); i >= 0; i--)
+		{
+			if (i == 0)
+			{
+				SnakeBody[0].m_cLocation.X = g_snake.m_cLocation.X;
+				SnakeBody[0].m_cLocation.Y = g_snake.m_cLocation.Y;
+			}
+
+			else
+			{
+				SnakeBody[i].m_cLocation.X = SnakeBody[i - 1].m_cLocation.X;
+				SnakeBody[i].m_cLocation.Y = SnakeBody[i - 1].m_cLocation.Y;
+			}
+		}
+	}
+}
+
+void Snakecollisiondetection()
+{
+	if (((g_snake.m_cLocation.Y == 2)
+
+		|| (g_snake.m_cLocation.X == 49)
+
+		|| (g_snake.m_cLocation.Y == 40)
+
+		|| (g_snake.m_cLocation.X == 168))
+
+
+		|| (score == 15)// win condition
+		)
+	{
+		g_eGameState = S_GAME;
+
+		spawnapple = true;
+		applelocation(spawnapple);
+		g_snake.m_cLocation.X = g_Console.getConsoleSize().X / 2;
+		g_snake.m_cLocation.Y = g_Console.getConsoleSize().Y / 2;
+		g_snake.m_bActive = true;
+		g_apple.m_cLocation.X;
+		g_apple.m_cLocation.Y;
+		g_apple.m_bActive = true;
+		spawnapple = false;
+		lastbutton = 0;
+		SnakeBody.clear();
+		score = 0;
+		goup = false;
+		goleft = false;
+		goright = false;
+		godown = false;
+	}
+}
+
+void SnakemoveCharacter()
+{
+
+	COORD C;
+	C = { g_snake.m_cLocation.X ,g_snake.m_cLocation.Y };//coord c here is player location 
+	bool bSomethingHappened = false;
+
+
+	if (g_dBounceTimeMove[0] > g_dElapsedTime || !g_snake.m_bActive)
+		return;
+	movebodypart();
+	if (g_abKeyPressed[K_UP] && (lastbutton != 4))
+	{
+		goup = true;
+		goleft = false;
+		goright = false;
+		godown = false;
+		lastbutton = 1;
+	}
+
+	if (g_abKeyPressed[K_LEFT] && (lastbutton != 3))
+	{
+		goup = false;
+		goleft = true;
+		goright = false;
+		godown = false;
+		lastbutton = 2;
+	}
+
+	if (g_abKeyPressed[K_RIGHT] && (lastbutton != 2))
+	{
+		goup = false;
+		goleft = false;
+		goright = true;
+		godown = false;
+		lastbutton = 3;
+	}
+
+	if (g_abKeyPressed[K_DOWN] && (lastbutton != 1))
+	{
+		goup = false;
+		goleft = false;
+		goright = false;
+		godown = true;
+		lastbutton = 4;
+	}
+
+
+
+
+	// Updating the location of the character based on the key press
+	// providing a beep sound whenver we shift the character
+	if (goup == true && g_snake.m_cLocation.Y > 2)
+	{
+		//Beep(1440, 30);
+		bSomethingHappened = true;
+		g_snake.m_cLocation.Y--;
+	}
+
+
+
+	if (goleft == true && g_snake.m_cLocation.X > 49)
+	{
+		//Beep(1440, 30);
+
+		bSomethingHappened = true;
+		g_snake.m_cLocation.X--;
+
+	}
+
+	if (godown == true && g_snake.m_cLocation.Y < 40)
+	{
+		//Beep(1440, 30);
+		bSomethingHappened = true;
+		g_snake.m_cLocation.Y++;
+
+	}
+
+
+	if (goright == true && g_snake.m_cLocation.X < 168)
+	{
+		//Beep(1440, 30);
+
+		bSomethingHappened = true;
+		g_snake.m_cLocation.X++;
+	}
+
+
+	if (g_abKeyPressed[K_SPACE])
+	{
+		g_snake.m_bActive = !g_snake.m_bActive;
+		bSomethingHappened = true;
+	}
+
+	if (bSomethingHappened)
+	{
+		// set the bounce time to some time in the future to prevent accidental triggers
+
+		g_dBounceTimeMove[0] = g_dElapsedTime + 0.05;
+	}
 }
 
 
@@ -1151,7 +1548,7 @@ void quizMode()
 			{
 				g_boss->updateLives(1);
 			}
-			//TEMP, temporary, replace with loading last saved state function
+			//TEMPOP, temporary, replace with loading last saved state function
 			if (g_eGameState == S_QUIZ_E)
 			{
 				g_eGameState = S_GAME;

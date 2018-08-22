@@ -110,45 +110,39 @@ void Boss::initBullets()
 		}
 		this->bulletAttack.bullet = (char)233;
 		break;
-	case 5: //right and ;=left
-		//same as case 4
+	case 5: //right and left
 		for (int i = 0; i < boxHeight; i++)
 		{
 			if (!(i % 2))
-			{
 				cp.X = boxLeftTop.X + boxWidth + 2;
-				cp.Y = boxLeftTop.Y + i;
-				pos.push_back(cp);
-				cd = { -1 , 0 };
-				dir.push_back(cd);
-			}
-		}
-		//fallthrough
-	case 3: //right
-		for (int i = 1; i < boxHeight; i++)
-		{
-			if (i % 2)
-			{
+			else
 				cp.X = boxLeftTop.X - 2;
-				cp.Y = boxLeftTop.Y + i;
-				pos.push_back(cp);
-				cd = { 1 , 0 };
-				dir.push_back(cd);
-			}
+
+			cp.Y = boxLeftTop.Y + i;
+			pos.push_back(cp);
+			cd = { 1 , 0 };
+			dir.push_back(cd);
+		}
+		break;
+	case 3: //right
+		for (int i = 0; i < boxHeight; i++)
+		{
+			cp.X = boxLeftTop.X - 2;
+			cp.Y = boxLeftTop.Y + i;
+			pos.push_back(cp);
+			cd = { 1 , 0 };
+			dir.push_back(cd);
 		}
 		this->bulletAttack.bullet = (char)222;
 		break;
 	case 4: //left
 		for (int i = 0; i < boxHeight; i++)
 		{
-			if (!(i % 2))
-			{
-				cp.X = boxLeftTop.X + boxWidth + 2;
-				cp.Y = boxLeftTop.Y + i;
-				pos.push_back(cp);
-				cd = { -1 , 0 };
-				dir.push_back(cd);
-			}
+			cp.X = boxLeftTop.X - 2;
+			cp.Y = boxLeftTop.Y + i;
+			pos.push_back(cp);
+			cd = { 1 , 0 };
+			dir.push_back(cd);
 		}
 		this->bulletAttack.bullet = (char)222;
 		break;

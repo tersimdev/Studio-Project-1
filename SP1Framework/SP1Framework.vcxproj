@@ -106,6 +106,7 @@
     <ClInclude Include="organism.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="quiz.h" />
+    <ClInclude Include="snakeMini.h" />
     <ClInclude Include="trigger.h" />
   </ItemGroup>
   <ItemGroup>
@@ -113,6 +114,7 @@
     <Text Include="Levels\1.txt" />
     <Text Include="Levels\2.txt" />
     <Text Include="Levels\BOSS1.txt" />
+    <Text Include="Levels\snakemap.txt" />
     <Text Include="Quiz\Answers.txt" />
     <Text Include="Quiz\Questions.txt" />
   </ItemGroup>
