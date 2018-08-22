@@ -1,9 +1,10 @@
 #include "aStar.h"
 
-aStar::aStar(int x, int y, Console* console)
+aStar::aStar(int x, int y, Console* console, Map* map)
 {
 	this->mapSize = {(SHORT)x, (SHORT)y};
 	this->console = console;
+	this->map = map;
 }
 
 bool aStar::isValid(COORD c)
@@ -26,7 +27,6 @@ vector<Node> aStar::makePath(vector<Node> &map, Node dest)
 {
 	Node c = dest;
 	vector<Node> path;
-	
 
 	while (!(map[(c.Y - 1 ) * mapSize.X + c.X].parent.X == c.X && map[(c.Y - 1 ) * mapSize.X + c.X].parent.Y == c.Y)
 		&& map[(c.Y - 1 ) * mapSize.X + c.X].X != -1 && map[(c.Y - 1 ) * mapSize.X + c.X].Y != -1)
@@ -89,15 +89,18 @@ vector<Node> aStar::aStarSearch(Node player, Node dest)
 		//find lowest fcost node and store it in node
 		Node node;
 		double temp = FLT_MAX;
-		for (unsigned int i = 0; i < openList.size(); i++)
+		do
 		{
-			if (openList[i].fCost < temp)
+			for (unsigned int i = 0; i < openList.size(); i++)
 			{
-				temp = openList[i].fCost;
-				node = openList[i];
+				if (openList[i].fCost < temp)
+				{
+					temp = openList[i].fCost;
+					node = openList[i];
+				}
+				openList.erase(openList.begin() + i);
 			}
-			openList.erase(openList.begin() + i);
-		}
+		} while (openList.size() > 1);
 
 		//switch current node to node with lowest fcost
 		c = node;
@@ -139,25 +142,28 @@ vector<Node> aStar::aStarSearch(Node player, Node dest)
 					destFound = true;
 					return makePath(map, dest);
 				}
-				else if (!closedList[(c.Y + newY - 1) * mapSize.X + (c.X + newX)]) //if not in closed list
+				else if (1)//!this->map->collideWithWall({ (SHORT)(c.X + newX), (SHORT)(c.Y + newY) }))
 				{
-					//calculate fcost
-					gNew = node.gCost + 1.0;
-					hNew = calcH({ (SHORT)(c.X + newX), (SHORT)(c.Y + newY) }, dest);
-					fNew = gNew + hNew;
-					//check if this neighbour is in openlist or if uninitialized ie check all neighbours not checked
-					if (map[(c.Y + newY - 1) * mapSize.X + (c.X + newX)].fCost == FLT_MAX ||
-						map[(c.Y + newY - 1) * mapSize.X + (c.X + newX)].fCost > fNew)
+					if (!closedList[(c.Y + newY - 1) * mapSize.X + (c.X + newX)]) //if not in closed list
 					{
-						//updates the cost of this neighbour
-						map[(c.Y + newY - 1) * mapSize.X + (c.X + newX)].fCost = fNew;
-						map[(c.Y + newY - 1) * mapSize.X + (c.X + newX)].gCost = gNew;
-						map[(c.Y + newY - 1) * mapSize.X + (c.X + newX)].hCost = hNew;
-						//make current node the parent of this neighbour node
-						map[(c.Y + newY - 1) * mapSize.X + (c.X + newX)].parent.X = c.X;
-						map[(c.Y + newY - 1) * mapSize.X + (c.X + newX)].parent.Y = c.Y;
-						//add to openlist
-						openList.emplace_back(map[(c.Y + newY - 1) * mapSize.X + (c.X + newX)]);
+						//calculate fcost
+						gNew = node.gCost + 1.0;
+						hNew = calcH({ (SHORT)(c.X + newX), (SHORT)(c.Y + newY) }, dest);
+						fNew = gNew + hNew;
+						//check if this neighbour is in openlist or if uninitialized ie check all neighbours not checked
+						if (map[(c.Y + newY - 1) * mapSize.X + (c.X + newX)].fCost == FLT_MAX ||
+							map[(c.Y + newY - 1) * mapSize.X + (c.X + newX)].fCost > fNew)
+						{
+							//updates the cost of this neighbour
+							map[(c.Y + newY - 1) * mapSize.X + (c.X + newX)].fCost = fNew;
+							map[(c.Y + newY - 1) * mapSize.X + (c.X + newX)].gCost = gNew;
+							map[(c.Y + newY - 1) * mapSize.X + (c.X + newX)].hCost = hNew;
+							//make current node the parent of this neighbour node
+							map[(c.Y + newY - 1) * mapSize.X + (c.X + newX)].parent.X = c.X;
+							map[(c.Y + newY - 1) * mapSize.X + (c.X + newX)].parent.Y = c.Y;
+							//add to openlist
+							openList.emplace_back(map[(c.Y + newY - 1) * mapSize.X + (c.X + newX)]);
+						}
 					}
 				}
 			}

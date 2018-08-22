@@ -1,6 +1,7 @@
 #ifndef _ASTAR_H
 #define _ASTAR_H
 #include "Framework/console.h"
+#include "map.h"
 #include <vector>
 #include <algorithm>
 using std::vector;
@@ -14,9 +15,11 @@ struct Node : public COORD
 class aStar
 {
 public:
-	aStar(int x, int y, Console* console);
+	aStar(int x, int y, Console* console, Map* map);
 
 	Console* console;
+	
+	Map* map;
 
 	COORD mapSize;
 

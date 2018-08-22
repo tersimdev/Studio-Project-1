@@ -40,8 +40,8 @@ std::vector<SNAKELAD> SnakeBody;
 Console g_Console(199, 51, "RISE OF THE TOMB EXPLORING N00BS");
 // Game specific variables here
 Map			g_map("Levels/astarTest.txt"); //map
-aStar		astar(g_map.cols, g_map.rows, &g_Console);
 //Map			g_map(0); //map
+aStar		astar(g_map.cols, g_map.rows, &g_Console, &g_map);
 SGameChar	g_sChar1((char)3, 0x0C, &g_map, 1); //player1
 SGameChar	g_sChar2((char)3, 0x0A, &g_map, 2); //player2
 Trigger		g_trigger(&g_map, &g_Console);
@@ -657,10 +657,14 @@ void renderGame()
 	vector<Node> test;
 	test = astar.aStarSearch(start, dest);
 	if (test.size() != 0)
+	{
 		for (auto i : test)
 		{
 			g_Console.writeToBuffer(i, "H", 0x0F);
+
 		}
+		g_sChar1.m_cLocation = test[0];
+	}
 	g_Console.writeToBuffer({ g_map.findChar('E').X + 1 , g_map.findChar('E').Y }, "FOUND", 0x0A);
 		
 }
