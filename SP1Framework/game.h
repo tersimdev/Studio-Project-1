@@ -91,6 +91,7 @@ enum EGAMESTATES
 {
     S_SPLASHSCREEN,
 	S_MENU,
+	S_LOADSAVE,
     S_GAME,
 	S_BOSS,
 	S_QUIZ,
@@ -118,6 +119,7 @@ void renderToScreen();      // dump the contents of the buffer to the screen, on
 
 /*new*/
 void mainMenu();			//captures events for navigating UI
+void loadSave();			//captures events for navigating UI
 void actionsListener();		//listens to actions
 void checkForTiles();		//checks for special tiles which player can interact with
 void enemyMovement();		//moves the enemy and collision detection
@@ -126,6 +128,7 @@ void quizMode();			//captures keyboard input
 void renderHealth();		//renders the health of players
 void renderBullet();		//renders bullets from players
 void renderMainMenu();      //renders main menu
+void renderLoadSave();		//renders load saves menu
 void renderBossMode();		//renders the boss' attacks etc
 void renderQuiz();			//renders the quiz to console
 void renderItems();			//renders currently owned items

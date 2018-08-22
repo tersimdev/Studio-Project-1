@@ -19,7 +19,7 @@ SGameChar	g_sChar1((char)3, 0x0C, &g_map, 1); //player1
 SGameChar	g_sChar2((char)3, 0x0A, &g_map, 2); //player2
 Trigger		g_trigger(&g_map, &g_Console);
 Quiz		g_quiz(0); //quiz
-Boss*		g_boss = NULL;
+Boss*		g_boss = NULL; //boss
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 // these are to prevent key bouncing, so we won't trigger keypresses more than once
 double	g_dBounceTimeNorm;
@@ -96,6 +96,7 @@ void getInput( void )
 	case S_SPLASHSCREEN: //none
 		break;
 	case S_MENU: //ui
+	case S_LOADSAVE: //ui
 	case S_GAME: //game
 	case S_BOSS: //boss
 		{
@@ -190,6 +191,8 @@ void update(double dt)
             break;
 		case S_MENU: mainMenu();
 			break;
+		case S_LOADSAVE: loadSave();
+			break;
         case S_GAME: gameplay(); // gameplay logic when we are in the game
             break;
 		case S_BOSS: bossMode();
@@ -214,6 +217,8 @@ void render()
 	case S_SPLASHSCREEN: renderSplashScreen();
 		break;
 	case S_MENU: renderMainMenu();
+		break;
+	case S_LOADSAVE: renderLoadSave();
 		break;
 	case S_GAME: renderGame();
 		break;
@@ -673,6 +678,11 @@ void mainMenu()
 			g_eGameState = S_GAME;
 			break;
 		case 1:
+			g_eGameState = S_LOADSAVE;
+			g_menuSelection = 1;
+			//currentgamestate = 2;
+			break;
+		case 2:
 			g_bQuitGame = true;
 			break;
 		}
@@ -683,13 +693,13 @@ void mainMenu()
 	{
 		g_menuSelection--;
 		if (g_menuSelection == -1)
-			g_menuSelection = 1;
+			g_menuSelection = 2;
 		bSomethingHappened = true;
 	}
 	else if (g_abKeyPressed[K_DOWN] || g_abKeyPressed[K_S])
 	{
 		g_menuSelection++;
-		g_menuSelection %= 2;
+		g_menuSelection %= 3;
 		bSomethingHappened = true;
 	}
 
@@ -698,6 +708,11 @@ void mainMenu()
 		g_eGameState = S_GAME;
 	}
 	else if (g_abKeyPressed[K_2])
+	{
+		g_eGameState = S_LOADSAVE;
+		g_menuSelection = 0;
+	}
+	else if (g_abKeyPressed[K_3])
 	{
 		g_bQuitGame = true;
 	}
@@ -714,9 +729,9 @@ void mainMenu()
 	}
 }
 
-void renderMainMenu()					
+void renderMainMenu()
 {
-	WORD attri1 = 0x07, attri2 = 0x07;
+	WORD attri1 = 0x07, attri2 = 0x07, attri3 = 0x07;
 
 	switch (g_menuSelection)
 	{
@@ -726,15 +741,131 @@ void renderMainMenu()
 	case 1:
 		attri2 = 0x03;
 		break;
+	case 2:
+		attri3 = 0x03;
+		break;
 	}
 
 	COORD c = g_Console.getConsoleSize();
 	c.Y /= 3;
-	c.X = (SHORT)(c.X * 0.5 - 3);
-	g_Console.writeToBuffer(c, "PLAY", attri1);
+	c.X = c.X * 0.5 - 3;
+
+	g_Console.writeToBuffer(c, "1. PLAY", attri1);
 	c.Y += 1;
-	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 3);
-	g_Console.writeToBuffer(c, "EXIT", attri2);
+	c.X = g_Console.getConsoleSize().X * 0.5 - 3;
+	g_Console.writeToBuffer(c, "2. LOAD", attri2);
+	c.Y += 1;
+	c.X = g_Console.getConsoleSize().X * 0.5 - 3;
+	g_Console.writeToBuffer(c, "3. EXIT", attri3);
+}
+
+void loadSave()
+{
+	//handling input
+	bool bSomethingHappened = false;
+	if (g_dBounceTimeUI > g_dElapsedTime)
+		return;
+
+	if (g_abKeyPressed[K_ENTER])
+	{
+		switch (g_menuSelection)
+		{
+		case 0:
+			//load saved file 1
+			break;
+		case 1:
+			//load saved file 2
+			break;
+		case 2:
+			//load saved file 3
+			break;
+		case 3:
+			g_eGameState = S_MENU;
+			g_menuSelection = 1;
+			break;
+		}
+		bSomethingHappened = true;
+	}
+
+	if (g_abKeyPressed[K_UP] || g_abKeyPressed[K_W])
+	{
+		g_menuSelection--;
+		if (g_menuSelection == -1)
+			g_menuSelection = 3;
+		bSomethingHappened = true;
+	}
+	else if (g_abKeyPressed[K_DOWN] || g_abKeyPressed[K_S])
+	{
+		g_menuSelection++;
+		g_menuSelection %= 4;
+		bSomethingHappened = true;
+	}
+
+	if (g_abKeyPressed[K_1])
+	{
+		//load saved file 1
+	}
+	else if (g_abKeyPressed[K_2])
+	{
+		//load saved file 2
+	}
+	else if (g_abKeyPressed[K_3])
+	{
+		//load saved file 3
+	}
+	else if (g_abKeyPressed[K_4])
+	{
+		g_eGameState = S_MENU;
+		g_menuSelection = 0;
+	}
+
+	if (g_abKeyPressed[K_BACKSPACE] || g_abKeyPressed[K_ESCAPE])
+	{
+		g_eGameState = S_MENU;
+		g_menuSelection = 0;
+	}
+
+	if (bSomethingHappened)
+	{
+		// set the bounce time to some time in the future to prevent accidental triggers
+		g_dBounceTimeUI = g_dElapsedTime + 0.2;
+	}
+}
+
+void renderLoadSave()
+{
+	WORD attri1 = 0x07, attri2 = 0x07, attri3 = 0x07, attri4 = 0x07;
+
+	switch (g_menuSelection)
+	{
+	case 0:
+		attri1 = 0x03;
+		break;
+	case 1:
+		attri2 = 0x03;
+		break;
+	case 2:
+		attri3 = 0x03;
+		break;
+	case 3:
+		attri4 = 0x03;
+		break;
+	}
+
+	COORD c = g_Console.getConsoleSize();
+	c.Y /= 3;
+	c.X = c.X * 0.5 - 4;
+
+	g_Console.writeToBuffer(c, "1. EMPTY", attri1);
+	c.Y += 1;
+	c.X = g_Console.getConsoleSize().X * 0.5 - 4;
+	g_Console.writeToBuffer(c, "2. EMPTY", attri2);
+	c.Y += 1;
+	c.X = g_Console.getConsoleSize().X * 0.5 - 4;
+	g_Console.writeToBuffer(c, "3. EMPTY", attri3);
+	c.Y += 1;
+	c.X = g_Console.getConsoleSize().X * 0.5 - 4;
+	g_Console.writeToBuffer(c, "4. BACK", attri4);
 }
 
 void quizMode()
