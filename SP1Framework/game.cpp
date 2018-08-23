@@ -6,6 +6,8 @@
 #include <iomanip>
 #include <sstream>
 
+
+
 double  g_dElapsedTime;
 double  g_dDeltaTime;
 bool    g_abKeyPressed[K_COUNT];
@@ -458,9 +460,11 @@ void processUserInput()
 		switch (g_eGameState)
 		{
 		case S_GAME:
+			SAVE();
 			g_bQuitGame = true;
 			break;
 		case S_BOSS:
+			SAVE();
 			g_eGameState = S_GAME;
 			break;
 		}
@@ -1301,6 +1305,8 @@ void mainMenu()
 
 void renderMainMenu()
 {
+	//for music, cant get it to work async with other functions
+	//PlaySound(TEXT("Left_Bank_Two_Elevator_music[Mp3Converter.net] (1).wav"), NULL, SND_LOOP | SND_ASYNC);
 	WORD attri1 = 0x07, attri2 = 0x07, attri3 = 0x07;
 
 	switch (g_menuSelection)
@@ -1340,6 +1346,7 @@ void loadSave()
 		switch (g_menuSelection)
 		{
 		case 0:
+			LOAD();
 			//load saved file 1
 			break;
 		case 1:
@@ -1698,5 +1705,126 @@ void renderItems()
 	if (g_abFlags[hasKey])
 	{
 		g_Console.writeToBuffer({ 145, 5 }, "KEY", 0x0E);
+	}
+}
+
+void SAVE()
+{
+	std::ofstream savefile("save1");
+
+	if (savefile.is_open())
+	{
+		savefile << g_eGameState << std::endl;
+		//save map
+
+		if (g_sChar1.m_bActive == true)
+		{
+			savefile << g_sChar1.m_cLocation.X << std::endl;
+			savefile << g_sChar1.m_cLocation.Y << std::endl;
+			savefile << "001" << std::endl;//player1 is active
+		}
+
+
+
+		if (g_sChar2.m_bActive == true)
+		{
+			savefile << g_sChar2.m_cLocation.X << std::endl;
+			savefile << g_sChar2.m_cLocation.Y << std::endl;
+			savefile << "002" << std::endl;//player2 is active
+		}
+
+		/*	if (g_abFlags[3] == true)
+		{
+		savefile << "003" << std::endl;
+		}
+
+		if (g_abFlags[5] == true)
+		{
+		savefile <<"005" << std::endl;
+		}*/
+
+		//savefile << "END" << std::endl;
+		savefile.close();
+	}
+
+	else
+	{
+		std::cerr << "UNABLE TO OPEN FILE" << std::endl;
+	}
+}
+
+void LOAD()
+{
+
+	string load[100];
+	std::ifstream savefile("save1");
+
+	for (i = 0; i<7 /* load[i]!="END" */; i++)
+	{
+		getline(savefile, load[i]);
+
+		if (i == 0)
+		{
+			switch (stoi(load[i]))
+			{
+			case 3:g_eGameState = S_GAME;
+				break;
+			case 4:g_eGameState = S_BOSS;
+				break;
+			}
+		}
+
+		switch (stoi(load[i]))
+		{
+		case 001:g_sChar1.m_cLocation.X = stoi(load[i - 2]);
+			g_sChar1.m_cLocation.Y = stoi(load[i - 1]);
+			break;
+
+		case 002:g_sChar2.m_cLocation.X = stoi(load[i - 2]);
+			g_sChar2.m_cLocation.Y = stoi(load[i - 1]);
+			break;
+
+			/*case 003:g_abFlags[3] = true;//pickaxe
+			break;
+
+			case 005:g_abFlags[5] = true;//keys
+			break;*/
+		}
+
+
+
+
+		/*if (i == 1)
+		{
+		g_sChar1.m_cLocation.X = stoi(load);
+		}
+
+		if (i == 2)
+		{
+		g_sChar1.m_cLocation.Y = stoi(load);
+		}
+
+		if (i == 3)
+		{
+		g_sChar2.m_cLocation.X = stoi(load);
+		}
+
+		if (i == 4)
+		{
+		g_sChar2.m_cLocation.Y = stoi(load);
+		}*/
+
+
+
+
+
+		/*switch (load)
+		{
+		case ("haspickaxe"): g_abFlags[3] = true;
+		break;
+		case( "haskey"):g_abFlags[5] = true;
+		break;
+		}*/
+
 	}
 }

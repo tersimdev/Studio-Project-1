@@ -13,6 +13,10 @@
 #include "aStar.h"
 #include "snakeMini.h"
 #include <string>
+#include <vector>
+#include "Windows.h"//for music
+#include "MMsystem.h"
+
 using std::string;
 
 extern CStopWatch g_swTimer;
@@ -140,7 +144,8 @@ void renderBossMode();		//renders the boss' attacks etc
 void renderQuiz();			//renders the quiz to console
 void renderItems();			//renders currently owned items
 void renderCube();			//renders the cube;
-
+void SAVE();
+void LOAD();
 
 
 #endif // _GAME_H
