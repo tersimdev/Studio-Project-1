@@ -23,6 +23,7 @@ class Map
 {
 public:
 	Map(int index);
+	Map(string fileName);
 
 	const static int numOfLevels = 6;
 
@@ -32,6 +33,7 @@ public:
 
 	vector<string> mapNames;
 	
+	//num of rows, num of columns, and current map level form ai ngame
 	int rows, cols, mapLevel = 0;
 
 	void updateMap(); //loads new level

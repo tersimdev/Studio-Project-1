@@ -6,6 +6,11 @@ Map::Map(int index)
 	mapNamesInit();
 	loadMap(mapNames[index]);
 }
+Map::Map(string fileName)
+{
+	mapNamesInit();
+	loadMap(fileName);
+}
 
 /*FUNCTIONS*/
 void Map::loadMap(string fileName)
