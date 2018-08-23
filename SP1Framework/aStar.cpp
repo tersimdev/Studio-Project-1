@@ -89,19 +89,20 @@ vector<Node> aStar::aStarSearch(Node player, Node dest)
 		//find lowest fcost node and store it in node
 		Node node;
 		double temp = FLT_MAX;
-		do
+		unsigned int index = 0;
+		//loop twice
+		for (unsigned int i = 0; i < openList.size(); i++)
 		{
-			for (unsigned int i = 0; i < openList.size(); i++)
+			if (openList[i].fCost < temp)
 			{
-				if (openList[i].fCost < temp)
-				{
-					temp = openList[i].fCost;
-					node = openList[i];
-				}
-				openList.erase(openList.begin() + i);
+				temp = openList[i].fCost;
+				node = openList[i];
+				index = i;
 			}
-		} while (openList.size() > 1);
+		}
 
+		//remove selected node from openlist
+		openList.erase(openList.begin() + index);
 		//switch current node to node with lowest fcost
 		c = node;
 		//add to closedlist
@@ -142,7 +143,7 @@ vector<Node> aStar::aStarSearch(Node player, Node dest)
 					destFound = true;
 					return makePath(map, dest);
 				}
-				else if (1)//!this->map->collideWithWall({ (SHORT)(c.X + newX), (SHORT)(c.Y + newY) }))
+				else if (!this->map->collideWithWall({ (SHORT)(c.X + newX), (SHORT)(c.Y + newY) }))
 				{
 					if (!closedList[(c.Y + newY - 1) * mapSize.X + (c.X + newX)]) //if not in closed list
 					{
