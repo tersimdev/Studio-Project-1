@@ -6,9 +6,6 @@
 #include <iomanip>
 #include <sstream>
 
-#include "aStar.h"
-#include "snakeMini.h"
-
 double  g_dElapsedTime;
 double  g_dDeltaTime;
 bool    g_abKeyPressed[K_COUNT];
@@ -47,6 +44,7 @@ SGameChar	g_sChar2((char)3, 0x0A, &g_map, 2); //player2
 Trigger		g_trigger(&g_map, &g_Console);
 Quiz		g_quiz(0); //quiz
 Boss*		g_boss = NULL; //boss
+Cube		g_cube; //cube reward
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 // these are to prevent key bouncing, so we won't trigger keypresses more than once
 double	g_dBounceTimeNorm;
@@ -139,6 +137,7 @@ void getInput( void )
 	case S_GAME: //game
 	case S_SNAKEMINIGAME: //snek
 	case S_BOSS: //boss
+	case S_RUBIKS: //rubiks cube
 		{
 		g_abKeyPressed[K_UP] = isKeyPressed(VK_UP);
 		g_abKeyPressed[K_DOWN] = isKeyPressed(VK_DOWN);
@@ -243,6 +242,8 @@ void update(double dt)
 			break;
 		case S_SNAKEMINIGAME:SnakeGameplay();
 			break;
+		case S_RUBIKS: cubeControl();
+			break;
     }
 }
 //--------------------------------------------------------------
@@ -272,6 +273,8 @@ void render()
 	case S_QUIZ_E: renderQuiz();
 		break;
 	case S_SNAKEMINIGAME: snakeminigame();
+		break;
+	case S_RUBIKS: renderCube();
 		break;
 	}
 	renderFramerate();  // renders debug information, frame rate, elapsed time, etc
@@ -786,6 +789,92 @@ void renderBossMode()
 	}	
 }
 
+
+
+
+
+
+
+
+
+/***************************************RUBIKS CUBE***************************************/
+
+
+void cubeControl()
+{
+	bool eventHappened = false;
+	if (g_dBounceTimeUI > g_dElapsedTime)
+		return;
+	//moves the cube
+	if (g_abKeyPressed[K_W])
+	{
+		g_cube.moveR(1);
+		eventHappened = true;
+	}
+	else if (g_abKeyPressed[K_S])
+	{
+		g_cube.moveR(-1);
+		eventHappened = true;
+	}
+	if (g_abKeyPressed[K_A])
+	{
+		g_cube.moveU(-1);
+		eventHappened = true;
+	}
+	else if (g_abKeyPressed[K_D])
+	{
+		g_cube.moveU(1);
+		eventHappened = true;
+	}
+	if (g_abKeyPressed[K_UP])
+	{
+		g_cube.rotateY(1);
+		eventHappened = true;
+	}
+	else if (g_abKeyPressed[K_DOWN])
+	{
+		g_cube.rotateY(-1);
+		eventHappened = true;
+	}
+	if (g_abKeyPressed[K_LEFT])
+	{
+		g_cube.rotateX(1);
+		eventHappened = true;
+	}
+	else if (g_abKeyPressed[K_RIGHT])
+	{
+		g_cube.rotateX(-1);
+		eventHappened = true;
+	}
+	if (eventHappened)
+		g_dBounceTimeUI = g_dElapsedTime + 0.2; // avg
+}
+
+void renderCube()
+{
+	COORD c[6];
+	c[0] = { 99, 24 };
+	c[1] = { 105, 24 };
+	c[2] = { 93, 24 };
+	c[3] = { 99, 20 };
+	c[4] = { 99, 28 };
+	c[5] = { 99, 32 };
+	for (int i = 0; i < 6; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			g_Console.writeToBuffer(c[i], 'H', g_cube.faces[i].colors[j]);
+			if (j == 0 || j == 2) c[i].X++;
+			else 
+			{
+				c[i].Y++; 
+				c[i].X--;
+			}
+		}
+	}
+	g_Console.writeToBuffer({(SHORT)120, (SHORT)24}, "Solve it if you can :)", 0x0F);
+	g_Console.writeToBuffer({(SHORT)120, (SHORT)25}, "'Esc' to exit", 0x0F);
+}
 
 
 

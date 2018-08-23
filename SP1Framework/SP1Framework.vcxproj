@@ -83,6 +83,7 @@
     <ClCompile Include="boss.cpp" />
     <ClCompile Include="boulders.cpp" />
     <ClCompile Include="COORDS.cpp" />
+    <ClCompile Include="cube.cpp" />
     <ClCompile Include="enemies.cpp" />
     <ClCompile Include="Framework\console.cpp" />
     <ClCompile Include="Framework\timer.cpp" />
@@ -98,6 +99,7 @@
     <ClInclude Include="boss.h" />
     <ClInclude Include="boulders.h" />
     <ClInclude Include="COORDS.h" />
+    <ClInclude Include="cube.h" />
     <ClInclude Include="enemies.h" />
     <ClInclude Include="Framework\console.h" />
     <ClInclude Include="Framework\timer.h" />

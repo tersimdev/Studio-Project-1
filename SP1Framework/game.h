@@ -9,6 +9,9 @@
 #include "quiz.h"
 #include "trigger.h"
 #include "boss.h"
+#include "cube.h"
+#include "aStar.h"
+#include "snakeMini.h"
 #include <string>
 using std::string;
 
@@ -97,6 +100,7 @@ enum EGAMESTATES
 	S_QUIZ_E,
 	S_QUIZ_B,
 	S_SNAKEMINIGAME,
+	S_RUBIKS,
     S_COUNT
 };
 
@@ -127,6 +131,7 @@ void checkForTiles();		//checks for special tiles which player can interact with
 void enemyMovement();		//moves the enemy and collision detection
 void bossMode();			//new map and collision tiles and enemies
 void quizMode();			//captures keyboard input
+void cubeControl();			//captures input to move cube
 void renderHealth();		//renders the health of players
 void renderBullet();		//renders bullets from players
 void renderMainMenu();      //renders main menu
@@ -134,6 +139,7 @@ void renderLoadSave();		//renders load saves menu
 void renderBossMode();		//renders the boss' attacks etc
 void renderQuiz();			//renders the quiz to console
 void renderItems();			//renders currently owned items
+void renderCube();			//renders the cube;
 
 
 
