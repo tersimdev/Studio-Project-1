@@ -52,46 +52,12 @@ bool Enemy::isAggro(COORD playerPos)
 			&& this->m_cLocation.Y - this->aggroRange <= playerPos.Y));
 }
 
-void Enemy::setGeneralDir(COORD playerPos)
+void Enemy::pathFindDir(vector<Node> path)
 {
-	if (playerPos.X - this->m_cLocation.X > 0)
-		this->dirToPlayerX = { 1, 0 };
-	else if (playerPos.X - this->m_cLocation.X < 0)
-		this->dirToPlayerX = { -1, 0 };
-	else
-		this->dirToPlayerY = { 0, 0 };
-
-	if (playerPos.Y - this->m_cLocation.Y > 0)
-		this->dirToPlayerY = { 0, 1 };
-	else if (playerPos.Y - this->m_cLocation.Y < 0)
-		this->dirToPlayerY = { 0, -1 };
-	else
-		this->dirToPlayerY = { 0, 0 };
-
-	dirToPlayerInvX.X = dirToPlayerX.X * -1;
-	dirToPlayerInvY.Y = dirToPlayerY.Y * -1;
-	this->direction = dirToPlayerX; //default to X
-}
-
-//imperfect pathfinding
-void Enemy::setAltDir(Map* map, COORD playerPos)
-{
-	if (!map->collideWithWall(ADDCOORDS(this->m_cLocation, this->dirToPlayerX)))
+	if (!path.empty())
 	{
-		this->direction = dirToPlayerX;
-	}
-	else if (this->m_cLocation.X == dirToPlayerX.X)
-	{
-		this->direction = { 0, dirToPlayerY.Y };
-	}
-
-	if (!map->collideWithWall(ADDCOORDS(this->m_cLocation, this->dirToPlayerY)))
-	{
-		this->direction = dirToPlayerY;
-	}
-	else if (this->m_cLocation.Y == dirToPlayerY.Y)
-	{
-		this->direction = { dirToPlayerX.X, 0 };
+		this->direction.X = path[0].X - this->m_cLocation.X;
+		this->direction.Y = path[0].Y - this->m_cLocation.Y;
 	}
 }
 

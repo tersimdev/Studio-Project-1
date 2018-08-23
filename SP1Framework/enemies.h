@@ -3,6 +3,7 @@
 #include "Framework\console.h"
 #include "organism.h"
 #include "map.h"
+#include "aStar.h"
 #include <random>
 #include <time.h>
 
@@ -24,9 +25,7 @@ public:
 
 	bool isAggro(COORD playerPos);
 
-	void setGeneralDir(COORD playerPos);
-
-	void setAltDir(Map* map, COORD playerPos);
+	void pathFindDir(vector<Node> path);
 
 	void moveEnemy(Map* map, Console* console);
 
@@ -35,9 +34,9 @@ public:
 	bool enemyAttack(COORD playerPos);
 
 private:
-	COORD spawnNonce = { 20, 10 };
+	COORD spawnNonce = { 10, 5 };
 
-	int aggroRange = 15;
+	int aggroRange = 30;
 };
 
 #endif

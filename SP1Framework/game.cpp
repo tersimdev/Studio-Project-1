@@ -30,7 +30,7 @@ bool spawnonsnake;
 std::vector<unsigned int> snakepart;
 int snakeini = 0;
 COORD PrevLoc;//previous location of apple
-int Snakewincondition = 15;
+int Snakewincondition = 3;
 string playerscore = "Score: ";
 SNAKELAD g_snake;
 SNAKELAD g_apple;
@@ -39,8 +39,8 @@ std::vector<SNAKELAD> SnakeBody;
 // Console object
 Console g_Console(199, 51, "RISE OF THE TOMB EXPLORING N00BS");
 // Game specific variables here
-Map			g_map("Levels/astarTest.txt"); //map
-//Map			g_map(0); //map
+//Map		g_map("Levels/astarTest.txt"); //map for astar testing
+Map			g_map(0); //map
 aStar		astar(g_map.cols, g_map.rows, &g_Console, &g_map);
 SGameChar	g_sChar1((char)3, 0x0C, &g_map, 1); //player1
 SGameChar	g_sChar2((char)3, 0x0A, &g_map, 2); //player2
@@ -564,62 +564,64 @@ void checkForTiles()
 }
 
 void enemyMovement()
-{	
-	bool bChangeDir = false;
+{
 	bool bMoving = false;
+	Node start, dest;
+	vector<Node> path;
 	if (g_dBounceTimeEnemy[0] > g_dElapsedTime)
 		return;
 	for (unsigned int i = 0; i < g_trigger.allEnemies.size(); i++)
 	{
-		if (g_dBounceTimeEnemy[1] < g_dElapsedTime)
+		if (g_trigger.allEnemies[i]->isAggro(g_sChar2.m_cLocation))
 		{
-			if (g_trigger.allEnemies[i]->isAggro(g_sChar2.m_cLocation))
-			{
-				//calculate general direction to player
-				g_trigger.allEnemies[i]->setGeneralDir(g_sChar2.m_cLocation);
-				//sets the direction to move if collide
-				g_trigger.allEnemies[i]->setAltDir(&g_map, g_sChar2.m_cLocation);
-			}
-			
-			else if (g_trigger.allEnemies[i]->isAggro(g_sChar1.m_cLocation))
-			{
-				//calculate general direction to player	
-				g_trigger.allEnemies[i]->setGeneralDir(g_sChar1.m_cLocation);
-				//sets the direction to move if collide
+			//A* to find best path
+			start.X = g_trigger.allEnemies[i]->m_cLocation.X;
+			start.Y = g_trigger.allEnemies[i]->m_cLocation.Y;
+			dest.X = g_sChar2.m_cLocation.X;
+			dest.Y = g_sChar2.m_cLocation.Y;
+			path = astar.aStarSearch(start, dest);
+			//find direction based on A* path
+			g_trigger.allEnemies[i]->pathFindDir(path);
+		}
 
-				g_trigger.allEnemies[i]->setAltDir(&g_map, g_sChar1.m_cLocation);
-			}
-			else
-			{
-				g_trigger.allEnemies[i]->direction = g_trigger.allEnemies[i]->directionGen(g_dBounceTimeEnemy[0]);
-			}
-			//calculating future location
-			g_trigger.allEnemies[i]->m_futureLocation
-				= ADDCOORDS(g_trigger.allEnemies[i]->m_cLocation, g_trigger.allEnemies[i]->direction);
-			if (!g_map.collideWithWall(g_trigger.allEnemies[i]->m_futureLocation))
-			{
-				g_trigger.allEnemies[i]->moveEnemy(&g_map, &g_Console);
-				bMoving = true;
-			}
+		else if (g_trigger.allEnemies[i]->isAggro(g_sChar1.m_cLocation))
+		{
+			//A* to find best path
+			start.X = g_trigger.allEnemies[i]->m_cLocation.X;
+			start.Y = g_trigger.allEnemies[i]->m_cLocation.Y;
+			dest.X = g_sChar1.m_cLocation.X;
+			dest.Y = g_sChar1.m_cLocation.Y;
+			path = astar.aStarSearch(start, dest);
+			//find direction based on A* path
+			g_trigger.allEnemies[i]->pathFindDir(path);
+		}
+		else
+		{
+			g_trigger.allEnemies[i]->direction = g_trigger.allEnemies[i]->directionGen(g_dBounceTimeEnemy[0]);
+		}
 
-			//if quiz triggered
-			if (g_trigger.allEnemies[i]->enemyAttack(g_sChar1.m_cLocation) || g_trigger.allEnemies[i]->enemyAttack(g_sChar2.m_cLocation))
-			{
-				g_trigger.allEnemies[i]->destroyEnemy(&g_map);
-				g_quiz.query();
-				g_eGameState = S_QUIZ_E;
-				
-			}
+		//calculating future location
+		g_trigger.allEnemies[i]->m_futureLocation
+			= ADDCOORDS(g_trigger.allEnemies[i]->m_cLocation, g_trigger.allEnemies[i]->direction);
+		if (!g_map.collideWithWall(g_trigger.allEnemies[i]->m_futureLocation))
+		{
+			g_trigger.allEnemies[i]->moveEnemy(&g_map, &g_Console);
+			bMoving = true;
+		}
+
+		//if quiz triggered
+		if (g_trigger.allEnemies[i]->enemyAttack(g_sChar1.m_cLocation) || g_trigger.allEnemies[i]->enemyAttack(g_sChar2.m_cLocation))
+		{
+			g_trigger.allEnemies[i]->destroyEnemy(&g_map);
+			g_quiz.query();
+			g_eGameState = S_QUIZ_E;
+
 		}
 	}
 
 	if (bMoving)
 	{
 		g_dBounceTimeEnemy[0] = g_dElapsedTime + 0.07;
-	}
-	if (bChangeDir)
-	{
-		g_dBounceTimeEnemy[1] = g_dElapsedTime + 0.35;
 	}
 	
 }
@@ -649,7 +651,7 @@ void renderGame()
 	if (g_abFlags[shooting]) // renders bullet if shooting
 		renderBullet();
 
-	Node start, dest;
+	/*Node start, dest;
 	start.X = g_sChar1.m_cLocation.X;
 	start.Y = g_sChar1.m_cLocation.Y;
 	dest.X = g_map.findChar('E').X;
@@ -665,7 +667,7 @@ void renderGame()
 		}
 		g_sChar1.m_cLocation = test[0];
 	}
-	g_Console.writeToBuffer({ g_map.findChar('E').X + 1 , g_map.findChar('E').Y }, "FOUND", 0x0A);
+	g_Console.writeToBuffer({ g_map.findChar('E').X + 1 , g_map.findChar('E').Y }, "FOUND", 0x0A);*/
 		
 }
 
@@ -873,7 +875,7 @@ void Snakerenderapple()
 
 	// Draw the location of the character
 	WORD charColor = 0x0C;
-	if (g_apple.m_bActive == true)
+	if (g_apple.m_bActive)
 	{
 		charColor = 0x0C;
 	}
@@ -935,7 +937,7 @@ void SnakerenderCharacter()
 
 	for (j = 0; j < SnakeBody.size(); j++)
 	{
-		if (SnakeBody[j].m_bActive == true)
+		if (SnakeBody[j].m_bActive)
 		{
 			charColor = 0x0A;
 			g_Console.writeToBuffer(SnakeBody[j].m_cLocation, char(1), charColor);
@@ -996,8 +998,8 @@ void movebodypart() //makes the body parts follow the head
 			{
 				SnakeBody[0].m_cLocation.X = g_snake.m_cLocation.X;
 				SnakeBody[0].m_cLocation.Y = g_snake.m_cLocation.Y;
+				break;
 			}
-
 			else
 			{
 				SnakeBody[i].m_cLocation.X = SnakeBody[i - 1].m_cLocation.X;
@@ -1018,7 +1020,7 @@ void Snakecollisiondetection()
 		|| (g_snake.m_cLocation.X == 168))
 
 
-		|| (score == 15)// win condition
+		|| (score == Snakewincondition)// win condition
 		)
 	{
 		g_eGameState = S_GAME;
@@ -1140,7 +1142,7 @@ void SnakemoveCharacter()
 	{
 		// set the bounce time to some time in the future to prevent accidental triggers
 
-		g_dBounceTimeMove[0] = g_dElapsedTime + 0.05;
+		g_dBounceTimeMove[0] = g_dElapsedTime + 0.1;
 	}
 }
 
