@@ -562,7 +562,7 @@ void checkForTiles()
 		}
 	}
 }
-
+//vector<Node> path; //for astar path visualization
 void enemyMovement()
 {
 	bool bMoving = false;
@@ -651,23 +651,11 @@ void renderGame()
 	if (g_abFlags[shooting]) // renders bullet if shooting
 		renderBullet();
 
-	/*Node start, dest;
-	start.X = g_sChar1.m_cLocation.X;
-	start.Y = g_sChar1.m_cLocation.Y;
-	dest.X = g_map.findChar('E').X;
-	dest.Y = g_map.findChar('E').Y;
-	vector<Node> test;
-	test = astar.aStarSearch(start, dest);
-	if (test.size() != 0)
+	/*for (auto i : path) //for astar path visualization
 	{
-		for (auto i : test)
-		{
-			g_Console.writeToBuffer(i, "H", 0x0F);
+		g_Console.writeToBuffer(i, "H", 0x0F);
 
-		}
-		g_sChar1.m_cLocation = test[0];
-	}
-	g_Console.writeToBuffer({ g_map.findChar('E').X + 1 , g_map.findChar('E').Y }, "FOUND", 0x0A);*/
+	}*/
 		
 }
 
