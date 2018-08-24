@@ -180,6 +180,7 @@ void Map::replaceAndRender(Console* console)
 				color = 0x06;
 				break;
 			case '0': //text
+
 				currChar = _0;
 				color = 0x03;
 				break;
