@@ -105,7 +105,9 @@
     <ClInclude Include="Framework\timer.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="map.h" />
+    <ClInclude Include="monster.h" />
     <ClInclude Include="organism.h" />
+    <ClInclude Include="pacman.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="quiz.h" />
     <ClInclude Include="snakeMini.h" />

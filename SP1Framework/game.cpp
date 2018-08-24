@@ -35,6 +35,15 @@ SNAKELAD g_snake;
 SNAKELAD g_apple;
 std::vector<SNAKELAD> SnakeBody;
 
+// rf added: for coin
+int countCoin = 169;
+PacmanMonster    g_monster1; // monster1 
+PacmanMonster    g_monster2; // monster2
+PacmanMonster    g_monster3; // monster3
+PacmanMonster    g_monster4; // monster4
+PacmanMonster    g_monster5; // monster5
+PacmanMonster    g_monster6; // monster6
+
 // Console object
 Console g_Console(199, 51, "RISE OF THE TOMB EXPLORING N00BS");
 // Game specific variables here
@@ -54,6 +63,7 @@ double  g_dBounceTimeUI;
 double  g_dBounceTimeMove[NumOfPlayers];
 double  g_dBounceTimeAction[NumOfPlayers];
 double  g_dBounceTimeEnemy[NumOfPlayers];
+double  g_dBounceTimeMonster;
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -73,6 +83,26 @@ void init(void)
 		g_dBounceTimeMove[i] = 0.0;
 		g_dBounceTimeAction[i] = 0.0;
 	}
+
+
+	// pacman monster
+	g_monster1.m_cLocation.X = 98;
+	g_monster1.m_cLocation.Y = 28;
+
+	g_monster2.m_cLocation.X = 98;
+	g_monster2.m_cLocation.Y = 35;
+
+	g_monster3.m_cLocation.X = 82;
+	g_monster3.m_cLocation.Y = 33;
+
+	g_monster4.m_cLocation.X = 115;
+	g_monster4.m_cLocation.Y = 33;
+
+	g_monster5.m_cLocation.X = 76;
+	g_monster5.m_cLocation.Y = 43;
+
+	g_monster6.m_cLocation.X = 121;
+	g_monster6.m_cLocation.Y = 43;
 	
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
@@ -138,6 +168,7 @@ void getInput( void )
 	case S_LOADSAVE: //ui
 	case S_GAME: //game
 	case S_SNAKEMINIGAME: //snek
+	case S_PACMAN://pacman
 	case S_BOSS: //boss
 	case S_RUBIKS: //rubiks cube
 		{
@@ -227,26 +258,28 @@ void update(double dt)
     g_dElapsedTime += dt;
     g_dDeltaTime = dt;
 
-    switch (g_eGameState)
-    {
-        case S_SPLASHSCREEN : splashScreenWait(); // game logic for the splash screen
-            break;
-		case S_MENU: mainMenu();
-			break;
-		case S_LOADSAVE: loadSave();
-			break;
-        case S_GAME: gameplay(); // gameplay logic when we are in the game
-            break;
-		case S_BOSS: bossMode();
-			break;
-		case S_QUIZ_B:
-		case S_QUIZ_E: quizMode();
-			break;
-		case S_SNAKEMINIGAME:SnakeGameplay();
-			break;
-		case S_RUBIKS: cubeControl();
-			break;
-    }
+	switch (g_eGameState)
+	{
+	case S_SPLASHSCREEN: splashScreenWait(); // game logic for the splash screen
+		break;
+	case S_MENU: mainMenu();
+		break;
+	case S_LOADSAVE: loadSave();
+		break;
+	case S_GAME: gameplay(); // gameplay logic when we are in the game
+		break;
+	case S_BOSS: bossMode();
+		break;
+	case S_QUIZ_B:
+	case S_QUIZ_E: quizMode();
+		break;
+	case S_SNAKEMINIGAME:SnakeGameplay();
+		break;
+	case S_RUBIKS: cubeControl();
+		break;
+	case S_PACMAN: pacmanMode();
+		break;
+	}
 }
 //--------------------------------------------------------------
 // Purpose  : Render function is to update the console screen
@@ -277,6 +310,8 @@ void render()
 	case S_SNAKEMINIGAME: snakeminigame();
 		break;
 	case S_RUBIKS: renderCube();
+		break;
+	case S_PACMAN: renderPacmanMode();
 		break;
 	}
 	renderFramerate();  // renders debug information, frame rate, elapsed time, etc
@@ -540,6 +575,27 @@ void checkForTiles()
 		{
 			g_eGameState = S_RUBIKS;
 		}
+
+		// for pacman stage
+		else if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'R')) // switch to pacman
+		{
+			//intialising position of player
+			g_sChar1.m_cLocation.X = 99;
+			g_sChar1.m_cLocation.Y = 30;
+			g_sChar2.m_cLocation.X = 98;
+			g_sChar2.m_cLocation.Y = 31;
+			g_map.loadMap("Levels/PACMAN.txt");
+
+			/* If this is added: there is null ptr error */
+			g_trigger = Trigger(&g_map, &g_Console);
+			for (auto i : g_trigger.allEnemies)
+			{
+				i->destroyEnemy(&g_map);
+			}
+
+			g_eGameState = S_PACMAN;
+		}
+
 		//boulders
 		if (g_map.findCharExists(g_sChar1.m_futureLocation, 'B'))
 		{
@@ -1240,6 +1296,291 @@ void SnakemoveCharacter()
 
 
 
+/***************************************PACMAN*****************************************/
+
+void pacmanMode()
+{
+	moveCharacter();    // moves the character, collision detection, physics, etc
+	checkForTiles();
+	monsterLogic();
+
+	// for collecting coins
+	if (g_map.findCharExists(g_sChar1.m_cLocation, 'A'))
+	{
+		g_map.removeChar(g_sChar1.m_cLocation);
+		countCoin--;
+	}
+	if (g_map.findCharExists(g_sChar2.m_cLocation, 'A'))
+	{
+		g_map.removeChar(g_sChar2.m_cLocation);
+		countCoin--;
+	}
+	if (countCoin == 0) // when no more coin, switch gamestate
+	{
+		g_map.loadMap("Levels/0.txt");
+		g_eGameState = S_GAME;
+		g_sChar1.m_cLocation = { 6, 44 };
+		g_sChar2.m_cLocation = { 9, 44 };
+		countCoin = 169;
+	}
+}
+
+void renderPacmanMode()
+{
+	renderMap();
+	renderCharacter();
+	renderMonster();
+	g_Console.writeToBuffer({ 91,14 }, "Coins left:", 0x0C);
+	g_Console.writeToBuffer({ 103, 14 }, std::to_string(countCoin), 0x0C);
+}
+
+void monsterLogic() // represented by 'M'
+{
+	int RNG1 = rand() % 4;
+	int RNG2 = rand() % 2;
+	int RNG3 = rand() % 2;
+
+	if (g_dBounceTimeMonster < g_dElapsedTime)
+	{
+		//movement for monster 1
+		if (RNG1 == 0 && g_monster1.m_cLocation.Y > 1) //up
+		{
+			moveMonster1(0, -1);
+			moveMonster5(0, -1);
+			moveMonster6(0, -1);
+		}
+
+		else if (RNG1 == 1 && g_monster1.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)//down
+		{
+			moveMonster1(0, 1);
+			moveMonster5(0, 1);
+			moveMonster6(0, 1);
+		}
+
+		else if (RNG1 == 2 && g_monster1.m_cLocation.X > 0)//left
+		{
+			moveMonster1(-1, 0);
+			moveMonster5(-1, 0);
+			moveMonster6(-1, 0);
+		}
+
+		else if (RNG1 == 3 && g_monster1.m_cLocation.X < g_Console.getConsoleSize().X - 1)//right
+		{
+			moveMonster1(1, 0);
+			moveMonster5(1, 0);
+			moveMonster6(1, 0);
+		}
+
+		//movement for monster 2 
+		if (RNG2 == 0)//left
+		{
+			moveMonster2(-1, 0);
+		}
+
+		else if (RNG2 == 1)//right
+		{
+			moveMonster2(1, 0);
+		}
+
+		//movement for monster 3
+		if (RNG3 == 0 && g_monster3.m_cLocation.Y > 1) //up
+		{
+			moveMonster3(0, -1);
+		}
+
+		else if (RNG3 == 1 && g_monster3.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)//down
+		{
+			moveMonster3(0, 1);
+		}
+
+		//movement for monster 4
+		if (RNG3 == 0 && g_monster3.m_cLocation.Y > 1) //up
+		{
+			moveMonster4(0, -1);
+		}
+
+		else if (RNG3 == 1 && g_monster3.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)//down
+		{
+			moveMonster4(0, 1);
+		}
+
+		// when player 1 or 2 touches monster, switch gamestate
+		if (EQUCOORDS(g_sChar1.m_cLocation, g_monster1.m_cLocation) ||
+			EQUCOORDS(g_sChar2.m_cLocation, g_monster1.m_cLocation) ||
+			EQUCOORDS(g_sChar1.m_cLocation, g_monster2.m_cLocation) ||
+			EQUCOORDS(g_sChar2.m_cLocation, g_monster2.m_cLocation) ||
+			EQUCOORDS(g_sChar1.m_cLocation, g_monster3.m_cLocation) ||
+			EQUCOORDS(g_sChar2.m_cLocation, g_monster3.m_cLocation) ||
+			EQUCOORDS(g_sChar1.m_cLocation, g_monster4.m_cLocation) ||
+			EQUCOORDS(g_sChar2.m_cLocation, g_monster4.m_cLocation) ||
+			EQUCOORDS(g_sChar1.m_cLocation, g_monster5.m_cLocation) ||
+			EQUCOORDS(g_sChar2.m_cLocation, g_monster5.m_cLocation) ||
+			EQUCOORDS(g_sChar1.m_cLocation, g_monster6.m_cLocation) ||
+			EQUCOORDS(g_sChar2.m_cLocation, g_monster6.m_cLocation))
+		{
+			g_map.loadMap("Levels/0.txt");
+			g_eGameState = S_GAME;
+			g_sChar1.m_cLocation = { 6, 44 };
+			g_sChar2.m_cLocation = { 9, 44 };
+
+			// initialise the position of monsters, after pacman ends
+			g_monster1.m_cLocation.X = 98;
+			g_monster1.m_cLocation.Y = 28;
+
+			g_monster2.m_cLocation.X = 98;
+			g_monster2.m_cLocation.Y = 35;
+
+			g_monster3.m_cLocation.X = 82;
+			g_monster3.m_cLocation.Y = 33;
+
+			g_monster4.m_cLocation.X = 115;
+			g_monster4.m_cLocation.Y = 33;
+
+			g_monster5.m_cLocation.X = 76;
+			g_monster5.m_cLocation.Y = 43;
+
+			g_monster6.m_cLocation.X = 121;
+			g_monster6.m_cLocation.Y = 43;
+		}
+	}
+}
+
+void renderMonster()
+{
+	g_Console.writeToBuffer(g_monster1.m_cLocation, (char)164, 0x03);
+	g_Console.writeToBuffer(g_monster2.m_cLocation, (char)164, 0x03);
+	g_Console.writeToBuffer(g_monster3.m_cLocation, (char)164, 0x03);
+	g_Console.writeToBuffer(g_monster4.m_cLocation, (char)164, 0x03);
+	g_Console.writeToBuffer(g_monster5.m_cLocation, (char)164, 0x03);
+	g_Console.writeToBuffer(g_monster6.m_cLocation, (char)164, 0x03);
+}
+
+void moveMonster1(int dirx, int diry)
+{
+	//check for monster 1
+	g_monster1.m_futureLocation.X = g_monster1.m_cLocation.X + dirx;
+	g_monster1.m_futureLocation.Y = g_monster1.m_cLocation.Y + diry;
+
+
+	if (!g_map.collideWithWall(g_monster1.m_futureLocation))
+	{
+		g_dBounceTimeMonster = g_dElapsedTime + 0.1;
+		g_monster1.m_cLocation.X = g_monster1.m_cLocation.X + dirx;
+		g_monster1.m_cLocation.Y = g_monster1.m_cLocation.Y + diry;
+	}
+
+	if (EQUCOORDS(g_monster1.m_cLocation, g_sChar1.m_cLocation) ||
+		EQUCOORDS(g_monster1.m_cLocation, g_sChar2.m_cLocation))
+	{
+		g_map.loadMap("Levels/0.txt");
+		g_eGameState = S_GAME;
+	}
+}
+
+void moveMonster2(int dirx, int diry)
+{
+	//check for monster 2
+	g_monster2.m_futureLocation.X = g_monster2.m_cLocation.X + dirx;
+	g_monster2.m_futureLocation.Y = g_monster2.m_cLocation.Y + diry;
+
+	if (!g_map.collideWithWall(g_monster2.m_futureLocation))
+	{
+		g_dBounceTimeMonster = g_dElapsedTime + 0.1;
+		g_monster2.m_cLocation.X = g_monster2.m_cLocation.X + dirx;
+		g_monster2.m_cLocation.Y = g_monster2.m_cLocation.Y + diry;
+	}
+
+	if (EQUCOORDS(g_monster2.m_cLocation, g_sChar1.m_cLocation) ||
+		EQUCOORDS(g_monster2.m_cLocation, g_sChar2.m_cLocation))
+	{
+		g_map.loadMap("Levels/0.txt");
+		g_eGameState = S_GAME;
+	}
+}
+
+void moveMonster3(int dirx, int diry)
+{
+	//check for monster 2
+	g_monster3.m_futureLocation.X = g_monster3.m_cLocation.X + dirx;
+	g_monster3.m_futureLocation.Y = g_monster3.m_cLocation.Y + diry;
+
+	if (!g_map.collideWithWall(g_monster3.m_futureLocation))
+	{
+		g_dBounceTimeMonster = g_dElapsedTime + 0.1;
+		g_monster3.m_cLocation.X = g_monster3.m_cLocation.X + dirx;
+		g_monster3.m_cLocation.Y = g_monster3.m_cLocation.Y + diry;
+	}
+
+	if (EQUCOORDS(g_monster3.m_cLocation, g_sChar1.m_cLocation) ||
+		EQUCOORDS(g_monster3.m_cLocation, g_sChar2.m_cLocation))
+	{
+		g_map.loadMap("Levels/0.txt");
+		g_eGameState = S_GAME;
+	}
+}
+
+void moveMonster4(int dirx, int diry)
+{
+	//check for monster 2
+	g_monster4.m_futureLocation.X = g_monster4.m_cLocation.X + dirx;
+	g_monster4.m_futureLocation.Y = g_monster4.m_cLocation.Y + diry;
+
+	if (!g_map.collideWithWall(g_monster4.m_futureLocation))
+	{
+		g_dBounceTimeMonster = g_dElapsedTime + 0.1;
+		g_monster4.m_cLocation.X = g_monster4.m_cLocation.X + dirx;
+		g_monster4.m_cLocation.Y = g_monster4.m_cLocation.Y + diry;
+	}
+
+	if (EQUCOORDS(g_monster4.m_cLocation, g_sChar1.m_cLocation) ||
+		EQUCOORDS(g_monster4.m_cLocation, g_sChar2.m_cLocation))
+	{
+		g_map.loadMap("Levels/0.txt");
+		g_eGameState = S_GAME;
+	}
+}
+
+void moveMonster5(int dirx, int diry)
+{
+	//check for monster 2
+	g_monster5.m_futureLocation.X = g_monster5.m_cLocation.X + dirx;
+	g_monster5.m_futureLocation.Y = g_monster5.m_cLocation.Y + diry;
+
+	if (!g_map.collideWithWall(g_monster5.m_futureLocation))
+	{
+		g_dBounceTimeMonster = g_dElapsedTime + 0.1;
+		g_monster5.m_cLocation.X = g_monster5.m_cLocation.X + dirx;
+		g_monster5.m_cLocation.Y = g_monster5.m_cLocation.Y + diry;
+	}
+
+	if (EQUCOORDS(g_monster5.m_cLocation, g_sChar1.m_cLocation) ||
+		EQUCOORDS(g_monster5.m_cLocation, g_sChar2.m_cLocation))
+	{
+		g_map.loadMap("Levels/0.txt");
+		g_eGameState = S_GAME;
+	}
+}
+
+void moveMonster6(int dirx, int diry)
+{
+	//check for monster 2
+	g_monster6.m_futureLocation.X = g_monster6.m_cLocation.X + dirx;
+	g_monster6.m_futureLocation.Y = g_monster6.m_cLocation.Y + diry;
+
+	if (!g_map.collideWithWall(g_monster6.m_futureLocation))
+	{
+		g_dBounceTimeMonster = g_dElapsedTime + 0.1;
+		g_monster6.m_cLocation.X = g_monster6.m_cLocation.X + dirx;
+		g_monster6.m_cLocation.Y = g_monster6.m_cLocation.Y + diry;
+	}
+
+	if (EQUCOORDS(g_monster6.m_cLocation, g_sChar1.m_cLocation) ||
+		EQUCOORDS(g_monster6.m_cLocation, g_sChar2.m_cLocation))
+	{
+		g_map.loadMap("Levels/0.txt");
+		g_eGameState = S_GAME;
+	}
+}
 
 
 

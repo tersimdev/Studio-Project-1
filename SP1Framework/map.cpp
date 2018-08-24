@@ -163,6 +163,10 @@ void Map::replaceAndRender(Console* console)
 				currChar = _T;
 				color = 0x0B;
 				break;
+			case 'R':
+				currChar = _R;
+				color = 0x0B;
+				break;
 			case 'I':
 				currChar = _I;
 				color = 0x0A;
@@ -170,6 +174,10 @@ void Map::replaceAndRender(Console* console)
 			case 'K':
 				currChar = _K;
 				color = 0x0E;
+				break;
+			case 'A': //coins
+				currChar = _A;
+				color = 0x06;
 				break;
 			case '0': //text
 				currChar = _0;

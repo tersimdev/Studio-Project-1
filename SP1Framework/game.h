@@ -10,6 +10,8 @@
 #include "trigger.h"
 #include "boss.h"
 #include "cube.h"
+#include "monster.h"
+#include "pacman.h"
 #include "aStar.h"
 #include "snakeMini.h"
 #include <string>
@@ -96,14 +98,15 @@ enum EKEYS
 // Enumeration for the different screen states
 enum EGAMESTATES
 {
-    S_SPLASHSCREEN,
+	S_SPLASHSCREEN,
 	S_MENU,
 	S_LOADSAVE,
-    S_GAME,
+	S_GAME,
 	S_BOSS,
 	S_QUIZ_E,
 	S_QUIZ_B,
 	S_SNAKEMINIGAME,
+	S_PACMAN,
 	S_RUBIKS,
     S_COUNT
 };
