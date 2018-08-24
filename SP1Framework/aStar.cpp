@@ -80,7 +80,6 @@ vector<Node> aStar::aStarSearch(Node player, Node dest)
 	map[(c.Y - 1) * mapSize.X + c.X].parent = c;
 
 	openList.emplace_back(map[(c.Y - 1) * mapSize.X + c.X]);
-	bool destFound = false;
 
 	//main alg loop
 	while (!openList.empty() && openList.size() < (unsigned int)(mapSize.X * mapSize.Y))
@@ -139,7 +138,6 @@ vector<Node> aStar::aStarSearch(Node player, Node dest)
 					//set current node to be its own parent
 					map[(c.Y + newY - 1) * mapSize.X + (c.X + newX)].parent.X = c.X;
 					map[(c.Y + newY - 1) * mapSize.X + (c.X + newX)].parent.Y = c.Y;
-					destFound = true;
 					return makePath(map, dest);
 				}
 				else if (!this->map->collideWithWall({ (SHORT)(c.X + newX), (SHORT)(c.Y + newY) }))
@@ -169,7 +167,5 @@ vector<Node> aStar::aStarSearch(Node player, Node dest)
 			}
 		}
 	}
-	if (!destFound) 
-		return empty;
-
+	return empty;
 }

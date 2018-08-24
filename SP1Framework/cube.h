@@ -6,19 +6,13 @@ using std::vector;
 
 enum STARTCOLOR
 {
-	WHITE = 0,
-	BLUE,
-	GREEN,
-	ORANGE,
-	RED,
-	YELLOW
+	WHITE	= 0,	//0 * 4,
+	BLUE	= 4,	//1 * 4,
+	GREEN	= 8,	//2 * 4,
+	ORANGE	= 12,	//3 * 4,
+	RED		= 16,	//4 * 4,
+	YELLOW	= 20	//5 * 4
 };
-
-struct Face
-{
-	vector<WORD> colors = vector<WORD>(4);
-};
-
 
 class Cube
 {
@@ -33,7 +27,9 @@ public:
 
 	void rotateX(int dir);
 
-	struct Face faces[6]; //create 6 faces
+	vector<WORD> faces = vector<WORD>(24);
+
+	vector<short> rotationPattern = vector<short>(4);
 
 	static const WORD _white = 0xFF;
 	static const WORD _blue = 0x99;

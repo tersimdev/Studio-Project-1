@@ -532,6 +532,10 @@ void checkForTiles()
 		{
 			g_eGameState = S_SNAKEMINIGAME;
 		}
+		else if (g_map.findCharExists(player->m_futureLocation, 'T')) //rubiks cube
+		{
+			g_eGameState = S_RUBIKS;
+		}
 		//boulders
 		if (g_map.findCharExists(g_sChar1.m_futureLocation, 'B'))
 		{
@@ -624,7 +628,7 @@ void enemyMovement()
 
 	if (bMoving)
 	{
-		g_dBounceTimeEnemy[0] = g_dElapsedTime + 0.07;
+		g_dBounceTimeEnemy[0] = g_dElapsedTime + 0.1;
 	}
 	
 }
@@ -816,7 +820,7 @@ void cubeControl()
 		g_cube.moveR(-1);
 		eventHappened = true;
 	}
-	if (g_abKeyPressed[K_A])
+	else if (g_abKeyPressed[K_A])
 	{
 		g_cube.moveU(-1);
 		eventHappened = true;
@@ -826,7 +830,7 @@ void cubeControl()
 		g_cube.moveU(1);
 		eventHappened = true;
 	}
-	if (g_abKeyPressed[K_UP])
+	else if (g_abKeyPressed[K_UP])
 	{
 		g_cube.rotateY(1);
 		eventHappened = true;
@@ -836,7 +840,7 @@ void cubeControl()
 		g_cube.rotateY(-1);
 		eventHappened = true;
 	}
-	if (g_abKeyPressed[K_LEFT])
+	else if (g_abKeyPressed[K_LEFT])
 	{
 		g_cube.rotateX(1);
 		eventHappened = true;
@@ -844,6 +848,11 @@ void cubeControl()
 	else if (g_abKeyPressed[K_RIGHT])
 	{
 		g_cube.rotateX(-1);
+		eventHappened = true;
+	}
+	if (g_abKeyPressed[K_BACKSPACE] || g_abKeyPressed[K_ENTER])
+	{
+		g_eGameState = S_GAME;
 		eventHappened = true;
 	}
 	if (eventHappened)
@@ -863,7 +872,7 @@ void renderCube()
 	{
 		for (int j = 0; j < 4; j++)
 		{
-			g_Console.writeToBuffer(c[i], 'H', g_cube.faces[i].colors[j]);
+			g_Console.writeToBuffer(c[i], 'O', g_cube.faces[i * 4 + j]);
 			if (j == 0 || j == 2) c[i].X++;
 			else 
 			{
@@ -872,8 +881,10 @@ void renderCube()
 			}
 		}
 	}
-	g_Console.writeToBuffer({(SHORT)120, (SHORT)24}, "Solve it if you can :)", 0x0F);
-	g_Console.writeToBuffer({(SHORT)120, (SHORT)25}, "'Esc' to exit", 0x0F);
+	g_Console.writeToBuffer({ (SHORT)120, (SHORT)23 }, "2x2 RUBIKS CUBE", 0x0F);
+	g_Console.writeToBuffer({ (SHORT)120, (SHORT)24 }, "WASD and Arrow Keys to manipulate", 0x0F);
+	g_Console.writeToBuffer({(SHORT)120, (SHORT)25}, "Solve it if you can :)", 0x0F);
+	g_Console.writeToBuffer({(SHORT)120, (SHORT)26}, "'Backspace' to exit", 0x0F);
 }
 
 
