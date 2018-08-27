@@ -38,6 +38,7 @@ enum FLAGS
 	tutoDone,
 	snakeDone,
 	bossDone,
+	pacmanDone,
 	flagCount
 };
 

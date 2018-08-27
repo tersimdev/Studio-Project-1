@@ -528,7 +528,7 @@ void checkForTiles()
 			player = &g_sChar2;
 
 		if (g_map.findCharExists(player->m_futureLocation, 'N') 
-			&& (g_abFlags[tutoDone] || g_abFlags[bossDone] || g_abFlags[snakeDone]))
+			&& (g_abFlags[tutoDone] || g_abFlags[bossDone] || g_abFlags[snakeDone]) || g_abFlags[pacmanDone])
 		{
 			g_map.updateMap(); //loads next map, wraping around
 			g_trigger.initTrigger(&g_map, &g_Console); //reinits all triggers for new map
@@ -536,6 +536,7 @@ void checkForTiles()
 			g_abFlags[tutoDone] = false;
 			g_abFlags[snakeDone] = false; //lose key
 			g_abFlags[bossDone] = false; //lose key
+			g_abFlags[pacmanDone] = false;
 			//moving the player that triggered it
 			if (player->m_cLocation.X > g_Console.getConsoleSize().X * 0.9)
 			{
@@ -843,7 +844,7 @@ void bossMode()
 		}
 		g_boss->dBounceTime = g_dElapsedTime + 0.07;
 	}
-	else if (!g_sChar1.m_bActive && !g_sChar2.m_bActive)
+	else if (!g_sChar1.m_bActive && !g_sChar2.m_bActive) // lose
 	{
 		//TEMPO, temporary, replace with loading last saved state function
 		g_sChar1.m_cLocation = { 10, 45 };
@@ -852,7 +853,7 @@ void bossMode()
 		g_eGameState = S_GAME;
 		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 	}
-	else
+	else // win
 	{
 		//TEMPO, temporary, replace with loading last saved state function
 		g_sChar1.m_cLocation = { 10, 45 };
@@ -860,6 +861,7 @@ void bossMode()
 		g_map.loadMap("Levels/0.txt");
 		g_eGameState = S_GAME;
 		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
+		g_abFlags[bossDone] = true;
 	}
 }
 
@@ -940,6 +942,7 @@ void cubeControl()
 		g_eGameState = S_GAME;
 		eventHappened = true;
 		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
+		g_abFlags[tutoDone] = true;
 	}
 	if (eventHappened)
 		g_dBounceTimeUI = g_dElapsedTime + 0.2; // avg
@@ -1200,6 +1203,7 @@ void Snakecollisiondetection()
 	{
 		g_eGameState = S_GAME;
 		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
+		g_abFlags[snakeDone] = true;
 
 		spawnapple = true;
 		applelocation(spawnapple);
@@ -1353,6 +1357,7 @@ void pacmanMode()
 		g_sChar1.m_cLocation = { 6, 44 };
 		g_sChar2.m_cLocation = { 9, 44 };
 		countCoin = 169;
+		g_abFlags[pacmanDone] = true;
 	}
 
 }
