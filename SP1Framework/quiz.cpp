@@ -87,3 +87,4 @@ void Quiz::reset()
 	this->currAns.clear();
 	this->attempt = "";
 }
+

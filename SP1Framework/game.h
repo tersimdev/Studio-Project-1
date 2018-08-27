@@ -16,8 +16,8 @@
 #include "snakeMini.h"
 #include <string>
 #include <vector>
-#include "Windows.h"//for music
-#include "MMsystem.h"
+#include "Windows.h"//not needed 
+
 
 using std::string;
 

@@ -84,6 +84,9 @@ void init(void)
 		g_dBounceTimeAction[i] = 0.0;
 	}
 
+	//
+	PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_LOOP | SND_ASYNC);
+	// Beep(523, 500);
 
 	// pacman monster
 	g_monster1.m_cLocation.X = 98;
@@ -405,7 +408,7 @@ void moveCharacter()
 			g_abFlags[moving1] = true;
 		}
 	}
-	if (g_dBounceTimeMove[1] < g_dElapsedTime&& g_sChar2.m_bActive)
+	if (g_dBounceTimeMove[1] < g_dElapsedTime&& g_sChar2.m_bActive) 
 	{
 		//player 2
 		if (g_abKeyPressed[K_UP] && g_sChar2.m_cLocation.Y > 1)
@@ -443,6 +446,9 @@ void moveCharacter()
 			&& !EQUCOORDS(g_sChar1.m_futureLocation, g_sChar2.m_cLocation))
 				g_sChar1.m_cLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
 		//check bounce time
+		// PlaySound(TEXT("Sounds/fart.wav"), NULL, SND_SYNC | SND_ASYNC);  
+		PlaySound(TEXT("Sounds/movement.wav"), NULL, SND_SYNC | SND_ASYNC);
+
 		g_dBounceTimeMove[0] = g_dElapsedTime + 0.05; // fazt
 	}
 	if (g_abFlags[moving2])
@@ -454,6 +460,8 @@ void moveCharacter()
 			&& !EQUCOORDS(g_sChar2.m_futureLocation, g_sChar1.m_cLocation))
 				g_sChar2.m_cLocation = ADDCOORDS(g_sChar2.m_cLocation, g_sChar2.direction);
 		//check bounce time
+		PlaySound(TEXT("Sounds/fart.wav"), NULL, SND_SYNC | SND_ASYNC);  
+
 		g_dBounceTimeMove[1] = g_dElapsedTime + 0.05; // fazt
 	}
 }
@@ -468,6 +476,7 @@ void actionsListener()
 			g_abFlags[shooting] = true;
 			g_sChar1.gun = new Gun(g_sChar1.m_cLocation, g_sChar1.direction);
 			eventHappened[0] = true;
+			PlaySound(TEXT("Sounds/shoot.wav"), NULL, SND_SYNC | SND_ASYNC); 
 		}
 	}
 	if (g_dBounceTimeAction[1] < g_dElapsedTime)
@@ -555,6 +564,7 @@ void checkForTiles()
 				g_sChar2.m_cLocation.X = player->m_cLocation.X - 1;
 				g_sChar2.m_cLocation.Y = player->m_cLocation.Y;
 			}
+			PlaySound(TEXT("Sounds/tada.wav"), NULL, SND_SYNC | SND_ASYNC); 
 		}
 		//gates
 		if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'U')) //boss
@@ -566,14 +576,18 @@ void checkForTiles()
 				i->destroyEnemy(&g_map);
 			}
 			g_eGameState = S_BOSS;
+			// PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);-> not running this
+			PlaySound(TEXT("Sounds/boss.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
 		else if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'M')) //snake
 		{
 			g_eGameState = S_SNAKEMINIGAME;
+			PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
 		else if (g_map.findCharExists(player->m_futureLocation, 'T')) //rubiks cube
 		{
 			g_eGameState = S_RUBIKS;
+			PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
 
 		// for pacman stage
@@ -592,8 +606,8 @@ void checkForTiles()
 			{
 				i->destroyEnemy(&g_map);
 			}
-
 			g_eGameState = S_PACMAN;
+			PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
 
 		//boulders
@@ -601,6 +615,8 @@ void checkForTiles()
 		{
 			g_trigger.boulder = g_trigger.findBoulder(g_sChar1.m_futureLocation);
 			g_trigger.boulder->moveBoulder(&g_map, &g_sChar1, &g_Console);
+			PlaySound(TEXT("Sounds/moveboulder.wav"), NULL, SND_SYNC | SND_ASYNC);
+
 		}
 		else if (g_map.findCharExists(g_sChar2.m_futureLocation, 'B'))
 		{
@@ -608,6 +624,7 @@ void checkForTiles()
 			{
 				g_trigger.boulder = g_trigger.findBoulder(g_sChar2.m_futureLocation);
 				g_trigger.boulder->destroyBoulder(&g_map);
+				PlaySound(TEXT("Sounds/pickaxe.wav"), NULL, SND_SYNC | SND_ASYNC);  
 			}
 		}
 		//pickaxe
@@ -615,17 +632,21 @@ void checkForTiles()
 		{
 			g_abFlags[hasPickaxe] = true;
 			g_map.removeChar(g_sChar2.m_futureLocation);
+			PlaySound(TEXT("Sounds/pickup.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
 		//key
 		if (g_map.findCharExists(g_sChar2.m_futureLocation, 'K'))
 		{
 			g_abFlags[hasKey] = true;
 			g_map.removeChar(g_sChar2.m_futureLocation);
+			PlaySound(TEXT("Sounds/pickup.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
 		else if (g_map.findCharExists(g_sChar1.m_futureLocation, 'K'))
 		{
 			g_abFlags[hasKey] = true;
 			g_map.removeChar(g_sChar1.m_futureLocation);
+			PlaySound(TEXT("Sounds/pickup.wav"), NULL, SND_SYNC | SND_ASYNC);
+
 		}
 	}
 }
@@ -766,12 +787,14 @@ void renderBullet()
 
 
 
-
+// Issue: after exiting boss gameplay or pacman:
+// When player try to move boulder
+// null ptr error
 
 
 
 /****************************************BOSS GAMEPLAY****************************************/
-
+// bgm added
 
 void bossMode()
 {
@@ -827,6 +850,7 @@ void bossMode()
 		g_sChar2.m_cLocation = { 12, 45 };
 		g_map.loadMap("Levels/0.txt");
 		g_eGameState = S_GAME;
+		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 	}
 	else
 	{
@@ -835,6 +859,7 @@ void bossMode()
 		g_sChar2.m_cLocation = { 12, 45 };
 		g_map.loadMap("Levels/0.txt");
 		g_eGameState = S_GAME;
+		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 	}
 }
 
@@ -914,6 +939,7 @@ void cubeControl()
 	{
 		g_eGameState = S_GAME;
 		eventHappened = true;
+		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 	}
 	if (eventHappened)
 		g_dBounceTimeUI = g_dElapsedTime + 0.2; // avg
@@ -955,7 +981,7 @@ void renderCube()
 
 
 /***************************************SNAKE GAME***************************************/
-
+// sound added in, may add in bgm specific for this
 
 void snakeminigame() //run mini game snake
 {
@@ -1032,6 +1058,7 @@ void Snakerenderapple()
 	if (((g_snake.m_cLocation.X) == (g_apple.m_cLocation.X)) && ((g_snake.m_cLocation.Y) == (g_apple.m_cLocation.Y)))
 	{
 		spawnapple = true;
+		PlaySound(TEXT("Sounds/apple.wav"), NULL, SND_SYNC | SND_ASYNC);
 
 		do
 		{
@@ -1172,6 +1199,7 @@ void Snakecollisiondetection()
 		)
 	{
 		g_eGameState = S_GAME;
+		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 
 		spawnapple = true;
 		applelocation(spawnapple);
@@ -1308,21 +1336,25 @@ void pacmanMode()
 	if (g_map.findCharExists(g_sChar1.m_cLocation, 'A'))
 	{
 		g_map.removeChar(g_sChar1.m_cLocation);
+		PlaySound(TEXT("Sounds/coin.wav"), NULL, SND_SYNC | SND_ASYNC);
 		countCoin--;
 	}
 	if (g_map.findCharExists(g_sChar2.m_cLocation, 'A'))
 	{
 		g_map.removeChar(g_sChar2.m_cLocation);
+		PlaySound(TEXT("Sounds/coin.wav"), NULL, SND_SYNC | SND_ASYNC);
 		countCoin--;
 	}
 	if (countCoin == 0) // when no more coin, switch gamestate
 	{
 		g_map.loadMap("Levels/0.txt");
 		g_eGameState = S_GAME;
+		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 		g_sChar1.m_cLocation = { 6, 44 };
 		g_sChar2.m_cLocation = { 9, 44 };
 		countCoin = 169;
 	}
+
 }
 
 void renderPacmanMode()
@@ -1420,6 +1452,7 @@ void monsterLogic() // represented by 'M'
 		{
 			g_map.loadMap("Levels/0.txt");
 			g_eGameState = S_GAME;
+			PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 			g_sChar1.m_cLocation = { 6, 44 };
 			g_sChar2.m_cLocation = { 9, 44 };
 
@@ -1468,13 +1501,6 @@ void moveMonster1(int dirx, int diry)
 		g_monster1.m_cLocation.X = g_monster1.m_cLocation.X + dirx;
 		g_monster1.m_cLocation.Y = g_monster1.m_cLocation.Y + diry;
 	}
-
-	if (EQUCOORDS(g_monster1.m_cLocation, g_sChar1.m_cLocation) ||
-		EQUCOORDS(g_monster1.m_cLocation, g_sChar2.m_cLocation))
-	{
-		g_map.loadMap("Levels/0.txt");
-		g_eGameState = S_GAME;
-	}
 }
 
 void moveMonster2(int dirx, int diry)
@@ -1488,13 +1514,6 @@ void moveMonster2(int dirx, int diry)
 		g_dBounceTimeMonster = g_dElapsedTime + 0.1;
 		g_monster2.m_cLocation.X = g_monster2.m_cLocation.X + dirx;
 		g_monster2.m_cLocation.Y = g_monster2.m_cLocation.Y + diry;
-	}
-
-	if (EQUCOORDS(g_monster2.m_cLocation, g_sChar1.m_cLocation) ||
-		EQUCOORDS(g_monster2.m_cLocation, g_sChar2.m_cLocation))
-	{
-		g_map.loadMap("Levels/0.txt");
-		g_eGameState = S_GAME;
 	}
 }
 
@@ -1510,13 +1529,6 @@ void moveMonster3(int dirx, int diry)
 		g_monster3.m_cLocation.X = g_monster3.m_cLocation.X + dirx;
 		g_monster3.m_cLocation.Y = g_monster3.m_cLocation.Y + diry;
 	}
-
-	if (EQUCOORDS(g_monster3.m_cLocation, g_sChar1.m_cLocation) ||
-		EQUCOORDS(g_monster3.m_cLocation, g_sChar2.m_cLocation))
-	{
-		g_map.loadMap("Levels/0.txt");
-		g_eGameState = S_GAME;
-	}
 }
 
 void moveMonster4(int dirx, int diry)
@@ -1530,13 +1542,6 @@ void moveMonster4(int dirx, int diry)
 		g_dBounceTimeMonster = g_dElapsedTime + 0.1;
 		g_monster4.m_cLocation.X = g_monster4.m_cLocation.X + dirx;
 		g_monster4.m_cLocation.Y = g_monster4.m_cLocation.Y + diry;
-	}
-
-	if (EQUCOORDS(g_monster4.m_cLocation, g_sChar1.m_cLocation) ||
-		EQUCOORDS(g_monster4.m_cLocation, g_sChar2.m_cLocation))
-	{
-		g_map.loadMap("Levels/0.txt");
-		g_eGameState = S_GAME;
 	}
 }
 
@@ -1552,13 +1557,6 @@ void moveMonster5(int dirx, int diry)
 		g_monster5.m_cLocation.X = g_monster5.m_cLocation.X + dirx;
 		g_monster5.m_cLocation.Y = g_monster5.m_cLocation.Y + diry;
 	}
-
-	if (EQUCOORDS(g_monster5.m_cLocation, g_sChar1.m_cLocation) ||
-		EQUCOORDS(g_monster5.m_cLocation, g_sChar2.m_cLocation))
-	{
-		g_map.loadMap("Levels/0.txt");
-		g_eGameState = S_GAME;
-	}
 }
 
 void moveMonster6(int dirx, int diry)
@@ -1572,13 +1570,6 @@ void moveMonster6(int dirx, int diry)
 		g_dBounceTimeMonster = g_dElapsedTime + 0.1;
 		g_monster6.m_cLocation.X = g_monster6.m_cLocation.X + dirx;
 		g_monster6.m_cLocation.Y = g_monster6.m_cLocation.Y + diry;
-	}
-
-	if (EQUCOORDS(g_monster6.m_cLocation, g_sChar1.m_cLocation) ||
-		EQUCOORDS(g_monster6.m_cLocation, g_sChar2.m_cLocation))
-	{
-		g_map.loadMap("Levels/0.txt");
-		g_eGameState = S_GAME;
 	}
 }
 
@@ -2036,9 +2027,13 @@ void renderQuiz()
 	g_Console.writeToBuffer({ 10, 27 }, g_quiz.attempt + "_", 0x0F);
 	string result = "", answers = "";
 	if (g_abFlags[quizzing])
-		g_quiz.checkAns() ? 
-			g_quiz.quizResult(WIN, &result, &answers) : 
+	{
+		g_quiz.checkAns() ?
+			g_quiz.quizResult(WIN, &result, &answers):
+
 			g_quiz.quizResult(LOSE, &result, &answers);
+	}
+		
 	else
 		result = "";
 	g_Console.writeToBuffer({ 10, 28 }, result, 0x0F);
