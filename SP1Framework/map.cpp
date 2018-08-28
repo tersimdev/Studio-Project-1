@@ -60,9 +60,6 @@ bool Map::collideWithWall(COORD c)
 	return false;
 }
 
-
-
-
 bool Map::findCharExists(COORD c, char target)
 {
 	if (this->mapArray[(c.Y - 1) * this->cols + c.X] == target)
@@ -79,7 +76,7 @@ COORD Map::findChar(char target)
 	{
 		for (int j = 0; j < this->cols; j++)
 		{
-			if (this->mapArray[i * this->cols + j] == target) //
+			if (this->mapArray[i * this->cols + j] == target)
 			{
 				c.X = j;
 				c.Y = i + 1;

@@ -14,7 +14,7 @@ SGameChar::SGameChar(char symb, WORD col, Map* map, int player)
 	this->playerHPUI = updateHealth(player, 0);
 
 	//setting positions, based on map
-	switch(player)
+	switch (player)
 	{
 	case 1:
 		this->m_cLocation = map->findChar('P');
@@ -42,7 +42,7 @@ string SGameChar::updateHealth(int playerNum, int dmg)
 				this->health = this->maxHealth;
 		}
 	}
-	
+
 	//if more then max health
 	if (this->health > this->maxHealth)
 		this->health = this->maxHealth;
@@ -73,13 +73,13 @@ string SGameChar::updateHealthUI(int playerNum)
 	for (int i = 0; i < this->maxHealth - this->health; i++)
 	{
 		playerHPText += '-';
- 	}
-	
+	}
+
 	string spaces = "     ";
 	if (this->health < 10)
 		spaces += ' ';
 	playerHPText += spaces + std::to_string(this->health) + " / " + std::to_string(this->maxHealth);
-	
+
 	//updating lives
 	for (int i = 0; i < lives; i++)
 	{
@@ -102,19 +102,19 @@ Gun::Gun(COORD loc, COORD dir)
 /*FUNCTIONS*/
 
 void Gun::shoot(SGameChar* player)
-{	
+{
 	int range = this->range;
 	//if bullet within range, add to bullet position
-	if ( ((direction.X == 1 && bulletPos.X < playerPos.X + range) 
-		|| (direction.X == -1 && bulletPos.X > playerPos.X - range) )
-		|| ( (direction.Y == 1 && bulletPos.Y < playerPos.Y + (range >> 1))
-		|| (direction.Y == -1 && bulletPos.Y > playerPos.Y - (range >> 1))) )
+	if (((direction.X == 1 && bulletPos.X < playerPos.X + range)
+		|| (direction.X == -1 && bulletPos.X > playerPos.X - range))
+		|| ((direction.Y == 1 && bulletPos.Y < playerPos.Y + (range >> 1))
+			|| (direction.Y == -1 && bulletPos.Y > playerPos.Y - (range >> 1))))
 	{
 		this->bulletPos.X += this->direction.X;
 		this->bulletPos.Y += this->direction.Y;
 		outOfRange = false;
 	}
-	else outOfRange = true;		
+	else outOfRange = true;
 }
 
 bool Gun::collision(Map* map, Console* console)
@@ -124,3 +124,4 @@ bool Gun::collision(Map* map, Console* console)
 		return true;
 	else return false;
 }
+

@@ -14,7 +14,7 @@
     <ProjectGuid>{1A587CA1-7340-416F-94D6-7C400A833946}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>SP1Framework</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -117,6 +117,7 @@
     <Text Include="Levels\0.txt" />
     <Text Include="Levels\1.txt" />
     <Text Include="Levels\2.txt" />
+    <Text Include="Levels\3.txt" />
     <Text Include="Levels\astarTest.txt" />
     <Text Include="Levels\BOSS1.txt" />
     <Text Include="Levels\snakemap.txt" />

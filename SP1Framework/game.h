@@ -37,8 +37,8 @@ enum FLAGS
 	hasKey,
 	tutoDone,
 	snakeDone,
-	bossDone,
 	pacmanDone,
+	bossDone,
 	flagCount
 };
 
@@ -109,6 +109,7 @@ enum EGAMESTATES
 	S_SNAKEMINIGAME,
 	S_PACMAN,
 	S_RUBIKS,
+	S_SAVE,
     S_COUNT
 };
 
@@ -148,8 +149,13 @@ void renderBossMode();		//renders the boss' attacks etc
 void renderQuiz();			//renders the quiz to console
 void renderItems();			//renders currently owned items
 void renderCube();			//renders the cube;
-void SAVE();
-void LOAD();
+void SAVE(string filename);
+void LOAD(string filename);
+void SAVEMAP(string mapname);
+void LOADMAP(string mapname);
+void SAVEUI();
+void RenderSAVEUI();
+void backgroundimage();
 
 
 #endif // _GAME_H

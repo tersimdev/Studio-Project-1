@@ -142,5 +142,8 @@
     <Text Include="Levels\astarTest.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="Levels\3.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

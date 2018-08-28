@@ -14,6 +14,16 @@ bool    g_abKeyPressed[K_COUNT];
 bool    g_abFlags[flagCount] = { 0 };
 int		g_menuSelection;
 
+string filename1 = "Saves/SAVE 1.txt";
+string mapname1 = "Saves/MAP 1.txt";
+string filename2 = "Saves/SAVE 2.txt";
+string mapname2 = "Saves/MAP 2.txt";
+string filename3 = "Saves/SAVE 3.txt";
+string mapname3 = "Saves/MAP 3.txt";
+
+string temporary1 = "Saves/Temporary save.txt";// save data and map when player enters minigame
+string temporarymap1 = "Saves/Temporary map.txt";
+
 /*For Snake*/
 unsigned int i;
 unsigned int j;
@@ -35,8 +45,8 @@ SNAKELAD g_snake;
 SNAKELAD g_apple;
 std::vector<SNAKELAD> SnakeBody;
 
-// rf added: for coin
-int countCoin = 169;
+// For coin
+int countCoin = 10;
 PacmanMonster    g_monster1; // monster1 
 PacmanMonster    g_monster2; // monster2
 PacmanMonster    g_monster3; // monster3
@@ -174,6 +184,7 @@ void getInput( void )
 	case S_PACMAN://pacman
 	case S_BOSS: //boss
 	case S_RUBIKS: //rubiks cube
+	case S_SAVE:
 		{
 		g_abKeyPressed[K_UP] = isKeyPressed(VK_UP);
 		g_abKeyPressed[K_DOWN] = isKeyPressed(VK_DOWN);
@@ -282,6 +293,8 @@ void update(double dt)
 		break;
 	case S_PACMAN: pacmanMode();
 		break;
+	case S_SAVE:SAVEUI();
+		break;
 	}
 }
 //--------------------------------------------------------------
@@ -315,6 +328,8 @@ void render()
 	case S_RUBIKS: renderCube();
 		break;
 	case S_PACMAN: renderPacmanMode();
+		break;
+	case S_SAVE:RenderSAVEUI();
 		break;
 	}
 	renderFramerate();  // renders debug information, frame rate, elapsed time, etc
@@ -446,7 +461,6 @@ void moveCharacter()
 			&& !EQUCOORDS(g_sChar1.m_futureLocation, g_sChar2.m_cLocation))
 				g_sChar1.m_cLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
 		//check bounce time
-		// PlaySound(TEXT("Sounds/fart.wav"), NULL, SND_SYNC | SND_ASYNC);  
 		PlaySound(TEXT("Sounds/movement.wav"), NULL, SND_SYNC | SND_ASYNC);
 
 		g_dBounceTimeMove[0] = g_dElapsedTime + 0.05; // fazt
@@ -460,7 +474,7 @@ void moveCharacter()
 			&& !EQUCOORDS(g_sChar2.m_futureLocation, g_sChar1.m_cLocation))
 				g_sChar2.m_cLocation = ADDCOORDS(g_sChar2.m_cLocation, g_sChar2.direction);
 		//check bounce time
-		PlaySound(TEXT("Sounds/fart.wav"), NULL, SND_SYNC | SND_ASYNC);  
+		PlaySound(TEXT("Sounds/movement.wav"), NULL, SND_SYNC | SND_ASYNC);  
 
 		g_dBounceTimeMove[1] = g_dElapsedTime + 0.05; // fazt
 	}
@@ -491,6 +505,11 @@ void actionsListener()
 		g_dBounceTimeAction[0] = g_dElapsedTime + 0.8; // slow
 	if (eventHappened[1])
 		g_dBounceTimeAction[1] = g_dElapsedTime + 0.5; // slow
+
+	if (g_sChar1.m_bActive == false && g_sChar2.m_bActive == false)//test
+	{
+		g_eGameState = S_MENU;
+	}
 }
 
 void processUserInput()
@@ -498,22 +517,24 @@ void processUserInput()
 	bool eventHappened = false;
 	if (g_dBounceTimeNorm > g_dElapsedTime)
 		return;
-		// quits the game if player hits the escape key
+	// quits the game if player hits the escape key
 	if (g_abKeyPressed[K_ESCAPE])
 	{
 		switch (g_eGameState)
 		{
 		case S_GAME:
-			SAVE();
-			g_bQuitGame = true;
+			g_eGameState = S_SAVE;
+			//SAVE();
+			//SAVEMAP();
+			//g_bQuitGame = true;
 			break;
 		case S_BOSS:
-			SAVE();
 			g_eGameState = S_GAME;
 			break;
 		}
 		eventHappened = true;
 	}
+
 
 	if (eventHappened)
 		g_dBounceTimeNorm = g_dElapsedTime + 0.125; // avg
@@ -536,7 +557,7 @@ void checkForTiles()
 			g_abFlags[tutoDone] = false;
 			g_abFlags[snakeDone] = false; //lose key
 			g_abFlags[bossDone] = false; //lose key
-			g_abFlags[pacmanDone] = false;
+			g_abFlags[pacmanDone] = false; //lose key
 			//moving the player that triggered it
 			if (player->m_cLocation.X > g_Console.getConsoleSize().X * 0.9)
 			{
@@ -570,6 +591,9 @@ void checkForTiles()
 		//gates
 		if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'U')) //boss
 		{
+			SAVE(temporary1);
+			SAVEMAP(temporarymap1);
+			//
 			g_boss = new Boss (&g_map, &g_Console, &g_sChar1.m_cLocation, &g_sChar2.m_cLocation, g_dElapsedTime);
 			g_trigger = Trigger(&g_map, &g_Console); //to access leftover enemies
 			for (auto i : g_trigger.allEnemies)
@@ -594,6 +618,9 @@ void checkForTiles()
 		// for pacman stage
 		else if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'R')) // switch to pacman
 		{
+			SAVE(temporary1);
+			SAVEMAP(temporarymap1);
+			//
 			//intialising position of player
 			g_sChar1.m_cLocation.X = 99;
 			g_sChar1.m_cLocation.Y = 30;
@@ -704,7 +731,7 @@ void enemyMovement()
 			g_trigger.allEnemies[i]->destroyEnemy(&g_map);
 			g_quiz.query();
 			g_eGameState = S_QUIZ_E;
-
+			PlaySound(TEXT("Sounds/collidemonster.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
 	}
 
@@ -847,19 +874,24 @@ void bossMode()
 	else if (!g_sChar1.m_bActive && !g_sChar2.m_bActive) // lose
 	{
 		//TEMPO, temporary, replace with loading last saved state function
-		g_sChar1.m_cLocation = { 10, 45 };
-		g_sChar2.m_cLocation = { 12, 45 };
-		g_map.loadMap("Levels/0.txt");
+
+		LOAD(temporary1);
+		LOADMAP(temporarymap1);
+
+
 		g_eGameState = S_GAME;
+		g_trigger.initTrigger(&g_map, &g_Console);//reninit all triggers for new map
 		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 	}
-	else // win
+	else // win 
 	{
+		LOAD(temporary1);
+		LOADMAP(temporarymap1);
+
 		//TEMPO, temporary, replace with loading last saved state function
-		g_sChar1.m_cLocation = { 10, 45 };
-		g_sChar2.m_cLocation = { 12, 45 };
-		g_map.loadMap("Levels/0.txt");
+
 		g_eGameState = S_GAME;
+		g_trigger.initTrigger(&g_map, &g_Console);//reninit all triggers for new map
 		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 		g_abFlags[bossDone] = true;
 	}
@@ -942,7 +974,6 @@ void cubeControl()
 		g_eGameState = S_GAME;
 		eventHappened = true;
 		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
-		g_abFlags[tutoDone] = true;
 	}
 	if (eventHappened)
 		g_dBounceTimeUI = g_dElapsedTime + 0.2; // avg
@@ -1222,6 +1253,7 @@ void Snakecollisiondetection()
 		goright = false;
 		godown = false;
 	}
+
 }
 
 void SnakemoveCharacter()
@@ -1351,15 +1383,27 @@ void pacmanMode()
 	}
 	if (countCoin == 0) // when no more coin, switch gamestate
 	{
-		g_map.loadMap("Levels/0.txt");
-		g_eGameState = S_GAME;
-		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
-		g_sChar1.m_cLocation = { 6, 44 };
-		g_sChar2.m_cLocation = { 9, 44 };
-		countCoin = 169;
-		g_abFlags[pacmanDone] = true;
-	}
+		LOAD(temporary1);
+		LOADMAP(temporarymap1);
 
+		g_eGameState = S_GAME;
+		g_trigger.initTrigger(&g_map, &g_Console);//reninit all triggers for new map		
+		countCoin = 169;
+		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
+		g_abFlags[pacmanDone] = true;
+		
+	}
+	if (g_abKeyPressed[K_BACKSPACE])
+	{
+		LOAD(temporary1);
+		LOADMAP(temporarymap1);
+
+		g_eGameState = S_GAME;
+		g_trigger.initTrigger(&g_map, &g_Console);//reninit all triggers for new map		
+		countCoin = 10;
+		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
+
+	}
 }
 
 void renderPacmanMode()
@@ -1367,8 +1411,9 @@ void renderPacmanMode()
 	renderMap();
 	renderCharacter();
 	renderMonster();
-	g_Console.writeToBuffer({ 91,14 }, "Coins left:", 0x0C);
-	g_Console.writeToBuffer({ 103, 14 }, std::to_string(countCoin), 0x0C);
+	g_Console.writeToBuffer({ 91,14 }, "Collect:", 0x0C);
+	g_Console.writeToBuffer({ 100, 14 }, std::to_string(countCoin), 0x0C);
+	g_Console.writeToBuffer({ 103, 14 }, "more coins", 0x0C);
 }
 
 void monsterLogic() // represented by 'M'
@@ -1455,11 +1500,13 @@ void monsterLogic() // represented by 'M'
 			EQUCOORDS(g_sChar1.m_cLocation, g_monster6.m_cLocation) ||
 			EQUCOORDS(g_sChar2.m_cLocation, g_monster6.m_cLocation))
 		{
-			g_map.loadMap("Levels/0.txt");
+			LOAD(temporary1);
+			LOADMAP(temporarymap1);
 			g_eGameState = S_GAME;
+			g_trigger.initTrigger(&g_map, &g_Console);//reninit all triggers for new map
+
 			PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
-			g_sChar1.m_cLocation = { 6, 44 };
-			g_sChar2.m_cLocation = { 9, 44 };
+			
 
 			// initialise the position of monsters, after pacman ends
 			g_monster1.m_cLocation.X = 98;
@@ -1653,8 +1700,7 @@ void mainMenu()
 
 void renderMainMenu()
 {
-	//for music, cant get it to work async with other functions
-	//PlaySound(TEXT("Left_Bank_Two_Elevator_music[Mp3Converter.net] (1).wav"), NULL, SND_LOOP | SND_ASYNC);
+	backgroundimage();
 	WORD attri1 = 0x07, attri2 = 0x07, attri3 = 0x07;
 
 	switch (g_menuSelection)
@@ -1671,14 +1717,14 @@ void renderMainMenu()
 	}
 
 	COORD c = g_Console.getConsoleSize();
-	c.Y /= 3;
-	c.X = (SHORT)(c.X * 0.5 - 3);
+	c.Y = 33;
+	c.X = (SHORT)(c.X * 0.5 + 1);
 	g_Console.writeToBuffer(c, "1. PLAY", attri1);
 	c.Y += 1;
-	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 3);
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 + 1);
 	g_Console.writeToBuffer(c, "2. LOAD", attri2);
 	c.Y += 1;
-	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 3);
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 + 1);
 	g_Console.writeToBuffer(c, "3. EXIT", attri3);
 }
 
@@ -1694,13 +1740,22 @@ void loadSave()
 		switch (g_menuSelection)
 		{
 		case 0:
-			LOAD();
+			g_eGameState = S_GAME;
+			LOAD(filename1);
+			LOADMAP(mapname1);
+
 			//load saved file 1
 			break;
 		case 1:
+			g_eGameState = S_GAME;
+			LOAD(filename2);
+			LOADMAP(mapname2);
 			//load saved file 2
 			break;
 		case 2:
+			g_eGameState = S_GAME;
+			LOAD(filename3);
+			LOADMAP(mapname3);
 			//load saved file 3
 			break;
 		case 3:
@@ -1758,6 +1813,7 @@ void loadSave()
 
 void renderLoadSave()
 {
+	backgroundimage();
 	WORD attri1 = 0x07, attri2 = 0x07, attri3 = 0x07, attri4 = 0x07;
 
 	switch (g_menuSelection)
@@ -1777,19 +1833,19 @@ void renderLoadSave()
 	}
 
 	COORD c = g_Console.getConsoleSize();
-	c.Y /= 3;
-	c.X = (SHORT)(c.X * 0.5 - 4);
+	c.Y = 33;
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 + 1);
 
-	g_Console.writeToBuffer(c, "1. EMPTY", attri1);
+	g_Console.writeToBuffer(c, "SAVE 1", attri1);
 	c.Y += 1;
-	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 4);
-	g_Console.writeToBuffer(c, "2. EMPTY", attri2);
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 + 1);
+	g_Console.writeToBuffer(c, "SAVE 2", attri2);
 	c.Y += 1;
-	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 4);
-	g_Console.writeToBuffer(c, "3. EMPTY", attri3);
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 + 1);
+	g_Console.writeToBuffer(c, "SAVE 3", attri3);
 	c.Y += 1;
-	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 4);
-	g_Console.writeToBuffer(c, "4. BACK", attri4);
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 + 1);
+	g_Console.writeToBuffer(c, "BACK", attri4);
 }
 
 void quizMode()
@@ -2060,40 +2116,48 @@ void renderItems()
 	}
 }
 
-void SAVE()
+void SAVE(string filename)
 {
-	std::ofstream savefile("save1");
+	std::ofstream savefile(filename);
 
 	if (savefile.is_open())
 	{
-		savefile << g_eGameState << std::endl;
-		//save map
 
 		if (g_sChar1.m_bActive == true)
 		{
-			savefile << g_sChar1.m_cLocation.X << std::endl;
-			savefile << g_sChar1.m_cLocation.Y << std::endl;
-			savefile << "001" << std::endl;//player1 is active
+			savefile << '1' << std::endl;//player1 is active
 		}
+		else
+		{
+			savefile << '0' << std::endl;
+		}
+
+		savefile << g_sChar1.m_cLocation.X << std::endl;
+
+		savefile << g_sChar1.m_cLocation.Y << std::endl;
 
 
 
 		if (g_sChar2.m_bActive == true)
 		{
-			savefile << g_sChar2.m_cLocation.X << std::endl;
-			savefile << g_sChar2.m_cLocation.Y << std::endl;
-			savefile << "002" << std::endl;//player2 is active
-		}
 
-		/*	if (g_abFlags[3] == true)
-		{
-		savefile << "003" << std::endl;
+			savefile << "1" << std::endl;//player2 is active
 		}
-
-		if (g_abFlags[5] == true)
+		else
 		{
-		savefile <<"005" << std::endl;
-		}*/
+			savefile << '0' << std::endl;
+		}
+		savefile << g_sChar2.m_cLocation.X << std::endl;
+
+		savefile << g_sChar2.m_cLocation.Y << std::endl;
+
+
+
+		for (int i = 0; i < flagCount; i++)
+		{
+			savefile << g_abFlags[i] ? '1' : '0';// if flag equals true save '1' else '0'
+		}
+		savefile << std::endl;
 
 		//savefile << "END" << std::endl;
 		savefile.close();
@@ -2103,80 +2167,248 @@ void SAVE()
 	{
 		std::cerr << "UNABLE TO OPEN FILE" << std::endl;
 	}
+
 }
 
-void LOAD()
+void LOAD(string filename)
 {
 
-	string load[100];
-	std::ifstream savefile("save1");
+	string load;
+	std::ifstream savefile(filename);
 
-	for (i = 0; i<7 /* load[i]!="END" */; i++)
+
+
+
+	getline(savefile, load);
+	g_sChar1.m_bActive = load == "1" ? true : false;
+
+	if (g_sChar1.m_bActive)
 	{
-		getline(savefile, load[i]);
-
-		if (i == 0)
-		{
-			switch (stoi(load[i]))
-			{
-			case 3:g_eGameState = S_GAME;
-				break;
-			case 4:g_eGameState = S_BOSS;
-				break;
-			}
-		}
-
-		switch (stoi(load[i]))
-		{
-		case 001:g_sChar1.m_cLocation.X = stoi(load[i - 2]);
-			g_sChar1.m_cLocation.Y = stoi(load[i - 1]);
-			break;
-
-		case 002:g_sChar2.m_cLocation.X = stoi(load[i - 2]);
-			g_sChar2.m_cLocation.Y = stoi(load[i - 1]);
-			break;
-
-			/*case 003:g_abFlags[3] = true;//pickaxe
-			break;
-
-			case 005:g_abFlags[5] = true;//keys
-			break;*/
-		}
-
-
-
-
-		/*if (i == 1)
-		{
+		getline(savefile, load);
 		g_sChar1.m_cLocation.X = stoi(load);
-		}
-
-		if (i == 2)
-		{
+		getline(savefile, load);
 		g_sChar1.m_cLocation.Y = stoi(load);
-		}
+	}
 
-		if (i == 3)
-		{
+	else
+	{
+		getline(savefile, load);
+		getline(savefile, load);
+	}
+
+	getline(savefile, load);
+	g_sChar2.m_bActive = load == "1" ? true : false;
+	if (g_sChar2.m_bActive)
+	{
+		getline(savefile, load);
 		g_sChar2.m_cLocation.X = stoi(load);
-		}
-
-		if (i == 4)
-		{
+		getline(savefile, load);
 		g_sChar2.m_cLocation.Y = stoi(load);
-		}*/
+	}
 
+	else
+	{
+		getline(savefile, load);
+		getline(savefile, load);
+	}
 
-
-
-
-		/*switch (load)
+	getline(savefile, load);
+	//flags
+	for (i = 0; i < flagCount; i++)
+	{
+		switch ((load[i]))
 		{
-		case ("haspickaxe"): g_abFlags[3] = true;
-		break;
-		case( "haskey"):g_abFlags[5] = true;
-		break;
-		}*/
+
+		case 48:g_abFlags[i] = 0;
+			break;
+		case 49:g_abFlags[i] = 1;
+			break;
+		}
+	}
+}
+
+void SAVEMAP(string mapname)
+{
+	string line;
+	std::ofstream savefile(mapname);
+
+
+
+	for (auto i : g_map.mapArray)
+	{
+		line += i;
 
 	}
+	savefile << line;
+}
+
+void LOADMAP(string mapname)
+{
+
+	string line;
+	std::ifstream savefile(mapname);
+
+	g_map.mapArray.clear();
+	while (getline(savefile, line))
+	{
+		for (i = 0; i < line.length(); i++)
+		{
+			g_map.mapArray.push_back(line[i]); //adding to array
+		}
+	}
+
+	vector<COORD> c;
+	g_map.findChars('E', &c);
+	if (!c.empty())
+	{
+		for (auto i : c)
+		{
+			g_map.removeChar(i);
+		}
+	}
+}
+
+
+
+void SAVEUI()
+{
+	bool bSomethingHappened = false;
+	if (g_dBounceTimeUI > g_dElapsedTime)
+		return;
+	if (g_abKeyPressed[K_ENTER])
+	{
+		switch (g_menuSelection)
+		{
+		case 0:
+			//savefile1
+
+			SAVE(filename1);
+			SAVEMAP(mapname1);
+
+			break;
+		case 1:
+			//savefile2
+
+			SAVE(filename2);
+			SAVEMAP(mapname2);
+
+			break;
+		case 2:
+			//savefile3
+
+			SAVE(filename3);
+			SAVEMAP(mapname3);
+
+			break;
+		case 3:
+			g_eGameState = S_GAME;
+			break;
+
+		case 4:
+			g_bQuitGame = true;
+			break;
+		}
+		bSomethingHappened = true;
+	}
+
+	if (g_abKeyPressed[K_UP] || g_abKeyPressed[K_W])
+	{
+		g_menuSelection--;
+		if (g_menuSelection == -1)
+			g_menuSelection = 4;
+		bSomethingHappened = true;
+	}
+	else if (g_abKeyPressed[K_DOWN] || g_abKeyPressed[K_S])
+	{
+		g_menuSelection++;
+		g_menuSelection %= 5;
+		bSomethingHappened = true;
+	}
+
+	if (g_abKeyPressed[K_1])
+	{
+		g_eGameState = S_GAME;
+	}
+	else if (g_abKeyPressed[K_2])
+	{
+		g_eGameState = S_LOADSAVE;
+		g_menuSelection = 0;
+	}
+	else if (g_abKeyPressed[K_3])
+	{
+		g_bQuitGame = true;
+	}
+
+
+
+	if (bSomethingHappened)
+	{
+		// set the bounce time to some time in the future to prevent accidental triggers
+		g_dBounceTimeUI = g_dElapsedTime + 0.2;
+	}
+}
+
+void RenderSAVEUI()
+{
+	WORD attri1 = 0x07, attri2 = 0x07, attri3 = 0x07, attri4 = 0x07, attri5 = 0x07;
+
+	switch (g_menuSelection)
+	{
+	case 0:
+		attri1 = 0x03;
+		break;
+	case 1:
+		attri2 = 0x03;
+		break;
+	case 2:
+		attri3 = 0x03;
+		break;
+	case 3:
+		attri4 = 0x03;
+		break;
+	case 4:
+		attri5 = 0x03;
+		break;
+	}
+
+
+	COORD c = g_Console.getConsoleSize();
+	c.Y = (SHORT)(g_Console.getConsoleSize().Y * 0.5);
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 1);
+	g_Console.writeToBuffer(c, "SAVE 1", attri1);
+	c.Y += 1;
+	g_Console.writeToBuffer(c, "SAVE 2", attri2);
+	c.Y += 1;
+	g_Console.writeToBuffer(c, "SAVE 3", attri3);
+	c.Y += 1;
+	c.X++;
+	g_Console.writeToBuffer(c, "BACK", attri4);
+	c.Y++;
+	g_Console.writeToBuffer(c, "EXIT", attri5);
+}
+
+void backgroundimage()
+{
+	COORD c = { 0,1 };
+	std::string line;
+	std::ifstream menubg("menuscreen.txt");
+	unsigned int rows = 50;
+	unsigned int cols = 200;
+	char box = 219;
+
+	for (i = 0;i < rows;i++)
+	{
+
+		getline(menubg, line);
+		for (j = 0;j < line.length();j++)
+		{
+			if (line[j] == 'Z')
+			{
+				line[j] = box;
+			}
+		}
+		g_Console.writeToBuffer(c, line, 0x0C);
+		c.Y++;
+	}
+	menubg.close();
 }
