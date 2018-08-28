@@ -201,6 +201,19 @@ void getInput( void )
 		g_abKeyPressed[K_ENTER] = isKeyPressed(VK_RETURN);
 		g_abKeyPressed[K_ESCAPE] = isKeyPressed(VK_ESCAPE);
 		g_abKeyPressed[K_BACKSPACE] = isKeyPressed(VK_BACK);
+
+		//cheats
+		g_abKeyPressed[K_1] = isKeyPressed(0x31);
+		g_abKeyPressed[K_2] = isKeyPressed(0x32);
+		g_abKeyPressed[K_3] = isKeyPressed(0x33);
+		g_abKeyPressed[K_4] = isKeyPressed(0x34);
+		g_abKeyPressed[K_5] = isKeyPressed(0x35);
+
+		g_abKeyPressed[K_6] = isKeyPressed(0x36);
+		g_abKeyPressed[K_7] = isKeyPressed(0x37);
+		g_abKeyPressed[K_8] = isKeyPressed(0x38);
+		g_abKeyPressed[K_9] = isKeyPressed(0x39);
+		g_abKeyPressed[K_0] = isKeyPressed(0x30);
 		}
 		break;
 	case S_QUIZ_B:
@@ -293,7 +306,7 @@ void update(double dt)
 		break;
 	case S_PACMAN: pacmanMode();
 		break;
-	case S_SAVE:SAVEUI();
+	case S_SAVE: SAVEUI();
 		break;
 	}
 }
@@ -329,7 +342,7 @@ void render()
 		break;
 	case S_PACMAN: renderPacmanMode();
 		break;
-	case S_SAVE:RenderSAVEUI();
+	case S_SAVE: RenderSAVEUI();
 		break;
 	}
 	renderFramerate();  // renders debug information, frame rate, elapsed time, etc
@@ -522,14 +535,24 @@ void processUserInput()
 	{
 		switch (g_eGameState)
 		{
+		case S_SAVE:
+			g_eGameState = S_GAME;
+			break;
 		case S_GAME:
 			g_eGameState = S_SAVE;
-			//SAVE();
-			//SAVEMAP();
-			//g_bQuitGame = true;
 			break;
 		case S_BOSS:
+		case S_PACMAN:
+			LOAD(temporary1);
+			LOADMAP(temporarymap1);
 			g_eGameState = S_GAME;
+			PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
+			countCoin = 10;
+			break;
+		case S_SNAKEMINIGAME:
+		case S_RUBIKS:
+			g_eGameState = S_GAME;
+			PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 			break;
 		}
 		eventHappened = true;
@@ -537,7 +560,7 @@ void processUserInput()
 
 
 	if (eventHappened)
-		g_dBounceTimeNorm = g_dElapsedTime + 0.125; // avg
+		g_dBounceTimeNorm = g_dElapsedTime + 0.5; // avg
 }
 
 void checkForTiles()
@@ -589,7 +612,7 @@ void checkForTiles()
 			PlaySound(TEXT("Sounds/tada.wav"), NULL, SND_SYNC | SND_ASYNC); 
 		}
 		//gates
-		if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'U')) //boss
+		if (g_abKeyPressed[K_0] || (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'U'))) //boss
 		{
 			SAVE(temporary1);
 			SAVEMAP(temporarymap1);
@@ -604,19 +627,12 @@ void checkForTiles()
 			// PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);-> not running this
 			PlaySound(TEXT("Sounds/boss.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
-		else if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'M')) //snake
+		else if (g_abKeyPressed[K_9] || (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'M'))) //snake
 		{
 			g_eGameState = S_SNAKEMINIGAME;
 			PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
-		else if (g_map.findCharExists(player->m_futureLocation, 'T')) //rubiks cube
-		{
-			g_eGameState = S_RUBIKS;
-			PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);
-		}
-
-		// for pacman stage
-		else if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'R')) // switch to pacman
+		else if (g_abKeyPressed[K_8] || (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'R'))) //pacman
 		{
 			SAVE(temporary1);
 			SAVEMAP(temporarymap1);
@@ -637,7 +653,11 @@ void checkForTiles()
 			g_eGameState = S_PACMAN;
 			PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
-
+		else if (g_abKeyPressed[K_6] || (g_map.findCharExists(player->m_futureLocation, 'T'))) //rubiks cube
+		{
+			g_eGameState = S_RUBIKS;
+			PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);
+		}
 		//boulders
 		if (g_map.findCharExists(g_sChar1.m_futureLocation, 'B'))
 		{
@@ -925,6 +945,8 @@ void renderBossMode()
 
 void cubeControl()
 {
+	processUserInput(); //for escape
+
 	bool eventHappened = false;
 	if (g_dBounceTimeUI > g_dElapsedTime)
 		return;
@@ -968,12 +990,6 @@ void cubeControl()
 	{
 		g_cube.rotateX(-1);
 		eventHappened = true;
-	}
-	if (g_abKeyPressed[K_BACKSPACE] || g_abKeyPressed[K_ENTER])
-	{
-		g_eGameState = S_GAME;
-		eventHappened = true;
-		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 	}
 	if (eventHappened)
 		g_dBounceTimeUI = g_dElapsedTime + 0.2; // avg
@@ -1023,6 +1039,7 @@ void snakeminigame() //run mini game snake
 	SnakeRenderMap();
 	SnakerenderCharacter();
 	Snakerenderapple();
+	processUserInput();
 
 	// sets the initial state for the game
 }
@@ -1367,6 +1384,7 @@ void pacmanMode()
 	moveCharacter();    // moves the character, collision detection, physics, etc
 	checkForTiles();
 	monsterLogic();
+	processUserInput();
 
 	// for collecting coins
 	if (g_map.findCharExists(g_sChar1.m_cLocation, 'A'))
@@ -1392,17 +1410,6 @@ void pacmanMode()
 		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 		g_abFlags[pacmanDone] = true;
 		
-	}
-	if (g_abKeyPressed[K_BACKSPACE])
-	{
-		LOAD(temporary1);
-		LOADMAP(temporarymap1);
-
-		g_eGameState = S_GAME;
-		g_trigger.initTrigger(&g_map, &g_Console);//reninit all triggers for new map		
-		countCoin = 10;
-		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
-
 	}
 }
 
@@ -1672,20 +1679,6 @@ void mainMenu()
 		bSomethingHappened = true;
 	}
 
-	if (g_abKeyPressed[K_1])
-	{
-		g_eGameState = S_GAME;
-	}
-	else if (g_abKeyPressed[K_2])
-	{
-		g_eGameState = S_LOADSAVE;
-		g_menuSelection = 0;
-	}
-	else if (g_abKeyPressed[K_3])
-	{
-		g_bQuitGame = true;
-	}
-
 	if (g_abKeyPressed[K_ESCAPE])
 	{
 		g_bQuitGame = true;
@@ -1780,23 +1773,6 @@ void loadSave()
 		bSomethingHappened = true;
 	}
 
-	if (g_abKeyPressed[K_1])
-	{
-		//load saved file 1
-	}
-	else if (g_abKeyPressed[K_2])
-	{
-		//load saved file 2
-	}
-	else if (g_abKeyPressed[K_3])
-	{
-		//load saved file 3
-	}
-	else if (g_abKeyPressed[K_4])
-	{
-		g_eGameState = S_MENU;
-		g_menuSelection = 0;
-	}
 
 	if (g_abKeyPressed[K_BACKSPACE] || g_abKeyPressed[K_ESCAPE])
 	{
@@ -2272,6 +2248,8 @@ void LOADMAP(string mapname)
 
 void SAVEUI()
 {
+	processUserInput();
+	
 	bool bSomethingHappened = false;
 	if (g_dBounceTimeUI > g_dElapsedTime)
 		return;
@@ -2324,22 +2302,6 @@ void SAVEUI()
 		g_menuSelection %= 5;
 		bSomethingHappened = true;
 	}
-
-	if (g_abKeyPressed[K_1])
-	{
-		g_eGameState = S_GAME;
-	}
-	else if (g_abKeyPressed[K_2])
-	{
-		g_eGameState = S_LOADSAVE;
-		g_menuSelection = 0;
-	}
-	else if (g_abKeyPressed[K_3])
-	{
-		g_bQuitGame = true;
-	}
-
-
 
 	if (bSomethingHappened)
 	{
@@ -2394,7 +2356,7 @@ void backgroundimage()
 	std::ifstream menubg("menuscreen.txt");
 	unsigned int rows = 50;
 	unsigned int cols = 200;
-	char box = 219;
+	char box = (char)219;
 
 	for (i = 0;i < rows;i++)
 	{
