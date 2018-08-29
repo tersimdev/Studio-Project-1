@@ -34,7 +34,7 @@ public:
 	bool enemyAttack(COORD playerPos);
 
 private:
-	COORD spawnNonce = { 10, 5 };
+	COORD spawnNonce = { 15, 10 };
 
 	int aggroRange = 30;
 };

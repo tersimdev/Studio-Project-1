@@ -45,10 +45,10 @@ SNAKELAD g_snake;
 SNAKELAD g_apple;
 std::vector<SNAKELAD> SnakeBody;
 
-//For pong
+/*For pong*/
 unsigned int pongScore = 0;
 int pongWinCondition = 5;
-// For coin
+/* For pacman*/
 int countCoin = 10;
 PacmanMonster    g_monster1; // monster1 
 PacmanMonster    g_monster2; // monster2
@@ -63,6 +63,7 @@ Console g_Console(199, 51, "RISE OF THE TOMB EXPLORING N00BS");
 //Map		g_map("Levels/astarTest.txt"); //map for astar testing
 Map			g_map(0); //map
 aStar		astar(g_map.cols, g_map.rows, &g_Console, &g_map);
+vector<Node>path; //for astar path visualization
 SGameChar	g_sChar1((char)3, 0x0C, &g_map, 1); //player1
 SGameChar	g_sChar2((char)3, 0x0A, &g_map, 2); //player2
 Pong		g_sPuck1((char)254, 0x0E, { 90, 22 }, { 1, 1 });
@@ -211,17 +212,11 @@ void getInput(void)
 		g_abKeyPressed[K_BACKSPACE] = isKeyPressed(VK_BACK);
 
 		//cheats
+		g_abKeyPressed[K_0] = isKeyPressed(0x30);
 		g_abKeyPressed[K_1] = isKeyPressed(0x31);
 		g_abKeyPressed[K_2] = isKeyPressed(0x32);
 		g_abKeyPressed[K_3] = isKeyPressed(0x33);
 		g_abKeyPressed[K_4] = isKeyPressed(0x34);
-		g_abKeyPressed[K_5] = isKeyPressed(0x35);
-
-		g_abKeyPressed[K_6] = isKeyPressed(0x36);
-		g_abKeyPressed[K_7] = isKeyPressed(0x37);
-		g_abKeyPressed[K_8] = isKeyPressed(0x38);
-		g_abKeyPressed[K_9] = isKeyPressed(0x39);
-		g_abKeyPressed[K_0] = isKeyPressed(0x30);
 	}
 	break;
 	case S_QUIZ_B:
@@ -739,16 +734,18 @@ void checkForTiles()
 		}
 	}
 }
-//vector<Node> path; //for astar path visualization
+
 void enemyMovement()
 {
 	bool bMoving = false;
 	Node start, dest;
-	vector<Node> path;
 	if (g_dBounceTimeEnemy[0] > g_dElapsedTime)
 		return;
 	for (unsigned int i = 0; i < g_trigger.allEnemies.size(); i++)
 	{
+		//randomise location
+		g_trigger.allEnemies[i]->direction = g_trigger.allEnemies[i]->directionGen(g_dBounceTimeEnemy[0]);
+
 		if (g_trigger.allEnemies[i]->isAggro(g_sChar2.m_cLocation))
 		{
 			//A* to find best path
@@ -757,8 +754,8 @@ void enemyMovement()
 			dest.X = g_sChar2.m_cLocation.X;
 			dest.Y = g_sChar2.m_cLocation.Y;
 			path = astar.aStarSearch(start, dest);
-			//find direction based on A* path
-			g_trigger.allEnemies[i]->pathFindDir(path);
+			if (!path.empty()) //find direction based on A* path
+				g_trigger.allEnemies[i]->pathFindDir(path);
 		}
 
 		else if (g_trigger.allEnemies[i]->isAggro(g_sChar1.m_cLocation))
@@ -769,12 +766,8 @@ void enemyMovement()
 			dest.X = g_sChar1.m_cLocation.X;
 			dest.Y = g_sChar1.m_cLocation.Y;
 			path = astar.aStarSearch(start, dest);
-			//find direction based on A* path
-			g_trigger.allEnemies[i]->pathFindDir(path);
-		}
-		else
-		{
-			g_trigger.allEnemies[i]->direction = g_trigger.allEnemies[i]->directionGen(g_dBounceTimeEnemy[0]);
+			if (!path.empty()) //find direction based on A* path
+				g_trigger.allEnemies[i]->pathFindDir(path);
 		}
 
 		//calculating future location
@@ -827,12 +820,13 @@ void renderGame()
 
 	if (g_abFlags[shooting]) // renders bullet if shooting
 		renderBullet();
-
-	/*for (auto i : path) //for astar path visualization
+	if (g_abKeyPressed[K_SPACE] && !path.empty())
 	{
-	g_Console.writeToBuffer(i, "H", 0x0F);
-
-	}*/
+		for (auto i : path) //for astar path visualization
+		{
+			g_Console.writeToBuffer(i, (char)176, 0x0F);
+		}
+	}
 
 }
 
