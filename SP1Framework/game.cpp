@@ -62,6 +62,10 @@ Map			g_map(0); //map
 aStar		astar(g_map.cols, g_map.rows, &g_Console, &g_map);
 SGameChar	g_sChar1((char)3, 0x0C, &g_map, 1); //player1
 SGameChar	g_sChar2((char)3, 0x0A, &g_map, 2); //player2
+Pong		g_sPuck1((char)254, 0x0E, { 90, 22 }, { 1, 1 });
+Pong		g_sPuck2((char)254, 0x0E, { 50, 22 }, { -1, 1 });
+Slider		g_sSlider1(0x0C, { 35, 20 });
+Slider		g_sSlider2(0x0A, { 133, 20 });
 Trigger		g_trigger(&g_map, &g_Console);
 Quiz		g_quiz(0); //quiz
 Boss*		g_boss = NULL; //boss
@@ -74,6 +78,7 @@ double  g_dBounceTimeMove[NumOfPlayers];
 double  g_dBounceTimeAction[NumOfPlayers];
 double  g_dBounceTimeEnemy[NumOfPlayers];
 double  g_dBounceTimeMonster;
+double	g_dBounceTimePuck;
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -261,6 +266,14 @@ void getInput( void )
 		g_abKeyPressed[K_SPACE] = isKeyPressed(VK_SPACE);
 		break;
 	}
+	case S_PONG:
+	{
+		g_abKeyPressed[K_S] = isKeyPressed(0x53);
+		g_abKeyPressed[K_W] = isKeyPressed(0x57);
+		g_abKeyPressed[K_UP] = isKeyPressed(VK_UP);
+		g_abKeyPressed[K_DOWN] = isKeyPressed(VK_DOWN);
+		break;
+	}
 		break;
 	}
 }
@@ -306,6 +319,8 @@ void update(double dt)
 		break;
 	case S_PACMAN: pacmanMode();
 		break;
+	case S_PONG: pongMode();
+		break;
 	case S_SAVE: SAVEUI();
 		break;
 	}
@@ -341,6 +356,8 @@ void render()
 	case S_RUBIKS: renderCube();
 		break;
 	case S_PACMAN: renderPacmanMode();
+		break;
+	case S_PONG: renderPong();
 		break;
 	case S_SAVE: RenderSAVEUI();
 		break;
@@ -543,6 +560,7 @@ void processUserInput()
 			break;
 		case S_BOSS:
 		case S_PACMAN:
+		case S_PONG:
 			LOAD(temporary1);
 			LOADMAP(temporarymap1);
 			g_eGameState = S_GAME;
@@ -581,6 +599,7 @@ void checkForTiles()
 			g_abFlags[snakeDone] = false; //lose key
 			g_abFlags[bossDone] = false; //lose key
 			g_abFlags[pacmanDone] = false; //lose key
+			g_abFlags[pongDone] = false;
 			//moving the player that triggered it
 			if (player->m_cLocation.X > g_Console.getConsoleSize().X * 0.9)
 			{
@@ -651,6 +670,20 @@ void checkForTiles()
 				i->destroyEnemy(&g_map);
 			}
 			g_eGameState = S_PACMAN;
+			PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);
+		}
+		else if (g_abKeyPressed[K_3] || g_map.findCharExists(player->m_futureLocation, 'F')) // pong
+		{
+			SAVE(temporary1);
+			SAVEMAP(temporarymap1);
+			//
+			g_map.loadMap("Levels/pong.txt");
+			g_trigger = Trigger(&g_map, &g_Console);
+			for (auto i : g_trigger.allEnemies)
+			{
+				i->destroyEnemy(&g_map);
+			}
+			g_eGameState = S_PONG;
 			PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
 		else if (g_abKeyPressed[K_6] || (g_map.findCharExists(player->m_futureLocation, 'T'))) //rubiks cube
@@ -2373,4 +2406,174 @@ void backgroundimage()
 		c.Y++;
 	}
 	menubg.close();
+}
+
+/***************************************PONG GAME***************************************/
+
+void pongMode()
+{
+	processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
+	puckMove();
+	moveSliders();
+	if (g_sPuck1.m_futureLocation.X == 135 || g_sPuck1.m_futureLocation.X == 34 || g_sPuck2.m_futureLocation.X == 135 || g_sPuck2.m_futureLocation.X == 34)
+	{
+		g_eGameState = S_GAME;
+		LOAD(temporary1);
+		LOADMAP(temporarymap1);
+		g_sPuck1.m_cLocation = { 84, 22 };
+		g_sPuck2.m_cLocation = { 50, 22 };
+		g_sPuck1.direction = { 1, 1 };
+		g_sPuck2.direction = { -1, 1 };
+		g_sSlider1.m_cLocation = { 35, 20 };
+		g_sSlider2.m_cLocation = { 133, 20 };
+		g_abFlags[pongDone] = true;
+	}
+}
+
+void renderPong()
+{
+	renderMap();
+	renderSliders();
+	g_Console.writeToBuffer(g_sPuck1.m_cLocation, g_sPuck1.symbol, g_sPuck1.color); // rendering the pucks
+	g_Console.writeToBuffer(g_sPuck2.m_cLocation, g_sPuck2.symbol, g_sPuck2.color);
+}
+
+void puckMove()
+{
+	bool bEventHappen = false;
+	if (g_dBounceTimePuck > g_dElapsedTime)
+		return;
+	int puckSpeed = 1; // speed of the puck
+	puckCollisionCheck();
+	bEventHappen = true;
+	g_sPuck1.m_cLocation.X += (puckSpeed * g_sPuck1.direction.X);
+	g_sPuck1.m_cLocation.Y += (puckSpeed * g_sPuck1.direction.Y);
+	g_sPuck2.m_cLocation.X += (puckSpeed * g_sPuck2.direction.X);
+	g_sPuck2.m_cLocation.Y += (puckSpeed * g_sPuck2.direction.Y);
+	if (bEventHappen = true)
+	{
+		g_dBounceTimePuck = g_dElapsedTime + 0.04;
+	}
+}
+
+void renderSliders()
+{
+	COORD extend1 = g_sSlider1.m_cLocation;
+	COORD extend2 = g_sSlider2.m_cLocation;
+	for (int i = 0; i < 5; i++)
+	{
+		extend1.Y += 1;
+		extend2.Y += 1;
+		g_Console.writeToBuffer(extend1, (char)219, g_sSlider1.color);
+		g_Console.writeToBuffer(extend2, (char)219, g_sSlider2.color);
+	}
+}
+
+void puckCollisionCheck()
+{
+	int puckSpeed = 1;
+	g_sPuck1.m_futureLocation = ADDCOORDS(g_sPuck1.m_cLocation, g_sPuck1.direction);
+	g_sPuck2.m_futureLocation = ADDCOORDS(g_sPuck2.m_cLocation, g_sPuck2.direction);
+	if (g_sPuck1.collisionCheckSlider(g_sPuck1.m_futureLocation, g_sSlider1.m_cLocation)) // to check if the puck collides with the player's slider
+	{
+		g_sPuck1.direction.X *= (-1);
+	}
+	if (g_sPuck1.collisionCheckSlider(g_sPuck1.m_futureLocation, g_sSlider2.m_cLocation))
+	{
+		g_sPuck1.direction.X *= (-1);
+	}
+	if (g_map.collideWithWall(g_sPuck1.m_futureLocation))
+	{
+		g_sPuck1.direction.Y *= (-1);
+	}
+	if (g_map.findCharExists(g_sPuck1.m_futureLocation, '5'))
+	{
+		g_map.removeChar(g_sPuck1.m_futureLocation);
+		g_sPuck1.direction.X *= (-1);
+	}
+
+	if (g_sPuck2.collisionCheckSlider(g_sPuck2.m_futureLocation, g_sSlider1.m_cLocation)) // to check if the puck collides with the player's slider
+	{
+		g_sPuck2.direction.X *= (-1);
+	}
+	if (g_sPuck2.collisionCheckSlider(g_sPuck2.m_futureLocation, g_sSlider2.m_cLocation))
+	{
+		g_sPuck2.direction.X *= (-1);
+	}
+	if (g_map.collideWithWall(g_sPuck2.m_futureLocation))
+	{
+		g_sPuck2.direction.Y *= (-1);
+	}
+	if (g_map.findCharExists(g_sPuck2.m_futureLocation, '5'))
+	{
+		g_map.removeChar(g_sPuck2.m_futureLocation);
+		g_sPuck2.direction.X *= (-1);
+	}
+
+}
+
+void moveSliders()
+{
+	g_abFlags[moving1] = false;
+	g_abFlags[moving2] = false;
+	if (g_dBounceTimeMove[0] < g_dElapsedTime && g_sSlider1.m_bActive)
+	{
+		//player 1
+		if (g_abKeyPressed[K_W] && g_sSlider1.m_cLocation.Y > 1)
+		{
+			//Beep(1440, 30);
+			g_sSlider1.direction = { 0,-1 };
+			g_abFlags[moving1] = true;
+		}
+		else if (g_abKeyPressed[K_S] && g_sSlider1.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
+		{
+			//Beep(1440, 30);
+			g_sSlider1.direction = { 0, 1 };
+			g_abFlags[moving1] = true;
+		}
+	}
+	if (g_dBounceTimeMove[0] < g_dElapsedTime && g_sSlider1.m_bActive)
+	{
+		//player 2
+		if (g_abKeyPressed[K_UP] && g_sSlider2.m_cLocation.Y > 1)
+		{
+			//Beep(1440, 30);
+			g_sSlider2.direction = { 0,-1 };
+			g_abFlags[moving2] = true;
+		}
+		else if (g_abKeyPressed[K_DOWN] && g_sSlider2.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
+		{
+			//Beep(1440, 30);
+			g_sSlider2.direction = { 0, 1 };
+			g_abFlags[moving2] = true;
+		}
+	}
+
+	if (g_abFlags[moving1])
+	{
+		//calculating future location
+		g_sSlider1.m_futureLocation = ADDCOORDS(g_sSlider1.m_cLocation, g_sSlider1.direction);
+		g_sSlider1.m_futureLocation.Y += 1;
+		if (!g_map.collideWithWall(g_sSlider1.m_futureLocation))
+		{
+			g_sSlider1.m_futureLocation.Y += 5;
+			if (!g_map.collideWithWall(g_sSlider1.m_futureLocation))
+				g_sSlider1.m_cLocation = ADDCOORDS(g_sSlider1.m_cLocation, g_sSlider1.direction);
+		}
+		//check bounce time
+		g_dBounceTimeMove[0] = g_dElapsedTime + 0.03; // fazt
+	}
+	if (g_abFlags[moving2])
+	{
+		//calculating future location
+		g_sSlider2.m_futureLocation = ADDCOORDS(g_sSlider2.m_cLocation, g_sSlider2.direction);
+		if (!g_map.collideWithWall(g_sSlider2.m_futureLocation))
+		{
+			g_sSlider2.m_futureLocation.Y += 5;
+			if (!g_map.collideWithWall(g_sSlider2.m_futureLocation))
+				g_sSlider2.m_cLocation = ADDCOORDS(g_sSlider2.m_cLocation, g_sSlider2.direction);
+		}
+		//check bounce time
+		g_dBounceTimeMove[0] = g_dElapsedTime + 0.03; // fazt
+	}
 }

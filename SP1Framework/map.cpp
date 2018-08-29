@@ -179,6 +179,14 @@ void Map::replaceAndRender(Console* console)
 				currChar = _A;
 				color = 0x06;
 				break;
+			case '5':
+				currChar = _5;
+				color = 0x0C;
+				break;
+			case 'D':
+				currChar = _D;
+				color = 0x0E;
+				break;
 			case '0': //text
 
 				currChar = _0;

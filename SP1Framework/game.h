@@ -14,6 +14,7 @@
 #include "pacman.h"
 #include "aStar.h"
 #include "snakeMini.h"
+#include "pong.h"
 #include <string>
 #include <vector>
 #include "Windows.h"//not needed 
@@ -39,6 +40,7 @@ enum FLAGS
 	snakeDone,
 	pacmanDone,
 	bossDone,
+	pongDone,
 	flagCount
 };
 
@@ -109,6 +111,7 @@ enum EGAMESTATES
 	S_SNAKEMINIGAME,
 	S_PACMAN,
 	S_RUBIKS,
+	S_PONG,
 	S_SAVE,
     S_COUNT
 };
@@ -149,6 +152,12 @@ void renderBossMode();		//renders the boss' attacks etc
 void renderQuiz();			//renders the quiz to console
 void renderItems();			//renders currently owned items
 void renderCube();			//renders the cube;
+void pongMode();			//pong
+void renderPong();			//render the map and stuff
+void puckMove();			//movement of the puck
+void puckCollisionCheck();	//checks if the puck collides with the wall or the sliders
+void moveSliders();			//players to move the sliders
+void renderSliders();		//to render the sliders
 void SAVE(string filename);
 void LOAD(string filename);
 void SAVEMAP(string mapname);
