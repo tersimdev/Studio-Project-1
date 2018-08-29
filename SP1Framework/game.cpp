@@ -47,7 +47,7 @@ std::vector<SNAKELAD> SnakeBody;
 
 /*For pong*/
 unsigned int pongScore = 0;
-int pongWinCondition = 5;
+int pongWinCondition = 2;
 /* For pacman*/
 int countCoin = 10;
 PacmanMonster    g_monster1; // monster1 
@@ -638,7 +638,7 @@ void checkForTiles()
 			PlaySound(TEXT("Sounds/tada.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
 		//gates
-		if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'U')) //boss
+		if (!g_abFlags[bossDone] && g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'U')) //boss
 		{
 			SAVE(temporary1);
 			SAVEMAP(temporarymap1);
@@ -653,12 +653,12 @@ void checkForTiles()
 			// PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);-> not running this
 			PlaySound(TEXT("Sounds/boss.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
-		else if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'M')) //snake
+		else if (!g_abFlags[snakeDone] && g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'M')) //snake
 		{
 			g_eGameState = S_SNAKEMINIGAME;
 			PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
-		else if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'R')) //pacman
+		else if (!g_abFlags[pacmanDone] && g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'R')) //pacman
 		{
 			SAVE(temporary1);
 			SAVEMAP(temporarymap1);
@@ -679,7 +679,7 @@ void checkForTiles()
 			g_eGameState = S_PACMAN;
 			PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
-		else if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'F')) // pong
+		else if (!g_abFlags[pongDone] && g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'F')) // pong
 		{
 			SAVE(temporary1);
 			SAVEMAP(temporarymap1);
@@ -1290,7 +1290,8 @@ void Snakecollisiondetection()
 	{
 		g_eGameState = S_GAME;
 		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
-		g_abFlags[snakeDone] = true;
+		if (score == Snakewincondition)
+			g_abFlags[snakeDone] = true;
 
 		spawnapple = true;
 		applelocation(spawnapple);
@@ -1444,8 +1445,7 @@ void pacmanMode()
 
 		g_eGameState = S_GAME;
 		g_trigger.initTrigger(&g_map, &g_Console);//reninit all triggers for new map		
-		countCoin = 169;
-		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
+		countCoin = 10;
 		g_abFlags[pacmanDone] = true;
 
 	}
@@ -1456,7 +1456,6 @@ void pacmanMode()
 		g_eGameState = S_GAME;
 		g_trigger.initTrigger(&g_map, &g_Console);//reninit all triggers for new map		
 		countCoin = 10;
-		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 	}
 }
 
@@ -2175,9 +2174,6 @@ void LOAD(string filename)
 	string load;
 	std::ifstream savefile(filename);
 
-
-
-
 	getline(savefile, load);
 	g_sChar1.m_bActive = load == "1" ? true : false;
 
@@ -2265,6 +2261,8 @@ void LOADMAP(string mapname)
 			g_map.removeChar(i);
 		}
 	}
+
+
 }
 
 
@@ -2426,7 +2424,7 @@ void pongMode()
 	processUserInput();
 	puckMove();
 	moveSliders();
-	if ((g_sPuck1.m_futureLocation.X == 135 || g_sPuck1.m_futureLocation.X == 34 || g_sPuck2.m_futureLocation.X == 135 || g_sPuck2.m_futureLocation.X == 34) || pongScore == 5)
+	if ((g_sPuck1.m_futureLocation.X == 135 || g_sPuck1.m_futureLocation.X == 34 || g_sPuck2.m_futureLocation.X == 135 || g_sPuck2.m_futureLocation.X == 34) || pongScore == pongWinCondition)
 	{
 		LOAD(temporary1);
 		LOADMAP(temporarymap1);
@@ -2439,9 +2437,12 @@ void pongMode()
 		g_sPuck2.direction = { -1, 1 };
 		g_sSlider1.m_cLocation = { 35, 20 };
 		g_sSlider2.m_cLocation = { 133, 20 };
+
+		if (pongScore == pongWinCondition)
+			g_abFlags[pongDone] = true;
 		pongScore = 0;
-		g_abFlags[pongDone] = true;
 	}
+
 }
 
 void renderPong()
