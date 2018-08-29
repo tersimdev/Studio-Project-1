@@ -45,6 +45,9 @@ SNAKELAD g_snake;
 SNAKELAD g_apple;
 std::vector<SNAKELAD> SnakeBody;
 
+//For pong
+unsigned int pongScore = 0;
+
 // For coin
 int countCoin = 10;
 PacmanMonster    g_monster1; // monster1 
@@ -2447,11 +2450,12 @@ void pongMode()
 	processUserInput();
 	puckMove();
 	moveSliders();
-	if (g_sPuck1.m_futureLocation.X == 135 || g_sPuck1.m_futureLocation.X == 34 || g_sPuck2.m_futureLocation.X == 135 || g_sPuck2.m_futureLocation.X == 34)
+	if ((g_sPuck1.m_futureLocation.X == 135 || g_sPuck1.m_futureLocation.X == 34 || g_sPuck2.m_futureLocation.X == 135 || g_sPuck2.m_futureLocation.X == 34) || pongScore == 5)
 	{
 		LOAD(temporary1);
 		LOADMAP(temporarymap1);
 		g_eGameState = S_GAME;
+
 		g_trigger.initTrigger(&g_map, &g_Console);
 		g_sPuck1.m_cLocation = { 84, 22 };
 		g_sPuck2.m_cLocation = { 50, 22 };
@@ -2459,6 +2463,7 @@ void pongMode()
 		g_sPuck2.direction = { -1, 1 };
 		g_sSlider1.m_cLocation = { 35, 20 };
 		g_sSlider2.m_cLocation = { 133, 20 };
+		g_abFlags[pongDone] = true;
 	}
 }
 
@@ -2468,6 +2473,8 @@ void renderPong()
 	renderSliders();
 	g_Console.writeToBuffer(g_sPuck1.m_cLocation, g_sPuck1.symbol, g_sPuck1.color); // rendering the pucks
 	g_Console.writeToBuffer(g_sPuck2.m_cLocation, g_sPuck2.symbol, g_sPuck2.color);
+	g_Console.writeToBuffer({ g_Console.getConsoleSize().X / 2,43 }, playerscore + std::to_string(pongScore) + '/' + std::to_string(pongWinCondition), 0x0C);
+
 }
 
 void puckMove()
@@ -2521,6 +2528,7 @@ void puckCollisionCheck()
 	if (g_map.findCharExists(g_sPuck1.m_futureLocation, '5'))
 	{
 		g_map.removeChar(g_sPuck1.m_futureLocation);
+		pongScore += 1;
 		g_sPuck1.direction.X *= (-1);
 	}
 
@@ -2539,6 +2547,7 @@ void puckCollisionCheck()
 	if (g_map.findCharExists(g_sPuck2.m_futureLocation, '5'))
 	{
 		g_map.removeChar(g_sPuck2.m_futureLocation);
+		pongScore += 1;
 		g_sPuck2.direction.X *= (-1);
 	}
 
