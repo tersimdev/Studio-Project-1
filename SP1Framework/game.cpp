@@ -55,9 +55,8 @@ PacmanMonster    g_monster2; // monster2
 PacmanMonster    g_monster3; // monster3
 PacmanMonster    g_monster4; // monster4
 PacmanMonster    g_monster5; // monster5
-PacmanMonster    g_monster6; // monster6
 
-							 // Console object
+// Console object
 Console g_Console(199, 51, "RISE OF THE TOMB EXPLORING N00BS");
 // Game specific variables here
 //Map		g_map("Levels/astarTest.txt"); //map for astar testing
@@ -114,17 +113,14 @@ void init(void)
 	g_monster2.m_cLocation.X = 98;
 	g_monster2.m_cLocation.Y = 35;
 
-	g_monster3.m_cLocation.X = 82;
-	g_monster3.m_cLocation.Y = 33;
+	g_monster3.m_cLocation.X = 121;
+	g_monster3.m_cLocation.Y = 43;
 
 	g_monster4.m_cLocation.X = 115;
 	g_monster4.m_cLocation.Y = 33;
 
 	g_monster5.m_cLocation.X = 76;
 	g_monster5.m_cLocation.Y = 43;
-
-	g_monster6.m_cLocation.X = 121;
-	g_monster6.m_cLocation.Y = 43;
 
 	// sets the initial state for the game
 	g_eGameState = S_SPLASHSCREEN;
@@ -1487,28 +1483,24 @@ void monsterLogic() // represented by 'M'
 		{
 			moveMonster1(0, -1);
 			moveMonster5(0, -1);
-			moveMonster6(0, -1);
 		}
 
 		else if (RNG1 == 1 && g_monster1.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)//down
 		{
 			moveMonster1(0, 1);
 			moveMonster5(0, 1);
-			moveMonster6(0, 1);
 		}
 
 		else if (RNG1 == 2 && g_monster1.m_cLocation.X > 0)//left
 		{
 			moveMonster1(-1, 0);
 			moveMonster5(-1, 0);
-			moveMonster6(-1, 0);
 		}
 
 		else if (RNG1 == 3 && g_monster1.m_cLocation.X < g_Console.getConsoleSize().X - 1)//right
 		{
 			moveMonster1(1, 0);
 			moveMonster5(1, 0);
-			moveMonster6(1, 0);
 		}
 
 		//movement for monster 2 
@@ -1554,9 +1546,7 @@ void monsterLogic() // represented by 'M'
 			EQUCOORDS(g_sChar1.m_cLocation, g_monster4.m_cLocation) ||
 			EQUCOORDS(g_sChar2.m_cLocation, g_monster4.m_cLocation) ||
 			EQUCOORDS(g_sChar1.m_cLocation, g_monster5.m_cLocation) ||
-			EQUCOORDS(g_sChar2.m_cLocation, g_monster5.m_cLocation) ||
-			EQUCOORDS(g_sChar1.m_cLocation, g_monster6.m_cLocation) ||
-			EQUCOORDS(g_sChar2.m_cLocation, g_monster6.m_cLocation))
+			EQUCOORDS(g_sChar2.m_cLocation, g_monster5.m_cLocation))
 		{
 			LOAD(temporary1);
 			LOADMAP(temporarymap1);
@@ -1581,9 +1571,6 @@ void monsterLogic() // represented by 'M'
 
 			g_monster5.m_cLocation.X = 76;
 			g_monster5.m_cLocation.Y = 43;
-
-			g_monster6.m_cLocation.X = 121;
-			g_monster6.m_cLocation.Y = 43;
 		}
 	}
 }
@@ -1595,7 +1582,6 @@ void renderMonster()
 	g_Console.writeToBuffer(g_monster3.m_cLocation, (char)164, 0x03);
 	g_Console.writeToBuffer(g_monster4.m_cLocation, (char)164, 0x03);
 	g_Console.writeToBuffer(g_monster5.m_cLocation, (char)164, 0x03);
-	g_Console.writeToBuffer(g_monster6.m_cLocation, (char)164, 0x03);
 }
 
 void moveMonster1(int dirx, int diry)
@@ -1669,19 +1655,6 @@ void moveMonster5(int dirx, int diry)
 	}
 }
 
-void moveMonster6(int dirx, int diry)
-{
-	//check for monster 2
-	g_monster6.m_futureLocation.X = g_monster6.m_cLocation.X + dirx;
-	g_monster6.m_futureLocation.Y = g_monster6.m_cLocation.Y + diry;
-
-	if (!g_map.collideWithWall(g_monster6.m_futureLocation))
-	{
-		g_dBounceTimeMonster = g_dElapsedTime + 0.1;
-		g_monster6.m_cLocation.X = g_monster6.m_cLocation.X + dirx;
-		g_monster6.m_cLocation.Y = g_monster6.m_cLocation.Y + diry;
-	}
-}
 
 
 
