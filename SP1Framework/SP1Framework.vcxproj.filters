@@ -157,5 +157,11 @@
     <Text Include="Levels\PACMAN.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="Levels\4.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="Levels\5.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

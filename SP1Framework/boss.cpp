@@ -114,13 +114,18 @@ void Boss::initBullets()
 		for (int i = 0; i < boxHeight; i++)
 		{
 			if (!(i % 2))
+			{
 				cp.X = boxLeftTop.X + boxWidth + 2;
+				cd = { -1 , 0 };
+			}
+				
 			else
+			{
 				cp.X = boxLeftTop.X - 2;
-
+				cd = { 1 , 0 };
+			}
 			cp.Y = boxLeftTop.Y + i;
 			pos.push_back(cp);
-			cd = { 1 , 0 };
 			dir.push_back(cd);
 		}
 		break;
