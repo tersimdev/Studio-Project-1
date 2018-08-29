@@ -590,7 +590,7 @@ void checkForTiles()
 			player = &g_sChar2;
 
 		if (g_map.findCharExists(player->m_futureLocation, 'N') 
-			&& (g_abFlags[tutoDone] || g_abFlags[bossDone] || g_abFlags[snakeDone]) || g_abFlags[pacmanDone])
+			&& (g_abFlags[tutoDone] || g_abFlags[bossDone] || g_abFlags[snakeDone]) || g_abFlags[pacmanDone] || g_abFlags[pongDone])
 		{
 			g_map.updateMap(); //loads next map, wraping around
 			g_trigger.initTrigger(&g_map, &g_Console); //reinits all triggers for new map
