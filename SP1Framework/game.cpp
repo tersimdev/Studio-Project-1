@@ -485,7 +485,6 @@ void moveCharacter()
 			&& !EQUCOORDS(g_sChar1.m_futureLocation, g_sChar2.m_cLocation))
 			g_sChar1.m_cLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
 		//check bounce time
-		PlaySound(TEXT("Sounds/movement.wav"), NULL, SND_SYNC | SND_ASYNC);
 
 		g_dBounceTimeMove[0] = g_dElapsedTime + 0.05; // fazt
 	}
@@ -498,7 +497,6 @@ void moveCharacter()
 			&& !EQUCOORDS(g_sChar2.m_futureLocation, g_sChar1.m_cLocation))
 			g_sChar2.m_cLocation = ADDCOORDS(g_sChar2.m_cLocation, g_sChar2.direction);
 		//check bounce time
-		PlaySound(TEXT("Sounds/movement.wav"), NULL, SND_SYNC | SND_ASYNC);
 
 		g_dBounceTimeMove[1] = g_dElapsedTime + 0.05; // fazt
 	}
@@ -712,7 +710,7 @@ void checkForTiles()
 			PlaySound(TEXT("Sounds/moveboulder.wav"), NULL, SND_SYNC | SND_ASYNC);
 
 		}
-		else if (g_map.findCharExists(g_sChar2.m_futureLocation, 'B'))
+		if (g_map.findCharExists(g_sChar2.m_futureLocation, 'B'))
 		{
 			if (g_abFlags[hasPickaxe] && g_abKeyPressed[K_RCTRL])
 			{
@@ -1708,8 +1706,7 @@ void mainMenu()
 			break;
 		case 1:
 			g_eGameState = S_LOADSAVE;
-			g_menuSelection = 1;
-			//currentgamestate = 2;
+			g_menuSelection = 0;
 			break;
 		case 2:
 			g_bQuitGame = true;
@@ -1764,14 +1761,14 @@ void renderMainMenu()
 
 	COORD c = g_Console.getConsoleSize();
 	c.Y = 33;
-	c.X = (SHORT)(c.X * 0.5 + 1);
-	g_Console.writeToBuffer(c, "1. PLAY", attri1);
+	c.X = (SHORT)(c.X * 0.5 + 3);
+	g_Console.writeToBuffer(c, "PLAY", attri1);
 	c.Y += 1;
-	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 + 1);
-	g_Console.writeToBuffer(c, "2. LOAD", attri2);
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 + 3);
+	g_Console.writeToBuffer(c, "LOAD", attri2);
 	c.Y += 1;
-	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 + 1);
-	g_Console.writeToBuffer(c, "3. EXIT", attri3);
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 + 3);
+	g_Console.writeToBuffer(c, "EXIT", attri3);
 }
 
 void loadSave()
@@ -1863,17 +1860,17 @@ void renderLoadSave()
 
 	COORD c = g_Console.getConsoleSize();
 	c.Y = 33;
-	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 + 1);
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 + 2);
 
 	g_Console.writeToBuffer(c, "SAVE 1", attri1);
 	c.Y += 1;
-	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 + 1);
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 + 2);
 	g_Console.writeToBuffer(c, "SAVE 2", attri2);
 	c.Y += 1;
-	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 + 1);
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 + 2);
 	g_Console.writeToBuffer(c, "SAVE 3", attri3);
 	c.Y += 1;
-	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 + 1);
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 + 3);
 	g_Console.writeToBuffer(c, "BACK", attri4);
 }
 
@@ -2332,11 +2329,13 @@ void SAVEUI()
 
 			break;
 		case 3:
+			g_menuSelection = 0;
 			g_eGameState = S_GAME;
 			break;
 
 		case 4:
-			g_bQuitGame = true;
+			g_menuSelection = 0;
+			g_eGameState = S_MENU;
 			break;
 		}
 		bSomethingHappened = true;
@@ -2389,7 +2388,7 @@ void RenderSAVEUI()
 
 	COORD c = g_Console.getConsoleSize();
 	c.Y = (SHORT)(g_Console.getConsoleSize().Y * 0.5);
-	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 - 1);
+	c.X = (SHORT)(g_Console.getConsoleSize().X * 0.5 + 2);
 	g_Console.writeToBuffer(c, "SAVE 1", attri1);
 	c.Y += 1;
 	g_Console.writeToBuffer(c, "SAVE 2", attri2);
