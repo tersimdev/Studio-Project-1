@@ -557,13 +557,11 @@ void processUserInput()
 			LOAD(temporary1);
 			LOADMAP(temporarymap1);
 			g_eGameState = S_GAME;
-			PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 			countCoin = 10;
 			break;
 		case S_SNAKEMINIGAME:
 		case S_RUBIKS:
 			g_eGameState = S_GAME;
-			PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 			break;
 		}
 		eventHappened = true;
@@ -703,7 +701,6 @@ void checkForTiles()
 		{
 			g_trigger.boulder = g_trigger.findBoulder(g_sChar1.m_futureLocation);
 			g_trigger.boulder->moveBoulder(&g_map, &g_sChar1, &g_Console);
-			PlaySound(TEXT("Sounds/moveboulder.wav"), NULL, SND_SYNC | SND_ASYNC);
 
 		}
 		if (g_map.findCharExists(g_sChar2.m_futureLocation, 'B'))
@@ -712,7 +709,6 @@ void checkForTiles()
 			{
 				g_trigger.boulder = g_trigger.findBoulder(g_sChar2.m_futureLocation);
 				g_trigger.boulder->destroyBoulder(&g_map);
-				PlaySound(TEXT("Sounds/pickaxe.wav"), NULL, SND_SYNC | SND_ASYNC);
 			}
 		}
 		//pickaxe
@@ -940,7 +936,6 @@ void bossMode()
 
 		g_eGameState = S_GAME;
 		g_trigger.initTrigger(&g_map, &g_Console);//reninit all triggers for new map
-		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 	}
 	else // win 
 	{
@@ -951,7 +946,6 @@ void bossMode()
 
 		g_eGameState = S_GAME;
 		g_trigger.initTrigger(&g_map, &g_Console);//reninit all triggers for new map
-		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 		g_abFlags[bossDone] = true;
 	}
 }
@@ -1289,7 +1283,6 @@ void Snakecollisiondetection()
 		)
 	{
 		g_eGameState = S_GAME;
-		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 		if (score == Snakewincondition)
 			g_abFlags[snakeDone] = true;
 
@@ -1552,8 +1545,6 @@ void monsterLogic() // represented by 'M'
 			g_eGameState = S_GAME;
 			g_trigger.initTrigger(&g_map, &g_Console);//reninit all triggers for new map
 
-			PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
-
 
 			// initialise the position of monsters, after pacman ends
 			g_monster1.m_cLocation.X = 98;
@@ -1775,7 +1766,8 @@ void loadSave()
 			break;
 		case 3:
 			g_eGameState = S_MENU;
-			g_menuSelection = 1;
+			PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
+			g_menuSelection = 0;
 			break;
 		}
 		bSomethingHappened = true;
@@ -1799,6 +1791,7 @@ void loadSave()
 	if (g_abKeyPressed[K_BACKSPACE] || g_abKeyPressed[K_ESCAPE])
 	{
 		g_eGameState = S_MENU;
+		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 		g_menuSelection = 0;
 	}
 
@@ -2306,6 +2299,7 @@ void SAVEUI()
 
 		case 4:
 			g_menuSelection = 0;
+			PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 			g_eGameState = S_MENU;
 			break;
 		}

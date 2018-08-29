@@ -19,6 +19,7 @@ void Boulder::moveBoulder(Map* map, SGameChar* player, Console* console)
 			this->m_cLocation = ADDCOORDS(this->m_cLocation, player->direction);
 			this->prevChar = map->addChar(this->m_cLocation, 'B'); //places the new B and store as prevchar
 			player->m_cLocation = ADDCOORDS(player->m_cLocation, player->direction);
+			PlaySound(TEXT("Sounds/moveboulder.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
 	}
 }
@@ -27,4 +28,5 @@ void Boulder::destroyBoulder(Map* map)
 {
 	map->removeChar(this->m_cLocation, this->prevChar);
 	//deletion handled when re-initializing
+	PlaySound(TEXT("Sounds/pickaxe.wav"), NULL, SND_SYNC | SND_ASYNC);
 }
