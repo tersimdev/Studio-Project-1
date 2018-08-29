@@ -122,6 +122,8 @@
     <Text Include="Levels\3.txt" />
     <Text Include="Levels\astarTest.txt" />
     <Text Include="Levels\BOSS1.txt" />
+    <Text Include="Levels\PACMAN.txt" />
+    <Text Include="Levels\pong.txt" />
     <Text Include="Levels\snakemap.txt" />
     <Text Include="Quiz\Answers.txt" />
     <Text Include="Quiz\Questions.txt" />

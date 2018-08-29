@@ -151,5 +151,11 @@
     <Text Include="Levels\3.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="Levels\pong.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="Levels\PACMAN.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -23,6 +23,7 @@ using std::string;
 #define _0 (char)176
 #define _5 (char)219
 #define _D (char)176
+#define _F (char)146
 
 class Map
 {
@@ -34,7 +35,7 @@ public:
 
 	vector<char> mapArray;
 
-	const vector<char> colllidables = { 'Z' , 'U' , 'B' , 'E' , 'N', 'R', 'M' , 'T' }; //add to this when needed
+	const vector<char> colllidables = { 'Z' , 'U' , 'B' , 'E' , 'N' , 'R' , 'M' , 'T' , 'F' }; //add to this when needed
 
 	vector<string> mapNames;
 	

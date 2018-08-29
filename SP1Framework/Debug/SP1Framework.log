@@ -1,3 +1,14 @@
-﻿  game.cpp
+﻿  map.cpp
+  game.cpp
+  Generating Code...
+  Compiling...
+  pong.cpp
+  player.cpp
+  main.cpp
+  enemies.cpp
+  boulders.cpp
+  boss.cpp
+  aStar.cpp
+  Generating Code...
   SP1Framework.vcxproj -> D:\Users\534\Desktop\master\DatingHotline\Debug\SP1Framework.exe
   SP1Framework.vcxproj -> D:\Users\534\Desktop\master\DatingHotline\Debug\SP1Framework.pdb (Full PDB)

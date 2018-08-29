@@ -595,7 +595,7 @@ void checkForTiles()
 			player = &g_sChar2;
 
 		if (g_map.findCharExists(player->m_futureLocation, 'N')
-			&& (g_abFlags[tutoDone] || g_abFlags[bossDone] || g_abFlags[snakeDone]) || g_abFlags[pacmanDone] || g_abFlags[pongDone])
+			&& (g_abFlags[tutoDone] || g_abFlags[bossDone] || g_abFlags[snakeDone] || g_abFlags[pacmanDone] || g_abFlags[pongDone]))
 		{
 			g_map.updateMap(); //loads next map, wraping around
 			g_trigger.initTrigger(&g_map, &g_Console); //reinits all triggers for new map
@@ -636,7 +636,7 @@ void checkForTiles()
 			PlaySound(TEXT("Sounds/tada.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
 		//gates
-		if (g_abKeyPressed[K_0] || (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'U'))) //boss
+		if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'U')) //boss
 		{
 			SAVE(temporary1);
 			SAVEMAP(temporarymap1);
@@ -651,12 +651,12 @@ void checkForTiles()
 			// PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);-> not running this
 			PlaySound(TEXT("Sounds/boss.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
-		else if (g_abKeyPressed[K_9] || (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'M'))) //snake
+		else if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'M')) //snake
 		{
 			g_eGameState = S_SNAKEMINIGAME;
 			PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
-		else if (g_abKeyPressed[K_8] || (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'R'))) //pacman
+		else if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'R')) //pacman
 		{
 			SAVE(temporary1);
 			SAVEMAP(temporarymap1);
@@ -677,7 +677,7 @@ void checkForTiles()
 			g_eGameState = S_PACMAN;
 			PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
-		else if (g_abKeyPressed[K_3] || g_map.findCharExists(player->m_futureLocation, 'F')) // pong
+		else if (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'F')) // pong
 		{
 			SAVE(temporary1);
 			SAVEMAP(temporarymap1);
@@ -691,7 +691,7 @@ void checkForTiles()
 			g_eGameState = S_PONG;
 			PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
-		else if (g_abKeyPressed[K_6] || (g_map.findCharExists(player->m_futureLocation, 'T'))) //rubiks cube
+		else if (g_map.findCharExists(player->m_futureLocation, 'T')) //rubiks cube
 		{
 			g_eGameState = S_RUBIKS;
 			PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);
@@ -2421,18 +2421,37 @@ void backgroundimage()
 	menubg.close();
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /***************************************PONG GAME***************************************/
 
 void pongMode()
 {
-	processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
+	processUserInput();
 	puckMove();
 	moveSliders();
 	if (g_sPuck1.m_futureLocation.X == 135 || g_sPuck1.m_futureLocation.X == 34 || g_sPuck2.m_futureLocation.X == 135 || g_sPuck2.m_futureLocation.X == 34)
 	{
-		g_eGameState = S_GAME;
 		LOAD(temporary1);
 		LOADMAP(temporarymap1);
+		g_eGameState = S_GAME;
 		g_trigger.initTrigger(&g_map, &g_Console);
 		g_sPuck1.m_cLocation = { 84, 22 };
 		g_sPuck2.m_cLocation = { 50, 22 };
@@ -2440,7 +2459,6 @@ void pongMode()
 		g_sPuck2.direction = { -1, 1 };
 		g_sSlider1.m_cLocation = { 35, 20 };
 		g_sSlider2.m_cLocation = { 133, 20 };
-		g_abFlags[pongDone] = true;
 	}
 }
 
