@@ -213,10 +213,6 @@ void getInput(void)
 
 		//cheats
 		g_abKeyPressed[K_0] = isKeyPressed(0x30);
-		g_abKeyPressed[K_1] = isKeyPressed(0x31);
-		g_abKeyPressed[K_2] = isKeyPressed(0x32);
-		g_abKeyPressed[K_3] = isKeyPressed(0x33);
-		g_abKeyPressed[K_4] = isKeyPressed(0x34);
 	}
 	break;
 	case S_QUIZ_B:
@@ -576,6 +572,20 @@ void processUserInput()
 			PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 			break;
 		}
+		eventHappened = true;
+	}
+	if (g_abKeyPressed[K_0])
+	{
+		g_map.updateMap(); //loads next map, wraping around
+		g_trigger.initTrigger(&g_map, &g_Console); //reinits all triggers for new map
+		g_abFlags[hasKey] = false; //lose key
+		g_abFlags[tutoDone] = false;
+		g_abFlags[snakeDone] = false; //lose key
+		g_abFlags[bossDone] = false; //lose key
+		g_abFlags[pacmanDone] = false; //lose key
+		g_abFlags[pongDone] = false;
+		g_sChar1.m_cLocation = g_map.findChar('P');
+		g_sChar2.m_cLocation = g_map.findChar('S');
 		eventHappened = true;
 	}
 
