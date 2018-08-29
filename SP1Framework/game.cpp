@@ -2420,6 +2420,7 @@ void pongMode()
 		g_eGameState = S_GAME;
 		LOAD(temporary1);
 		LOADMAP(temporarymap1);
+		g_trigger.initTrigger(&g_map, &g_Console);
 		g_sPuck1.m_cLocation = { 84, 22 };
 		g_sPuck2.m_cLocation = { 50, 22 };
 		g_sPuck1.direction = { 1, 1 };
