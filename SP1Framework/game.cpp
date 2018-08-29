@@ -54,7 +54,7 @@ PacmanMonster    g_monster4; // monster4
 PacmanMonster    g_monster5; // monster5
 PacmanMonster    g_monster6; // monster6
 
-// Console object
+							 // Console object
 Console g_Console(199, 51, "RISE OF THE TOMB EXPLORING N00BS");
 // Game specific variables here
 //Map		g_map("Levels/astarTest.txt"); //map for astar testing
@@ -73,7 +73,7 @@ Cube		g_cube; //cube reward
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 // these are to prevent key bouncing, so we won't trigger keypresses more than once
 double	g_dBounceTimeNorm;
-double  g_dBounceTimeUI; 
+double  g_dBounceTimeUI;
 double  g_dBounceTimeMove[NumOfPlayers];
 double  g_dBounceTimeAction[NumOfPlayers];
 double  g_dBounceTimeEnemy[NumOfPlayers];
@@ -121,19 +121,19 @@ void init(void)
 
 	g_monster6.m_cLocation.X = 121;
 	g_monster6.m_cLocation.Y = 43;
-	
-    // sets the initial state for the game
-    g_eGameState = S_SPLASHSCREEN;
 
-    // sets the width, height and the font name to use in the console
-    g_Console.setConsoleFont(0, 16, L"Consolas");
+	// sets the initial state for the game
+	g_eGameState = S_SPLASHSCREEN;
+
+	// sets the width, height and the font name to use in the console
+	g_Console.setConsoleFont(0, 16, L"Consolas");
 
 	//prevent selection of text- disable quick edit mode
 	g_Console.setConsoleMode(ENABLE_EXTENDED_FLAGS | ENABLE_MOUSE_INPUT);
-	
+
 	//to pass tutorial level
 	g_abFlags[tutoDone] = true;
-	
+
 	//init variables
 	g_menuSelection = 0;
 
@@ -157,12 +157,12 @@ void init(void)
 // Input    : Void
 // Output   : void
 //--------------------------------------------------------------
-void shutdown( void )
+void shutdown(void)
 {
-    // Reset to white text on black background
-    colour(FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
+	// Reset to white text on black background
+	colour(FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
 
-    g_Console.clearBuffer();
+	g_Console.clearBuffer();
 }
 
 //--------------------------------------------------------------
@@ -176,8 +176,8 @@ void shutdown( void )
 // Input    : Void
 // Output   : void
 //--------------------------------------------------------------
-void getInput( void )
-{    
+void getInput(void)
+{
 	switch (g_eGameState)
 	{
 	case S_SPLASHSCREEN: //none
@@ -190,7 +190,7 @@ void getInput( void )
 	case S_BOSS: //boss
 	case S_RUBIKS: //rubiks cube
 	case S_SAVE:
-		{
+	{
 		g_abKeyPressed[K_UP] = isKeyPressed(VK_UP);
 		g_abKeyPressed[K_DOWN] = isKeyPressed(VK_DOWN);
 		g_abKeyPressed[K_LEFT] = isKeyPressed(VK_LEFT);
@@ -219,11 +219,11 @@ void getInput( void )
 		g_abKeyPressed[K_8] = isKeyPressed(0x38);
 		g_abKeyPressed[K_9] = isKeyPressed(0x39);
 		g_abKeyPressed[K_0] = isKeyPressed(0x30);
-		}
-		break;
+	}
+	break;
 	case S_QUIZ_B:
 	case S_QUIZ_E:
-		{
+	{
 		g_abKeyPressed[K_A] = isKeyPressed(0x41);
 		g_abKeyPressed[K_B] = isKeyPressed(0x42);
 		g_abKeyPressed[K_C] = isKeyPressed(0x43);
@@ -274,7 +274,7 @@ void getInput( void )
 		g_abKeyPressed[K_DOWN] = isKeyPressed(VK_DOWN);
 		break;
 	}
-		break;
+	break;
 	}
 }
 
@@ -294,9 +294,9 @@ void getInput( void )
 //--------------------------------------------------------------
 void update(double dt)
 {
-    // get the delta time
-    g_dElapsedTime += dt;
-    g_dDeltaTime = dt;
+	// get the delta time
+	g_dElapsedTime += dt;
+	g_dDeltaTime = dt;
 
 	switch (g_eGameState)
 	{
@@ -335,7 +335,7 @@ void update(double dt)
 //--------------------------------------------------------------
 void render()
 {
-    clearScreen();      // clears the current screen and draw from scratch 
+	clearScreen();      // clears the current screen and draw from scratch 
 	switch (g_eGameState)
 	{
 	case S_SPLASHSCREEN: renderSplashScreen();
@@ -363,13 +363,13 @@ void render()
 		break;
 	}
 	renderFramerate();  // renders debug information, frame rate, elapsed time, etc
-    renderToScreen();   // dump the contents of the buffer to the screen, one frame worth of game
+	renderToScreen();   // dump the contents of the buffer to the screen, one frame worth of game
 }
 
 void splashScreenWait()    // waits for time to pass in splash screen
 {
-    if (g_dElapsedTime > 1.0) // wait for 3 seconds to switch to main menu mode, else do nothing
-        g_eGameState = S_MENU;
+	if (g_dElapsedTime > 1.0) // wait for 3 seconds to switch to main menu mode, else do nothing
+		g_eGameState = S_MENU;
 }
 
 void renderFramerate()
@@ -414,8 +414,8 @@ void clearScreen()
 
 void gameplay()         // gameplay logic
 {
-    processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
-    moveCharacter();    // moves the character, collision detection, physics, etc
+	processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
+	moveCharacter();    // moves the character, collision detection, physics, etc
 	checkForTiles();	// checks for special tiles which player can interact with
 	actionsListener();	// other action keys like shooting, etc
 	enemyMovement();	//enemy movement
@@ -453,7 +453,7 @@ void moveCharacter()
 			g_abFlags[moving1] = true;
 		}
 	}
-	if (g_dBounceTimeMove[1] < g_dElapsedTime&& g_sChar2.m_bActive) 
+	if (g_dBounceTimeMove[1] < g_dElapsedTime&& g_sChar2.m_bActive)
 	{
 		//player 2
 		if (g_abKeyPressed[K_UP] && g_sChar2.m_cLocation.Y > 1)
@@ -483,13 +483,13 @@ void moveCharacter()
 	}
 
 	if (g_abFlags[moving1])
-	{	
+	{
 		//calculating future location
 		g_sChar1.m_futureLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
 		//check if colliding with collidables in map, or if moving towards player 2
-		if (!g_map.collideWithWall(g_sChar1.m_futureLocation) 
+		if (!g_map.collideWithWall(g_sChar1.m_futureLocation)
 			&& !EQUCOORDS(g_sChar1.m_futureLocation, g_sChar2.m_cLocation))
-				g_sChar1.m_cLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
+			g_sChar1.m_cLocation = ADDCOORDS(g_sChar1.m_cLocation, g_sChar1.direction);
 		//check bounce time
 		PlaySound(TEXT("Sounds/movement.wav"), NULL, SND_SYNC | SND_ASYNC);
 
@@ -500,11 +500,11 @@ void moveCharacter()
 		//calculating future location
 		g_sChar2.m_futureLocation = ADDCOORDS(g_sChar2.m_cLocation, g_sChar2.direction);
 		//check if colliding with collidables in map, or if moving towards player 2
-		if (!g_map.collideWithWall(g_sChar2.m_futureLocation) 
+		if (!g_map.collideWithWall(g_sChar2.m_futureLocation)
 			&& !EQUCOORDS(g_sChar2.m_futureLocation, g_sChar1.m_cLocation))
-				g_sChar2.m_cLocation = ADDCOORDS(g_sChar2.m_cLocation, g_sChar2.direction);
+			g_sChar2.m_cLocation = ADDCOORDS(g_sChar2.m_cLocation, g_sChar2.direction);
 		//check bounce time
-		PlaySound(TEXT("Sounds/movement.wav"), NULL, SND_SYNC | SND_ASYNC);  
+		PlaySound(TEXT("Sounds/movement.wav"), NULL, SND_SYNC | SND_ASYNC);
 
 		g_dBounceTimeMove[1] = g_dElapsedTime + 0.05; // fazt
 	}
@@ -520,13 +520,13 @@ void actionsListener()
 			g_abFlags[shooting] = true;
 			g_sChar1.gun = new Gun(g_sChar1.m_cLocation, g_sChar1.direction);
 			eventHappened[0] = true;
-			PlaySound(TEXT("Sounds/shoot.wav"), NULL, SND_SYNC | SND_ASYNC); 
+			PlaySound(TEXT("Sounds/shoot.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
 	}
 	if (g_dBounceTimeAction[1] < g_dElapsedTime)
 	{
 		if (g_abKeyPressed[K_SPACE])
-		{	
+		{
 			//temp key to test stuff
 			eventHappened[1] = true;
 		}
@@ -558,9 +558,14 @@ void processUserInput()
 		case S_GAME:
 			g_eGameState = S_SAVE;
 			break;
+		}
+		eventHappened = true;
+	}
+	if (g_abKeyPressed[K_BACKSPACE])
+	{
+		switch (g_eGameState)
+		{
 		case S_BOSS:
-		case S_PACMAN:
-		case S_PONG:
 			LOAD(temporary1);
 			LOADMAP(temporarymap1);
 			g_eGameState = S_GAME;
@@ -589,7 +594,7 @@ void checkForTiles()
 		if (g_abFlags[moving2])
 			player = &g_sChar2;
 
-		if (g_map.findCharExists(player->m_futureLocation, 'N') 
+		if (g_map.findCharExists(player->m_futureLocation, 'N')
 			&& (g_abFlags[tutoDone] || g_abFlags[bossDone] || g_abFlags[snakeDone]) || g_abFlags[pacmanDone] || g_abFlags[pongDone])
 		{
 			g_map.updateMap(); //loads next map, wraping around
@@ -628,7 +633,7 @@ void checkForTiles()
 				g_sChar2.m_cLocation.X = player->m_cLocation.X - 1;
 				g_sChar2.m_cLocation.Y = player->m_cLocation.Y;
 			}
-			PlaySound(TEXT("Sounds/tada.wav"), NULL, SND_SYNC | SND_ASYNC); 
+			PlaySound(TEXT("Sounds/tada.wav"), NULL, SND_SYNC | SND_ASYNC);
 		}
 		//gates
 		if (g_abKeyPressed[K_0] || (g_abFlags[hasKey] && g_map.findCharExists(player->m_futureLocation, 'U'))) //boss
@@ -636,7 +641,7 @@ void checkForTiles()
 			SAVE(temporary1);
 			SAVEMAP(temporarymap1);
 			//
-			g_boss = new Boss (&g_map, &g_Console, &g_sChar1.m_cLocation, &g_sChar2.m_cLocation, g_dElapsedTime);
+			g_boss = new Boss(&g_map, &g_Console, &g_sChar1.m_cLocation, &g_sChar2.m_cLocation, g_dElapsedTime);
 			g_trigger = Trigger(&g_map, &g_Console); //to access leftover enemies
 			for (auto i : g_trigger.allEnemies)
 			{
@@ -705,7 +710,7 @@ void checkForTiles()
 			{
 				g_trigger.boulder = g_trigger.findBoulder(g_sChar2.m_futureLocation);
 				g_trigger.boulder->destroyBoulder(&g_map);
-				PlaySound(TEXT("Sounds/pickaxe.wav"), NULL, SND_SYNC | SND_ASYNC);  
+				PlaySound(TEXT("Sounds/pickaxe.wav"), NULL, SND_SYNC | SND_ASYNC);
 			}
 		}
 		//pickaxe
@@ -792,7 +797,7 @@ void enemyMovement()
 	{
 		g_dBounceTimeEnemy[0] = g_dElapsedTime + 0.1;
 	}
-	
+
 }
 
 
@@ -812,8 +817,8 @@ void renderSplashScreen()  // renders the splash screen
 
 void renderGame()
 {
-    renderMap();        // renders the map to the buffer first
-    renderCharacter();  // renders the character into the buffer
+	renderMap();        // renders the map to the buffer first
+	renderCharacter();  // renders the character into the buffer
 	renderHealth();		// render character health bar
 	renderItems();		// renders items into buffer
 
@@ -822,10 +827,10 @@ void renderGame()
 
 	/*for (auto i : path) //for astar path visualization
 	{
-		g_Console.writeToBuffer(i, "H", 0x0F);
+	g_Console.writeToBuffer(i, "H", 0x0F);
 
 	}*/
-		
+
 }
 
 void renderMap()
@@ -851,7 +856,7 @@ void renderHealth()
 }
 
 void renderBullet()
-{	
+{
 	g_sChar1.gun->shoot(&g_sChar1);
 	g_trigger.enemy = g_trigger.findEnemy(g_sChar1.gun->bulletPos);
 	//check if bullet exceeds console or hits wall or out of range or hits enemy
@@ -861,7 +866,7 @@ void renderBullet()
 			g_trigger.enemy->destroyEnemy(&g_map);
 		delete g_sChar1.gun; //no more visual bullet
 		g_abFlags[shooting] = false; //stops rendering
-	}		
+	}
 	else
 		g_Console.writeToBuffer(g_sChar1.gun->bulletPos, (char)254, 0x0E);
 }
@@ -961,8 +966,8 @@ void renderBossMode()
 		{
 			g_boss->renderBossAttack(&g_Console);
 		}
-		
-	}	
+
+	}
 }
 
 
@@ -1043,17 +1048,17 @@ void renderCube()
 		{
 			g_Console.writeToBuffer(c[i], 'O', g_cube.faces[i * 4 + j]);
 			if (j == 0 || j == 2) c[i].X++;
-			else 
+			else
 			{
-				c[i].Y++; 
+				c[i].Y++;
 				c[i].X--;
 			}
 		}
 	}
 	g_Console.writeToBuffer({ (SHORT)120, (SHORT)23 }, "2x2 RUBIKS CUBE", 0x0F);
 	g_Console.writeToBuffer({ (SHORT)120, (SHORT)24 }, "WASD and Arrow Keys to manipulate", 0x0F);
-	g_Console.writeToBuffer({(SHORT)120, (SHORT)25}, "Solve it if you can :)", 0x0F);
-	g_Console.writeToBuffer({(SHORT)120, (SHORT)26}, "'Backspace' to exit", 0x0F);
+	g_Console.writeToBuffer({ (SHORT)120, (SHORT)25 }, "Solve it if you can :)", 0x0F);
+	g_Console.writeToBuffer({ (SHORT)120, (SHORT)26 }, "'Backspace' to exit", 0x0F);
 }
 
 
@@ -1417,7 +1422,6 @@ void pacmanMode()
 	moveCharacter();    // moves the character, collision detection, physics, etc
 	checkForTiles();
 	monsterLogic();
-	processUserInput();
 
 	// for collecting coins
 	if (g_map.findCharExists(g_sChar1.m_cLocation, 'A'))
@@ -1442,7 +1446,16 @@ void pacmanMode()
 		countCoin = 169;
 		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 		g_abFlags[pacmanDone] = true;
-		
+
+	}
+	if (g_abKeyPressed[K_BACKSPACE])
+	{
+		LOAD(temporary1);
+		LOADMAP(temporarymap1);
+		g_eGameState = S_GAME;
+		g_trigger.initTrigger(&g_map, &g_Console);//reninit all triggers for new map		
+		countCoin = 10;
+		PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
 	}
 }
 
@@ -1546,7 +1559,7 @@ void monsterLogic() // represented by 'M'
 			g_trigger.initTrigger(&g_map, &g_Console);//reninit all triggers for new map
 
 			PlaySound(TEXT("Sounds/bgm.wav"), NULL, SND_SYNC | SND_ASYNC);
-			
+
 
 			// initialise the position of monsters, after pacman ends
 			g_monster1.m_cLocation.X = 98;
@@ -2056,7 +2069,7 @@ void quizMode()
 		bSomethingHappened = true;
 	}
 	if (g_abKeyPressed[K_ENTER])
-	{	
+	{
 		if (g_abFlags[quizzing])
 		{
 			g_abFlags[quizzing] = false;
@@ -2099,11 +2112,11 @@ void renderQuiz()
 	if (g_abFlags[quizzing])
 	{
 		g_quiz.checkAns() ?
-			g_quiz.quizResult(WIN, &result, &answers):
+			g_quiz.quizResult(WIN, &result, &answers) :
 
 			g_quiz.quizResult(LOSE, &result, &answers);
 	}
-		
+
 	else
 		result = "";
 	g_Console.writeToBuffer({ 10, 28 }, result, 0x0F);
@@ -2113,12 +2126,12 @@ void renderQuiz()
 void renderItems()
 {
 	g_Console.writeToBuffer({ 185, 5 }, "PISTOL", 0x0E);
-	
+
 	if (g_abFlags[hasPickaxe])
 	{
 		g_Console.writeToBuffer({ 164, 5 }, "PICKAXE", 0x0E);
 	}
-	
+
 	if (g_abFlags[hasKey])
 	{
 		g_Console.writeToBuffer({ 145, 5 }, "KEY", 0x0E);
@@ -2282,7 +2295,7 @@ void LOADMAP(string mapname)
 void SAVEUI()
 {
 	processUserInput();
-	
+
 	bool bSomethingHappened = false;
 	if (g_dBounceTimeUI > g_dElapsedTime)
 		return;
