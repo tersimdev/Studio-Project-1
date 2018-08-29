@@ -47,7 +47,7 @@ std::vector<SNAKELAD> SnakeBody;
 
 //For pong
 unsigned int pongScore = 0;
-
+int pongWinCondition = 5;
 // For coin
 int countCoin = 10;
 PacmanMonster    g_monster1; // monster1 
@@ -2463,6 +2463,7 @@ void pongMode()
 		g_sPuck2.direction = { -1, 1 };
 		g_sSlider1.m_cLocation = { 35, 20 };
 		g_sSlider2.m_cLocation = { 133, 20 };
+		pongScore = 0;
 		g_abFlags[pongDone] = true;
 	}
 }
