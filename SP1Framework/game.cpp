@@ -557,11 +557,14 @@ void processUserInput()
 			LOAD(temporary1);
 			LOADMAP(temporarymap1);
 			g_eGameState = S_GAME;
-			countCoin = 10;
+			g_sChar1.color = 0x0C;
+			g_sChar2.color = 0x0A;
+			PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);
 			break;
 		case S_SNAKEMINIGAME:
 		case S_RUBIKS:
 			g_eGameState = S_GAME;
+			PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);
 			break;
 		}
 		eventHappened = true;
@@ -933,7 +936,6 @@ void bossMode()
 		LOAD(temporary1);
 		LOADMAP(temporarymap1);
 
-
 		g_eGameState = S_GAME;
 		g_trigger.initTrigger(&g_map, &g_Console);//reninit all triggers for new map
 	}
@@ -941,8 +943,6 @@ void bossMode()
 	{
 		LOAD(temporary1);
 		LOADMAP(temporarymap1);
-
-		//TEMPO, temporary, replace with loading last saved state function
 
 		g_eGameState = S_GAME;
 		g_trigger.initTrigger(&g_map, &g_Console);//reninit all triggers for new map
@@ -1435,7 +1435,7 @@ void pacmanMode()
 	{
 		LOAD(temporary1);
 		LOADMAP(temporarymap1);
-
+		PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);
 		g_eGameState = S_GAME;
 		g_trigger.initTrigger(&g_map, &g_Console);//reninit all triggers for new map		
 		countCoin = 10;
@@ -1446,6 +1446,7 @@ void pacmanMode()
 	{
 		LOAD(temporary1);
 		LOADMAP(temporarymap1);
+		PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);
 		g_eGameState = S_GAME;
 		g_trigger.initTrigger(&g_map, &g_Console);//reninit all triggers for new map		
 		countCoin = 10;
@@ -1665,6 +1666,7 @@ void mainMenu()
 		switch (g_menuSelection)
 		{
 		case 0:
+			PlaySound(TEXT("Sounds/tada.wav"), NULL, SND_SYNC | SND_ASYNC);
 			g_eGameState = S_GAME;
 			break;
 		case 1:
@@ -2435,6 +2437,8 @@ void pongMode()
 		if (pongScore == pongWinCondition)
 			g_abFlags[pongDone] = true;
 		pongScore = 0;
+
+		PlaySound(TEXT("Sounds/minigame.wav"), NULL, SND_SYNC | SND_ASYNC);
 	}
 
 }
